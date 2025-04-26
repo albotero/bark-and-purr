@@ -1,8 +1,7 @@
-import  { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import Swal from "sweetalert2";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { UserContext } from "../context/_";
-
 
 const RegisterForm = () => {
     const [formData, setFormData] = useState({
@@ -12,19 +11,25 @@ const RegisterForm = () => {
         confirmPass: ""
     });
 
-
-    const { register, setToken  } = useContext(UserContext);
+    const { register, setToken } = useContext(UserContext);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-            setFormData({
+        setFormData({
             ...formData,
             [name]: value,
         });
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (formData.name.trim() === "" || formData.email.trim() === "" || formData.pass.trim() === "" || formData.confirmPass.trim() === "") {
+
+        if (
+            formData.name.trim() === "" ||
+            formData.email.trim() === "" ||
+            formData.pass.trim() === "" ||
+            formData.confirmPass.trim() === ""
+        ) {
             Swal.fire({
                 title: "Error!",
                 text: "You must complete all the fields.",
@@ -33,8 +38,7 @@ const RegisterForm = () => {
             });
             return;
         }
-    
-        // Validate that the password matches
+
         if (formData.pass !== formData.confirmPass) {
             Swal.fire({
                 title: "Error!",
@@ -44,7 +48,7 @@ const RegisterForm = () => {
             });
             return;
         }
-    
+
         try {
             await register(formData.name, formData.email, formData.pass);
             Swal.fire({
@@ -54,19 +58,19 @@ const RegisterForm = () => {
                 confirmButtonText: "OK",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    setToken(true); 
+                    setToken(true);
                 }
             });
-        } catch (error) {
+        } catch {
             Swal.fire({
                 title: "Error!",
                 text: "There was a problem with your registration. Please try again.",
                 icon: "error",
-                confirmButtonText: "OK",                
+                confirmButtonText: "OK",
             });
         }
     };
-    
+
     return (
         <form onSubmit={handleSubmit} className="register-form container mt-5 p-4 border rounded">
             <div className="form-group mb-3">
@@ -103,7 +107,7 @@ const RegisterForm = () => {
                 />
             </div>
             <div className="form-group mb-3">
-                <label htmlFor="confirmPass">Confirmar Password:</label>
+                <label htmlFor="confirmPass">Confirm Password:</label>
                 <input
                     type="password"
                     name="confirmPass"
@@ -113,7 +117,9 @@ const RegisterForm = () => {
                     onChange={handleChange}
                 />
             </div>
-            <button type="submit" className="btn btn-primary w-100">Register</button>
+            <button type="submit" className="btn btn-primary w-100">
+                Register
+            </button>
         </form>
     );
 };
