@@ -1,0 +1,9 @@
+.nav-link {
+  color: var(--bs-light);
+  text-decoration: none;
+  padding: 0.2rem 0;
+}
+
+.nav-link.active {
+  border-bottom: 1px solid var(--bs-light);
+}
