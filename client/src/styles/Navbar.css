@@ -2,6 +2,7 @@
   color: var(--bs-light);
   text-decoration: none;
   padding: 0.2rem 0;
+  margin: 0 0.3rem;
 }
 
 .nav-link.active {

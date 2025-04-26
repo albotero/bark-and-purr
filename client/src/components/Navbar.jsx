@@ -13,12 +13,22 @@ const Navbar = () => {
         <BsNavbar.Brand href="/">B & P</BsNavbar.Brand>
         <BsNavbar.Toggle aria-controls="responsive-navbar-nav" />
         <BsNavbar.Collapse>
+          {/* Links at the left */}
           <Nav className="me-auto">
             <NavLink to="/" className={linkClassName}>
               Home
             </NavLink>
+            <NavLink to="/product/p123" className={linkClassName}>
+              Product
+            </NavLink>
+          </Nav>
+          {/* Links at the right */}
+          <Nav>
             <NavLink to="/user" className={linkClassName}>
               Profile
+            </NavLink>
+            <NavLink to="/logout" className="nav-link">
+              Logout
             </NavLink>
           </Nav>
         </BsNavbar.Collapse>
