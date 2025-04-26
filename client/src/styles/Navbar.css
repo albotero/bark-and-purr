@@ -6,5 +6,11 @@
 }
 
 .nav-link.active {
-  border-bottom: 1px solid var(--bs-light);
+  font-weight: 500;
+}
+
+@media screen and (min-width: 768px) {
+  .nav-link.active {
+    border-bottom: 1px solid var(--bs-light);
+  }
 }

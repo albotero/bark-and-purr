@@ -1,5 +1,7 @@
+import Container from "react-bootstrap/esm/Container"
+
 const Profile = () => {
-  return <div>Profile</div>
+  return <Container>PROFILE!</Container>
 }
 
 export default Profile
