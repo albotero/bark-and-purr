@@ -1,17 +1,16 @@
-import { useState, useContext } from "react";
-import Swal from "sweetalert2";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { UserContext } from "../context/_";
+import { useState } from "react"
+import Swal from "sweetalert2"
+import { useUser } from "../context/UserContext"
 
 const RegisterForm = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        pass: "",
-        confirmPass: ""
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    pass: "",
+    confirmPass: "",
+  })
 
-    const { register, setToken } = useContext(UserContext);
+  const { register, setToken } = useUser()
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -124,4 +123,5 @@ const RegisterForm = () => {
     );
 };
 
-export default RegisterForm;
+export default RegisterForm
+
