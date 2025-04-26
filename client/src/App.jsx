@@ -3,6 +3,7 @@ import Container from "react-bootstrap/esm/Container"
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
+import Register from "./pages/Register"
 import Profile from "./pages/Profile"
 import Product from "./pages/Product"
 
@@ -14,7 +15,7 @@ function App() {
         <Routes>
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
-          <Route path="register" element={<></>} />
+          <Route path="register" element={<Register />} />
           <Route path="search" element={<></>} />
           <Route path="product/:productId" element={<Product />} />
           <Route path="user">
