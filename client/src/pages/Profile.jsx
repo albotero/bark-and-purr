@@ -171,6 +171,7 @@ const Profile = () => {
                       label={text}
                       checked={isActive}
                       data-id={id}
+                      id={`notify-check-${id}`}
                       onChange={handleNotificationCheckChange}
                     />
                   ))}
