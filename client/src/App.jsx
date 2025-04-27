@@ -6,11 +6,13 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Profile from "./pages/Profile"
 import Product from "./pages/Product"
+import { useUser } from "./context/UserContext"; 
 
 function App() {
+  const { token } = useUser(); 
   return (
     <>
-      <Navbar />
+      <Navbar token={token}/>
       <Container className="container-main">
         <Routes>
           <Route index element={<Home />} />

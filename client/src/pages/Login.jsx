@@ -1,7 +1,7 @@
 import { useState } from "react"
 import Swal from "sweetalert2"
 import { useUser } from "../context/UserContext"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +9,7 @@ const Login = () => {
     pass: "",
   })
 
-  const { login } = useUser()
+  const { login , setToken} = useUser()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -36,14 +36,16 @@ const Login = () => {
     const result = await login(formData.email, formData.pass)
 
     if (result.success) {
-      Swal.fire({
-        title: "Success!",
-        text: "Registration completed successfully",
-        icon: "success",
-        confirmButtonText: "Go to Home",
-      }).then(() => {
-        navigate("/") // Redirige al home al presionar "OK"
-      })
+        Swal.fire({
+          title: "Success!",
+          text: "Login completed successfully",
+          icon: "success",
+          confirmButtonText: "Go to Home",
+        }).then(() => {
+          setToken(true); 
+          navigate("/");
+        });
+      
     } else {
       Swal.fire({
         title: "Error!",
@@ -55,33 +57,49 @@ const Login = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="login-form container mt-5 p-4 border rounded">
-      <div className="form-group mb-3">
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          className="form-control"
-          value={formData.email}
-          onChange={handleChange}
-        />
+    <div className="d-flex align-items-center justify-content-center vh-100" >
+      <div className="p-5 border rounded" style={{ backgroundColor: "white", width: "100%", maxWidth: "400px" }}>
+        <h2 className="text-center mb-4">Login</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              className="form-control"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="mb-2 d-flex justify-content-between align-items-center">
+            <label htmlFor="pass" className="form-label mb-0">Password</label>
+            <Link to="/forgot-password" className="small" style={{ fontSize: "0.9em" }}>
+              Forgot password?
+            </Link>
+          </div>
+          <div className="mb-3">
+            <input
+              type="password"
+              name="pass"
+              id="pass"
+              className="form-control"
+              value={formData.pass}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-check mb-3">
+            <input type="checkbox" className="form-check-input" id="rememberMe" />
+            <label className="form-check-label" htmlFor="rememberMe">
+              Remember me
+            </label>
+          </div>
+          <button type="submit" className="btn btn-primary w-100">
+            Login
+          </button>
+        </form>
       </div>
-      <div className="form-group mb-3">
-        <label htmlFor="pass">Password:</label>
-        <input
-          type="password"
-          name="pass"
-          id="pass"
-          className="form-control"
-          value={formData.pass}
-          onChange={handleChange}
-        />
-      </div>
-      <button type="submit" className="btn btn-primary w-100">
-        Login
-      </button>
-    </form>
+    </div>
   )
 }
 
