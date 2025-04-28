@@ -1,5 +1,6 @@
 import "../styles/Profile.css"
 import { useEffect, useState } from "react"
+import { FaRegCircleCheck, FaRegCircleXmark } from "react-icons/fa6"
 import Button from "react-bootstrap/esm/Button"
 import Col from "react-bootstrap/esm/Col"
 import Container from "react-bootstrap/esm/Container"
@@ -24,7 +25,7 @@ const languages = [
 ]
 
 const Profile = () => {
-  const [personalInfo, setPersonalInfo] = useState({})
+  const [userInfo, setUserInfo] = useState({})
   const [address, setAddress] = useState({})
   const [preferences, setPreferences] = useState({})
   const [inputAddress, setInputAddress] = useState({})
@@ -34,7 +35,7 @@ const Profile = () => {
 
   /* Mock data */
   useEffect(() => {
-    setPersonalInfo({
+    setUserInfo({
       avatar: "/vite.svg",
       name: "John Doe",
       email: "john.doe@mail.com",
@@ -92,16 +93,31 @@ const Profile = () => {
       <Row>
         <Col xs={12} md={5}>
           <div className="avatar-container">
-            <img className="avatar-img" src={personalInfo.avatar} alt="Avatar" />
+            <img className="avatar-img" src={userInfo.avatar} alt="Avatar" />
             <EditIcon className="avatar-icon" />
           </div>
           <div className="personal-info">
-            <h4 className="user-name">{personalInfo.name}</h4>
-            <ProfileInfoItem icon="✉️" text={personalInfo.email} />
-            <ProfileInfoItem icon="🗓️" text={personalInfo.birthday} />
-            <ProfileInfoItem icon="⭐️" text={personalInfo.favorites?.text} href={personalInfo.favorites?.href} />
-            <ProfileInfoItem icon="🛍️" text={personalInfo.purchases?.text} href={personalInfo.purchases?.href} />
-            <ProfileInfoItem icon="🐾" text={personalInfo.publications?.text} href={personalInfo.publications?.href} />
+            <h4 className="user-name">{userInfo.name}</h4>
+            <ProfileInfoItem icon="mail" iconColor="secondary" text={userInfo.email} />
+            <ProfileInfoItem icon="bday" iconColor="secondary" text={userInfo.birthday} />
+            <ProfileInfoItem
+              icon="favs"
+              iconColor="danger"
+              text={userInfo.favorites?.text}
+              href={userInfo.favorites?.href}
+            />
+            <ProfileInfoItem
+              icon="purchases"
+              iconColor="success"
+              text={userInfo.purchases?.text}
+              href={userInfo.purchases?.href}
+            />
+            <ProfileInfoItem
+              icon="pubs"
+              iconColor="warning"
+              text={userInfo.publications?.text}
+              href={userInfo.publications?.href}
+            />
           </div>
         </Col>
         <Col xs={12} md={7}>
@@ -185,7 +201,13 @@ const Profile = () => {
                   <hr />
                   {preferences.notifications?.map(({ id, isActive, text }) => (
                     <p key={id} className="my-1 d-flex align-items-start gap-2">
-                      <span>{isActive ? "✅" : "❌"}</span>
+                      <span>
+                        {isActive ? (
+                          <FaRegCircleCheck className="text-success" />
+                        ) : (
+                          <FaRegCircleXmark className="text-danger" />
+                        )}
+                      </span>
                       <span>{text}</span>
                     </p>
                   ))}
