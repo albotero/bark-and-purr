@@ -1,33 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from "react-router"
+import Container from "react-bootstrap/esm/Container"
+import Navbar from "./components/Navbar"
+import Home from "./pages/Home"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+import Profile from "./pages/Profile"
+import Product from "./pages/Product"
+import { useUser } from "./context/UserContext"; 
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const { token } = useUser(); 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Navbar token={token}/>
+      <Container className="container-main">
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="search" element={<></>} />
+          <Route path="product/:productId" element={<Product />} />
+          <Route path="user">
+            <Route index element={<Profile />} />
+            <Route path="cart" element={<></>} />
+            <Route path="favorites" element={<></>} />
+            <Route path="notifications" element={<></>} />
+            <Route path="purchases" element={<></>} />
+            <Route path="publications" element={<></>} />
+          </Route>
+          <Route path="*" element={<div>Page not found!</div>} />
+        </Routes>
+      </Container>
     </>
   )
 }
