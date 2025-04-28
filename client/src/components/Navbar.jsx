@@ -1,23 +1,25 @@
 import "../styles/Navbar.css"
-import { NavLink } from "react-router-dom"
+import { NavLink, Link } from "react-router-dom"
 import Container from "react-bootstrap/esm/Container"
 import Nav from "react-bootstrap/esm/Nav"
 import BsNavbar from "react-bootstrap/esm/Navbar"
-import { useUser } from "../context/UserContext"; 
+import { useUser } from "../context/UserContext"
 
 const Navbar = () => {
-  const { token, logout } = useUser();
+  const { token, logout } = useUser()
 
   const handleLogout = () => {
-    logout();
-  };
+    logout()
+  }
 
-  const linkClassName = ({ isActive }) => "nav-link" + (isActive ? " active" : "");
+  const linkClassName = ({ isActive }) => "nav-link" + (isActive ? " active" : "")
 
   return (
     <BsNavbar expand="lg" variant="dark" className="bg-primary">
       <Container>
-        <BsNavbar.Brand href="/">B & P</BsNavbar.Brand>
+        <BsNavbar.Brand as={Link} to="/">
+          B & P
+        </BsNavbar.Brand>
         <BsNavbar.Toggle aria-controls="responsive-navbar-nav" />
         <BsNavbar.Collapse>
           {/* Links at the left */}
@@ -40,7 +42,8 @@ const Navbar = () => {
                   Register
                 </NavLink>
               </>
-            ) : ( // Si hay token, se muestra Profile y Logout
+            ) : (
+              // Si hay token, se muestra Profile y Logout
               <>
                 <NavLink to="/user" className={linkClassName}>
                   Profile
