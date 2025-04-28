@@ -6,13 +6,14 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Profile from "./pages/Profile"
 import Product from "./pages/Product"
+import Cart from "./pages/Cart"
 import { useUser } from "./context/UserContext"; 
 
 function App() {
   const { token } = useUser(); 
   return (
     <>
-      <Navbar token={token}/>
+      <Navbar token={token} />
       <Container className="container-main">
         <Routes>
           <Route index element={<Home />} />
@@ -22,7 +23,7 @@ function App() {
           <Route path="product/:productId" element={<Product />} />
           <Route path="user">
             <Route index element={<Profile />} />
-            <Route path="cart" element={<></>} />
+            <Route path="cart" element={<Cart/>} />
             <Route path="favorites" element={<></>} />
             <Route path="notifications" element={<></>} />
             <Route path="purchases" element={<></>} />
@@ -32,7 +33,7 @@ function App() {
         </Routes>
       </Container>
     </>
-  )
+  );
 }
 
 export default App
