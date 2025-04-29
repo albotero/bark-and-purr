@@ -48,7 +48,14 @@ const Navbar = () => {
                 <NavLink to="/user" className={linkClassName}>
                   Profile
                 </NavLink>
-                <button onClick={handleLogout} className="btn btn-link nav-link" style={{ padding: 0 }}>
+                <NavLink to="/user/cart" className={linkClassName}>
+                  Cart
+                </NavLink>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-link nav-link"
+                  style={{ padding: 0 }}
+                >
                   Logout
                 </button>
                 {/* <NavLink to="/logout" className="nav-link">
@@ -60,7 +67,7 @@ const Navbar = () => {
         </BsNavbar.Collapse>
       </Container>
     </BsNavbar>
-  )
+  );
 }
 
 export default Navbar

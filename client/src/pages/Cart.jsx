@@ -3,7 +3,7 @@ import { ProductCard } from "../components/ProductCard";
 import { SummaryCard } from "../components/SummaryCard";
 import { Container, Row, Col, Spinner } from "react-bootstrap";
 
-export default function CartPage() {
+export default function Cart() {
   const userId = 1; // ID fijo por ahora
   const { cart, loading } = useCart(userId);
 
