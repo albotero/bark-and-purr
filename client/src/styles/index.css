@@ -1,0 +1,28 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #4a4747;
+  min-height: 100vh;
+}
+
+.container-main {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+}
+
+@media screen and (min-width: 768px) {
+  .container-main {
+    padding: 2rem 5rem 3rem;
+  }
+}

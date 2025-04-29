@@ -1,0 +1,83 @@
+.avatar-container {
+  position: relative;
+  width: 13rem;
+  height: 16rem;
+  margin: 0 auto;
+}
+
+.avatar-img,
+.avatar-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border: 0.35rem solid var(--bs-light);
+  border-radius: 50%;
+}
+
+.edit-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--bs-tertiary-color);
+}
+
+.edit-icon:hover {
+  color: var(--bs-warning);
+}
+
+.avatar-img {
+  width: 13rem;
+  height: 13rem;
+  background-color: var(--bs-tertiary-color);
+  box-shadow: 0 0 1rem rgba(100, 100, 100, 0.5);
+  transform: translate(-50%, -50%);
+}
+
+.avatar-icon {
+  border-width: 0.2rem;
+  transform: translate(3.75rem, 3.1rem);
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.6rem;
+  background-color: rgb(190, 190, 190);
+  color: var(--bs-light);
+}
+
+.avatar-icon:hover {
+  background-color: var(--bs-gray-300);
+}
+
+.personal-info {
+  padding: 0 1rem;
+}
+
+h4.user-name {
+  font-size: 2.3rem;
+  font-weight: 300;
+  letter-spacing: -0.05rem;
+}
+
+.profile-section {
+  position: relative;
+  border: 1px solid rgba(50, 50, 50, 0.5);
+  margin: 2rem 1rem 2.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.profile-section .title {
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  transform: translateY(-50%);
+  padding: 0 0.4rem;
+  background-color: var(--bs-white);
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: -0.05rem;
+  display: flex;
+  gap: 0.3rem;
+}
