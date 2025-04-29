@@ -8,6 +8,7 @@ import Profile from "./pages/Profile"
 import Product from "./pages/Product"
 import Cart from "./pages/Cart"
 import { useUser } from "./context/UserContext"; 
+import Footer from "./components/Footer"
 
 function App() {
   const { token } = useUser(); 
@@ -32,6 +33,7 @@ function App() {
           <Route path="*" element={<div>Page not found!</div>} />
         </Routes>
       </Container>
+      <Footer />
     </>
   );
 }
