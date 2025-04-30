@@ -4,6 +4,7 @@ import { FaArrowRight } from "react-icons/fa6"
 import { FiFilter } from "react-icons/fi"
 import Container from "react-bootstrap/esm/Container"
 import Form from "react-bootstrap/Form"
+import EditIcon from "../components/EditIcon"
 import OrderItem from "../components/OrderItem"
 import PriceSelector from "../components/PriceSelector"
 
@@ -16,6 +17,10 @@ const Discover = () => {
   const handleSearch = (e) => {
     alert(`Searching... ${searchQuery}`)
     e.preventDefault()
+  }
+
+  const handleClearFilters = () => {
+    alert("Filters cleared!")
   }
 
   /* Mock Data */
@@ -44,9 +49,18 @@ const Discover = () => {
 
       {/* Filter => Desktop view */}
       <aside className="filter-results d-none d-lg-block">
-        <h4>Filter Results</h4>
+        <h4 className="d-flex">
+          Filter Results
+          <EditIcon callback={handleClearFilters} type="clean" />
+        </h4>
         <h6>By price</h6>
         <PriceSelector />
+        <h6>By available stock</h6>
+        <div className="d-flex gap-2 align-items-center">
+          <span className="flex-shrink-0">More than</span>
+          <Form.Control type="number" min={0} size="sm" className="w-25" />
+          <span className="flex-shrink-0">units</span>
+        </div>
         <hr />
         <h4>Order By</h4>
         <div className="w-100 d-flex justify-content-evenly">

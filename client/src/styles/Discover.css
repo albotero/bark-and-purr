@@ -17,7 +17,7 @@
 }
 
 .filter-results h6 {
-  margin: 0;
+  margin: 1.8rem 0 0.5rem;
 }
 
 .filter-results hr {
@@ -70,6 +70,7 @@
 .price-chart {
   width: 100%;
   aspect-ratio: 5 / 2;
+  margin-top: -0.9rem;
 }
 
 @media screen and (min-width: 768px) {
