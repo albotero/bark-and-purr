@@ -1,0 +1,29 @@
+{
+  "profile": "Profile",
+  "save_changes": "Save changes",
+  "user_info": {
+    "favorites": "Favorites",
+    "purchases": "Purchases",
+    "publications": "Publications"
+  },
+  "address": {
+    "title": "Shipping Address",
+    "address": "Address",
+    "line": "Address Line {{num}}",
+    "city": "City",
+    "state": "State",
+    "zip": "ZIP code",
+    "country": "Country"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "language": "Language",
+    "notifications": {
+      "purchase": "Send me a notification when I make a purchase",
+      "shipped": "Send me a notification when my purchases are shipped",
+      "publish": "Send me a notification when I publish a product",
+      "review": "Send me a notification when a product I published gets a review",
+      "password": "Send me a notification when my password is changed"
+    }
+  }
+}

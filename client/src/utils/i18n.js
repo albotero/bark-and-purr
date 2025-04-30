@@ -4,9 +4,9 @@ import LanguageDetector from "i18next-browser-languagedetector"
 
 // Import all translations
 import enCommon from "../locales/en/common.json"
-import enUser from "../locales/en/user.json"
+import enProfile from "../locales/en/profile.json"
 import esCommon from "../locales/es/common.json"
-import esUser from "../locales/es/user.json"
+import esProfile from "../locales/es/profile.json"
 
 i18n
   .use(LanguageDetector)
@@ -19,11 +19,11 @@ i18n
     resources: {
       en: {
         common: enCommon,
-        user: enUser,
+        profile: enProfile,
       },
       es: {
         common: esCommon,
-        user: esUser,
+        profile: esProfile,
       },
     },
   })
