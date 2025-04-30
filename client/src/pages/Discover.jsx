@@ -2,11 +2,15 @@ import "../styles/Discover.css"
 import { useState } from "react"
 import { FaArrowRight } from "react-icons/fa6"
 import { FiFilter } from "react-icons/fi"
+import Col from "react-bootstrap/esm/Col"
 import Container from "react-bootstrap/esm/Container"
 import Form from "react-bootstrap/Form"
+import Row from "react-bootstrap/esm/Row"
+import Pagination from "react-bootstrap/Pagination"
 import EditIcon from "../components/EditIcon"
 import OrderItem from "../components/OrderItem"
 import PriceSelector from "../components/PriceSelector"
+import { ProductCard } from "../components/ProductCard"
 
 const Discover = () => {
   const [order, setOrder] = useState("price_desc")
@@ -29,10 +33,19 @@ const Discover = () => {
     { id: 1002, key: "rating", text: "Rating" },
     { id: 1003, key: "date", text: "Date" },
   ]
+  const products = [
+    { id: "p001", title: "Product1", price: 10200 },
+    { id: "p002", title: "Product2", price: 8200 },
+    { id: "p003", title: "Product3", price: 4000 },
+    { id: "p004", title: "Product4", price: 13400 },
+    { id: "p005", title: "Product5", price: 1200 },
+    { id: "p006", title: "Product6", price: 6700, img: "/vite.svg" },
+    { id: "p007", title: "Product7", price: 4500 },
+  ]
 
   return (
     <div className="d-flex flex-column flex-lg-row">
-      <Container>
+      <Container className="order-2 order-lg-1">
         <Form className="search-bar mx-auto my-2 my-lg-4" onSubmit={handleSearch}>
           <Form.Control
             type="text"
@@ -44,11 +57,36 @@ const Discover = () => {
           {searchQuery && <FaArrowRight className="search-button" onClick={handleSearch} />}
         </Form>
 
-        <Container>{/* Gallery of filtered Products */}</Container>
+        <Row className="mx-3 my-4">
+          {/* Gallery of filtered Products */}
+          {products.map((product) => (
+            <Col key={product.id} xs={12} lg={6} xl={4} xxl={3} className="py-4 pt-lg-2 pb-lg-3">
+              <ProductCard product={product} />
+            </Col>
+          ))}
+        </Row>
+
+        <Row>
+          <Col className="d-flex justify-content-center mb-4">
+            <Pagination>
+              <Pagination.First />
+              <Pagination.Prev />
+
+              <Pagination.Item>{4}</Pagination.Item>
+              <Pagination.Item>{5}</Pagination.Item>
+              <Pagination.Item active>{6}</Pagination.Item>
+              <Pagination.Item>{7}</Pagination.Item>
+              <Pagination.Item disabled>{8}</Pagination.Item>
+
+              <Pagination.Next />
+              <Pagination.Last />
+            </Pagination>
+          </Col>
+        </Row>
       </Container>
 
       {/* Filter => Desktop view */}
-      <aside className="filter-results d-none d-lg-block">
+      <aside className="filter-results d-none d-lg-block order-2">
         <h4 className="d-flex">
           Filter Results
           <EditIcon callback={handleClearFilters} type="clean" />
@@ -71,7 +109,7 @@ const Discover = () => {
       </aside>
 
       {/* Filter => Mobile view */}
-      <aside className="filter-results mobile d-lg-none">
+      <aside className="filter-results mobile d-lg-none order-1">
         <div className="d-flex gap-3">
           {orderOptions.map(({ id: orderId, key, text }) => (
             <OrderItem key={orderId} data={{ key, text, order, setOrder }} />
