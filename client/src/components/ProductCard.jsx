@@ -38,7 +38,7 @@ export function ProductCard({ product }) {
                 -
               </Button>
               <Button variant="light" disabled>
-                {quantity}
+                {cartItem.quantity}
               </Button>
               <Button
                 variant="secondary"
