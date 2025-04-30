@@ -1,0 +1,29 @@
+{
+  "profile": "Perfil",
+  "save_changes": "Guardar cambios",
+  "user_info": {
+    "favorites": "Favoritos",
+    "purchases": "Compras",
+    "publications": "Publicaciones"
+  },
+  "address": {
+    "title": "Dirección de Envío",
+    "address": "Dirección",
+    "line": "Dirección Línea {{num}}",
+    "city": "Ciudad",
+    "state": "Estado",
+    "zip": "Código ZIP",
+    "country": "País"
+  },
+  "preferences": {
+    "title": "Preferencias",
+    "language": "Idioma",
+    "notifications": {
+      "purchase": "Notifícame cuando haga una compra",
+      "shipped": "Notifícame cuando mis compras sean enviadas",
+      "publish": "Notifícame cuando publique un producto",
+      "review": "Notifícame cuando un producto que publiqué reciba una reseña",
+      "password": "Notifícame cuando cambie mi contraseña"
+    }
+  }
+}
