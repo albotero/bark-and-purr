@@ -101,7 +101,7 @@ const Profile = () => {
   }
 
   return (
-    <Container>
+    <Container className="section-padding">
       <h2>{t("profile")}</h2>
       <Row>
         <Col xs={12} md={5}>

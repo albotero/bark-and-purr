@@ -5,8 +5,11 @@ import LanguageDetector from "i18next-browser-languagedetector"
 // Import all translations
 import enCommon from "../locales/en/common.json"
 import enProfile from "../locales/en/profile.json"
+import enNavbar from "../locales/en/navbar.json"
+
 import esCommon from "../locales/es/common.json"
 import esProfile from "../locales/es/profile.json"
+import esNavbar from "../locales/es/navbar.json"
 
 i18n
   .use(LanguageDetector)
@@ -20,10 +23,12 @@ i18n
       en: {
         common: enCommon,
         profile: enProfile,
+        navbar: enNavbar,
       },
       es: {
         common: esCommon,
         profile: esProfile,
+        navbar: esNavbar,
       },
     },
   })
