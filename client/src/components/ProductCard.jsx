@@ -6,8 +6,8 @@ import ButtonGroup from "react-bootstrap/esm/ButtonGroup";
 import Card from "react-bootstrap/esm/Card";
 import { useCart } from "../context/CartContext";
 
-export function ProductCard({ product }) {
-  const { id: productId, title, price, quantity, img } = product;
+export function ProductCard({ product, showAddToCart = true }) {  // Prop showAddToCart agregado
+  const { id: productId, title, price, img } = product;
   const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart();
 
   const cartItem = cart.find((item) => item.id === productId);
@@ -73,13 +73,18 @@ export function ProductCard({ product }) {
         <Card.Title>{title}</Card.Title>
         <div className="d-flex gap-3 w-100">
           <Card.Text className="flex-grow-1 m-0">${price}</Card.Text>
-          <Button
-            variant="outline-primary"
-            size="sm"
-            onClick={() => addToCart({ ...product, quantity: 1 })}
-          >
-            <BsCart4 />
-          </Button>
+
+          {/* Solo renderizar el botón si showAddToCart es true */}
+          {showAddToCart && (
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={() => addToCart({ ...product, quantity: 1 })}
+            >
+              <BsCart4 />
+            </Button>
+          )}
+
           <Link
             to={`/product/${productId}`}
             className="btn btn-outline-primary btn-sm"

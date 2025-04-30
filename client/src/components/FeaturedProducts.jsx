@@ -15,7 +15,7 @@ const FeaturedProducts = () => {
         ) : (
           featured.map((product) => (
             <Col key={product.id} md={4} className="mb-4">
-              <ProductCard product={product} />
+              <ProductCard product={product} showAddToCart={false} />
             </Col>
           ))
         )}
