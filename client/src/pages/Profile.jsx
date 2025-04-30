@@ -1,6 +1,7 @@
 import "../styles/Profile.css"
 import { useEffect, useState } from "react"
 import { FaRegCircleCheck, FaRegCircleXmark } from "react-icons/fa6"
+import { useTranslation } from "react-i18next"
 import Button from "react-bootstrap/esm/Button"
 import Col from "react-bootstrap/esm/Col"
 import Container from "react-bootstrap/esm/Container"
@@ -32,6 +33,7 @@ const Profile = () => {
   const [inputPreferences, setInputPreferences] = useState({})
   const [isEditingAddress, setIsEditingAddress] = useState(false)
   const [isEditingPreferences, setIsEditingPreferences] = useState(false)
+  const { i18n, t } = useTranslation("user")
 
   /* Mock data */
   useEffect(() => {
@@ -53,20 +55,20 @@ const Profile = () => {
       country: "United States",
     }
     const p = {
-      language: "en",
+      language: i18n.language,
       notifications: [
-        { id: 1001, isActive: false, text: "Send me a notification when I make a purchase" },
-        { id: 1002, isActive: true, text: "Send me a notification when my purchases are shipped" },
-        { id: 1003, isActive: true, text: "Send me a notification when I publish a product" },
-        { id: 1004, isActive: false, text: "Send me a notification when a product I published gets a review" },
-        { id: 1005, isActive: false, text: "Send me a notification when my password is changed" },
+        { id: 1001, isActive: false, text: "notifications.purchase" },
+        { id: 1002, isActive: true, text: "notifications.shipped" },
+        { id: 1003, isActive: true, text: "notifications.publish" },
+        { id: 1004, isActive: false, text: "notifications.review" },
+        { id: 1005, isActive: false, text: "notifications.password" },
       ],
     }
     setAddress(a)
     setPreferences(p)
     setInputAddress(a)
     setInputPreferences(p)
-  }, [])
+  }, [i18n.language])
 
   const languageLabel = (id) => languages.find((el) => el.id == id)?.label
 
@@ -85,6 +87,17 @@ const Profile = () => {
     const { id } = dataset
     const updateNotification = (nots) => nots.map((el) => (el.id == id ? { ...el, isActive } : el))
     setInputPreferences((prev) => ({ ...prev, notifications: updateNotification(prev.notifications) }))
+  }
+
+  const handleSaveAddress = () => {
+    setAddress(inputAddress)
+    setIsEditingAddress(false)
+  }
+
+  const handleSavePreferences = () => {
+    i18n.changeLanguage(inputPreferences.language)
+    setPreferences(inputPreferences)
+    setIsEditingPreferences(false)
   }
 
   return (
@@ -141,7 +154,7 @@ const Profile = () => {
                     </FloatingLabel>
                   ))}
                   <div className="my-4 mx-auto">
-                    <Button>Save changes</Button>
+                    <Button onClick={handleSaveAddress}>{t("save_changes")}</Button>
                   </div>
                 </Form>
               ) : (
@@ -165,13 +178,13 @@ const Profile = () => {
           <Row>
             <Col className="profile-section">
               <div className="title">
-                <h4>Preferences</h4>
+                <h4>{t("preferences")}</h4>
                 <EditIcon callback={setIsEditingPreferences} type="edit" />
               </div>
               {isEditingPreferences ? (
                 <Form className="d-flex flex-column gap-2 pt-3">
                   <Form.Group className="d-flex align-items-center gap-3">
-                    <Form.Label className="m-0">Language:</Form.Label>
+                    <Form.Label className="m-0">{t("language")}:</Form.Label>
                     <Form.Select value={inputPreferences.language} onChange={handleLanguageSelectionChange}>
                       {languages.map(({ id: l }) => (
                         <option key={l} value={l}>
@@ -184,7 +197,7 @@ const Profile = () => {
                   {inputPreferences.notifications?.map(({ id, isActive, text }) => (
                     <Form.Check
                       key={id}
-                      label={text}
+                      label={t(text)}
                       checked={isActive}
                       data-id={id}
                       id={`notify-check-${id}`}
@@ -192,12 +205,14 @@ const Profile = () => {
                     />
                   ))}
                   <div className="my-4 mx-auto">
-                    <Button>Save changes</Button>
+                    <Button onClick={handleSavePreferences}>{t("save_changes")}</Button>
                   </div>
                 </Form>
               ) : (
                 <>
-                  <p>Language: {languageLabel(preferences.language)} </p>
+                  <p>
+                    {t("language")}: {languageLabel(preferences.language)}{" "}
+                  </p>
                   <hr />
                   {preferences.notifications?.map(({ id, isActive, text }) => (
                     <p key={id} className="my-1 d-flex align-items-start gap-2">
@@ -208,7 +223,7 @@ const Profile = () => {
                           <FaRegCircleXmark className="text-danger" />
                         )}
                       </span>
-                      <span>{text}</span>
+                      <span>{t(text)}</span>
                     </p>
                   ))}
                 </>
