@@ -94,7 +94,7 @@ const Profile = () => {
         <Col xs={12} md={5}>
           <div className="avatar-container">
             <img className="avatar-img" src={userInfo.avatar} alt="Avatar" />
-            <EditIcon className="avatar-icon" />
+            <EditIcon className="avatar-icon" type="edit" />
           </div>
           <div className="personal-info">
             <h4 className="user-name">{userInfo.name}</h4>
@@ -125,7 +125,7 @@ const Profile = () => {
             <Col className="profile-section">
               <div className="title">
                 <h4>Shipping Address</h4>
-                <EditIcon callback={setIsEditingAddress} />
+                <EditIcon callback={setIsEditingAddress} type="edit" />
               </div>
               {isEditingAddress ? (
                 <Form className="d-flex flex-column gap-2 pt-3">
@@ -166,7 +166,7 @@ const Profile = () => {
             <Col className="profile-section">
               <div className="title">
                 <h4>Preferences</h4>
-                <EditIcon callback={setIsEditingPreferences} />
+                <EditIcon callback={setIsEditingPreferences} type="edit" />
               </div>
               {isEditingPreferences ? (
                 <Form className="d-flex flex-column gap-2 pt-3">
