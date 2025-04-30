@@ -4,6 +4,7 @@ import Container from "react-bootstrap/esm/Container"
 import Nav from "react-bootstrap/esm/Nav"
 import BsNavbar from "react-bootstrap/esm/Navbar"
 import { useUser } from "../context/UserContext"
+import { CartCounter } from "../components/CartCounter"
 
 const Navbar = () => {
   const { token, logout } = useUser()
@@ -45,6 +46,10 @@ const Navbar = () => {
             ) : (
               // Si hay token, se muestra Profile y Logout
               <>
+                {/* Cart Counter always visible when logged in */}
+                <Nav.Item className="me-3">
+                  <CartCounter /> 
+                </Nav.Item>
                 <NavLink to="/user" className={linkClassName}>
                   Profile
                 </NavLink>

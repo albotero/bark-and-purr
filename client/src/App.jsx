@@ -10,10 +10,12 @@ import Cart from "./pages/Cart"
 import { useUser } from "./context/UserContext"; 
 import Footer from "./components/Footer"
 
+import { CartProvider } from "./context/CartContext";
+
 function App() {
   const { token } = useUser(); 
   return (
-    <>
+    <CartProvider>
       <Navbar token={token} />
       <Container className="container-main">
         <Routes>
@@ -24,7 +26,7 @@ function App() {
           <Route path="product/:productId" element={<Product />} />
           <Route path="user">
             <Route index element={<Profile />} />
-            <Route path="cart" element={<Cart/>} />
+            <Route path="cart" element={<Cart />} />
             <Route path="favorites" element={<></>} />
             <Route path="notifications" element={<></>} />
             <Route path="purchases" element={<></>} />
@@ -34,7 +36,7 @@ function App() {
         </Routes>
       </Container>
       <Footer />
-    </>
+    </CartProvider>
   );
 }
 
