@@ -19,10 +19,15 @@ body {
 .container-main {
   color: var(--bs-body-color);
   background-color: var(--bs-body-bg);
+  padding: 0;
+}
+
+.section-padding {
+  padding: 2rem 0 3rem;
 }
 
 @media screen and (min-width: 768px) {
-  .container-main {
+  .section-padding {
     padding: 2rem 5rem 3rem;
   }
 }

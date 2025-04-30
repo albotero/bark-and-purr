@@ -27,6 +27,9 @@ const Navbar = () => {
             <NavLink to="/" className={linkClassName}>
               Home
             </NavLink>
+            <NavLink to="/discover" className={linkClassName}>
+              Discover
+            </NavLink>
             <NavLink to="/product/p123" className={linkClassName}>
               Product
             </NavLink>
@@ -51,11 +54,7 @@ const Navbar = () => {
                 <NavLink to="/user/cart" className={linkClassName}>
                   Cart
                 </NavLink>
-                <button
-                  onClick={handleLogout}
-                  className="btn btn-link nav-link"
-                  style={{ padding: 0 }}
-                >
+                <button onClick={handleLogout} className="btn btn-link nav-link" style={{ padding: 0 }}>
                   Logout
                 </button>
                 {/* <NavLink to="/logout" className="nav-link">
@@ -67,7 +66,7 @@ const Navbar = () => {
         </BsNavbar.Collapse>
       </Container>
     </BsNavbar>
-  );
+  )
 }
 
 export default Navbar
