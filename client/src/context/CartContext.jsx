@@ -12,6 +12,7 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  // Agregar producto
   const addToCart = (product) => {
     setCart((prevCart) => {
       const existing = prevCart.find((item) => item.id === product.id);
@@ -27,11 +28,22 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  // Remover producto completamente
   const removeFromCart = (productId) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
-  const decreaseQuantity = (productId) => {
+  // Aumentar cantidad
+  const increaseQty = (productId) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  };
+
+  // Disminuir cantidad (y eliminar si llega a 0)
+  const decreaseQty = (productId) => {
     setCart((prevCart) =>
       prevCart
         .map((item) =>
@@ -43,14 +55,17 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  // Vaciar carrito
   const clearCart = () => setCart([]);
 
+  // Simular compra
   const buyCart = () => {
     alert("Purchase completed successfully!");
     clearCart();
-    // Future: send cart to backend
+    // Aquí podrías enviar los datos al backend
   };
 
+  // Calcular total
   const cartTotal = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
@@ -62,7 +77,8 @@ export const CartProvider = ({ children }) => {
         cart,
         addToCart,
         removeFromCart,
-        decreaseQuantity,
+        increaseQty,
+        decreaseQty,
         clearCart,
         buyCart,
         cartTotal,

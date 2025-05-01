@@ -10,6 +10,9 @@ import Cart from "./pages/Cart"
 import Footer from "./components/Footer"
 import Discover from "./pages/Discover"
 import { useUser } from "./context/UserContext"
+import Favorites from "./pages/Favorites"
+import NewProduct from "./pages/NewProduct"
+import Publications from "./pages/Publications"
 
 
 function App() {
@@ -28,17 +31,18 @@ function App() {
           <Route path="user">
             <Route index element={<Profile />} />
             <Route path="cart" element={<Cart />} />
-            <Route path="favorites" element={<></>} />
+            <Route path="favorites" element={<Favorites />} />
             <Route path="notifications" element={<></>} />
             <Route path="purchases" element={<></>} />
-            <Route path="publications" element={<></>} />
+            <Route path="publications" element={<Publications />} />
+            <Route path="new-product" element={<NewProduct />} />
           </Route>
           <Route path="*" element={<div>Page not found!</div>} />
         </Routes>
       </Container>
       <Footer />
     </>
-  )
+  );
 }
 
 export default App
