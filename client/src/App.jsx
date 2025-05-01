@@ -10,6 +10,7 @@ import Cart from "./pages/Cart"
 import Footer from "./components/Footer"
 import Discover from "./pages/Discover"
 import { useUser } from "./context/UserContext"
+import Favorites from "./pages/Favorites"
 
 
 function App() {
@@ -28,7 +29,7 @@ function App() {
           <Route path="user">
             <Route index element={<Profile />} />
             <Route path="cart" element={<Cart />} />
-            <Route path="favorites" element={<></>} />
+            <Route path="favorites" element={<Favorites />} />
             <Route path="notifications" element={<></>} />
             <Route path="purchases" element={<></>} />
             <Route path="publications" element={<></>} />
