@@ -1,28 +1,31 @@
 import { useCart } from "../context/CartContext"
-import { Link } from "react-router-dom"
 import Button from "react-bootstrap/Button"
 import Card from "react-bootstrap/Card"
 import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
+import Tree from "../components/Tree"
+import { useTranslation } from "react-i18next"
 
 const Cart = () => {
   const { cart, removeFromCart, buyCart, cartTotal, increaseQty, decreaseQty } = useCart()
+  const { t } = useTranslation("cart")
+
+  const treeItems = [
+    { key: "home", href: "/" },
+    { key: "cart", isActive: true },
+  ]
 
   return (
     <Container className="section-padding">
-      <p>
-        <Link to="/" className="text-decoration-none text-muted">
-          Home
-        </Link>{" "}
-        &gt; <b>Cart</b>
-      </p>
-      <h5 className="mb-4">{cart.length} products in your Cart:</h5>
+      <Tree items={treeItems} />
+
+      <h5 className="mb-4">{t("title", { count: cart.length })}:</h5>
 
       {cart.length === 0 ? (
         <Row>
           <Col>
-            <p className="text-muted">Your cart is empty.</p>
+            <p className="text-muted">{t("empty")}.</p>
           </Col>
         </Row>
       ) : (
@@ -46,7 +49,9 @@ const Cart = () => {
                     {/* Product details */}
                     <Col xs={6}>
                       <h5 className="mb-1">{item.title}</h5>
-                      <p className="mb-1 text-muted">Unitary Price: ${item.price}</p>
+                      <p className="mb-1 text-muted">
+                        {t("unit_price")}: ${item.price}
+                      </p>
 
                       {/* Quantity controls */}
                       <div className="d-flex align-items-center gap-2">
@@ -62,9 +67,11 @@ const Cart = () => {
 
                     {/* Total */}
                     <Col xs={3} className="text-end">
-                      <p className="fw-semibold mb-0">Total: ${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="fw-semibold mb-0">
+                        {t("total")}: ${(item.price * item.quantity).toFixed(2)}
+                      </p>
                       <Button variant="outline-danger" size="sm" onClick={() => removeFromCart(item.id)}>
-                        Remove
+                        {t("remove")}
                       </Button>
                     </Col>
                   </Row>
@@ -78,12 +85,14 @@ const Cart = () => {
             <Card className="shadow-sm rounded-4">
               <Card.Body>
                 <h5 className="mb-3">
-                  🛒 <strong>Summary</strong>
+                  🛒 <strong>{t("summary")}</strong>
                 </h5>
-                <p>Subtotal</p>
-                <h5 className="fw-bold mb-4">Total Amount: ${cartTotal.toFixed(2)}</h5>
+                <p>{t("subtotal")}</p>
+                <h5 className="fw-bold mb-4">
+                  {t("total_amount")}: ${cartTotal.toFixed(2)}
+                </h5>
                 <Button variant="primary" className="w-100 rounded-pill" onClick={buyCart}>
-                  Pay
+                  {t("pay")}
                 </Button>
               </Card.Body>
             </Card>

@@ -1,0 +1,11 @@
+{
+  "title": "{{count}} productos en tu Carrito",
+  "empty": "Tu carrito está vacío",
+  "unit_price": "Precio unitario",
+  "total": "Total",
+  "remove": "Quitar del Carrito",
+  "summary": "Resumen del Pedido",
+  "subtotal": "Subtotal",
+  "total_amount": "Precio total",
+  "pay": "Pagar"
+}

@@ -6,8 +6,9 @@ import { useTranslation } from "react-i18next"
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",
-    pass: "",
+    // Test credentials
+    email: "test@example.com",
+    pass: "123456",
   })
 
   const { t } = useTranslation("auth")
