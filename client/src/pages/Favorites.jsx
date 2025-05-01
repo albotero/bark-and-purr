@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import Container from "react-bootstrap/esm/Container";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/esm/Col";
-import { ProductCard } from "../components/ProductCard";
-import Button from "react-bootstrap/Button";
-import { FaHeartBroken } from "react-icons/fa";
-import { useTranslation } from "react-i18next";
+import React, { useEffect, useState } from "react"
+import Container from "react-bootstrap/esm/Container"
+import Row from "react-bootstrap/esm/Row"
+import Col from "react-bootstrap/esm/Col"
+import { ProductCard } from "../components/ProductCard"
+import Button from "react-bootstrap/Button"
+import { FaHeartBroken } from "react-icons/fa"
+import { useTranslation } from "react-i18next"
 
 const Favorites = () => {
-  const { t } = useTranslation("favorites");
-  const [favorites, setFavorites] = useState([]);
+  const { t } = useTranslation("favorites")
+  const [favorites, setFavorites] = useState([])
 
   useEffect(() => {
     // Array de prueba
@@ -28,15 +28,15 @@ const Favorites = () => {
         price: 7990,
         description: "Juguete interactivo para gatos",
       },
-    ]);
-  }, []);
+    ])
+  }, [])
 
   const removeFromFavorites = (id) => {
-    setFavorites((prev) => prev.filter((item) => item.id !== id));
-  };
+    setFavorites((prev) => prev.filter((item) => item.id !== id))
+  }
 
   return (
-    <Container className="py-5">
+    <Container className="section-padding">
       {/* Mostrar el número de favoritos al lado del título */}
       <h2 className="mb-4">
         {t("title")} ({favorites.length})
@@ -51,10 +51,7 @@ const Favorites = () => {
           {favorites.map((product) => (
             <Col key={product.id} sm={12} md={6} lg={4}>
               <div className="position-relative">
-                <ProductCard
-                  product={product}
-                  showAddToCart={true} 
-                />
+                <ProductCard product={product} showAddToCart={true} />
                 <Button
                   variant="outline-danger"
                   size="sm"
@@ -70,7 +67,7 @@ const Favorites = () => {
         </Row>
       )}
     </Container>
-  );
-};
+  )
+}
 
-export default Favorites;
+export default Favorites

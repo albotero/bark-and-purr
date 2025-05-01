@@ -1,0 +1,11 @@
+{
+  "hero": {
+    "title": "Ofertas especiales para tu mejor amigo",
+    "subtitle": "Descubre los mejores productos para tus mascotas"
+  },
+  "featured": {
+    "title": "Productos Destacados",
+    "no_products": "Aún no hay productos"
+  },
+  "rights_reserved": "Todos los derechos reservados"
+}

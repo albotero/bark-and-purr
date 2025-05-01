@@ -3,15 +3,17 @@ import { initReactI18next } from "react-i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
 
 // Import all translations
-import enCommon from "../locales/en/common.json"
+import enAuth from "../locales/en/auth.json"
 import enProfile from "../locales/en/profile.json"
 import enNavbar from "../locales/en/navbar.json"
 import enFavorites from "../locales/en/favorites.json"
+import enHome from "../locales/en/home.json"
 
-import esCommon from "../locales/es/common.json"
+import esAuth from "../locales/es/auth.json"
 import esProfile from "../locales/es/profile.json"
 import esNavbar from "../locales/es/navbar.json"
 import esFavorites from "../locales/es/favorites.json"
+import esHome from "../locales/es/home.json"
 
 i18n
   .use(LanguageDetector)
@@ -23,16 +25,18 @@ i18n
     },
     resources: {
       en: {
-        common: enCommon,
+        auth: enAuth,
         profile: enProfile,
         navbar: enNavbar,
-        favorites: enFavorites,  
+        favorites: enFavorites,
+        home: enHome,
       },
       es: {
-        common: esCommon,
+        auth: esAuth,
         profile: esProfile,
         navbar: esNavbar,
-        favorites: esFavorites, 
+        favorites: esFavorites,
+        home: esHome,
       },
     },
   })

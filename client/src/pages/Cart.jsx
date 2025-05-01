@@ -1,17 +1,16 @@
-import { useCart } from "../context/CartContext";
-import { Link } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { useCart } from "../context/CartContext"
+import { Link } from "react-router-dom"
+import Button from "react-bootstrap/Button"
+import Card from "react-bootstrap/Card"
+import Container from "react-bootstrap/Container"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
 
 const Cart = () => {
-  const { cart, removeFromCart, buyCart, cartTotal, increaseQty, decreaseQty } =
-    useCart();
+  const { cart, removeFromCart, buyCart, cartTotal, increaseQty, decreaseQty } = useCart()
 
   return (
-    <Container className="my-5">
+    <Container className="section-padding">
       <p>
         <Link to="/" className="text-decoration-none text-muted">
           Home
@@ -47,25 +46,15 @@ const Cart = () => {
                     {/* Product details */}
                     <Col xs={6}>
                       <h5 className="mb-1">{item.title}</h5>
-                      <p className="mb-1 text-muted">
-                        Unitary Price: ${item.price}
-                      </p>
+                      <p className="mb-1 text-muted">Unitary Price: ${item.price}</p>
 
                       {/* Quantity controls */}
                       <div className="d-flex align-items-center gap-2">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => decreaseQty(item.id)}
-                        >
+                        <Button variant="secondary" size="sm" onClick={() => decreaseQty(item.id)}>
                           -
                         </Button>
                         <span className="fw-bold">{item.quantity}</span>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => increaseQty(item.id)}
-                        >
+                        <Button variant="secondary" size="sm" onClick={() => increaseQty(item.id)}>
                           +
                         </Button>
                       </div>
@@ -73,14 +62,8 @@ const Cart = () => {
 
                     {/* Total */}
                     <Col xs={3} className="text-end">
-                      <p className="fw-semibold mb-0">
-                        Total: ${(item.price * item.quantity).toFixed(2)}
-                      </p>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => removeFromCart(item.id)}
-                      >
+                      <p className="fw-semibold mb-0">Total: ${(item.price * item.quantity).toFixed(2)}</p>
+                      <Button variant="outline-danger" size="sm" onClick={() => removeFromCart(item.id)}>
                         Remove
                       </Button>
                     </Col>
@@ -98,14 +81,8 @@ const Cart = () => {
                   🛒 <strong>Summary</strong>
                 </h5>
                 <p>Subtotal</p>
-                <h5 className="fw-bold mb-4">
-                  Total Amount: ${cartTotal.toFixed(2)}
-                </h5>
-                <Button
-                  variant="primary"
-                  className="w-100 rounded-pill"
-                  onClick={buyCart}
-                >
+                <h5 className="fw-bold mb-4">Total Amount: ${cartTotal.toFixed(2)}</h5>
+                <Button variant="primary" className="w-100 rounded-pill" onClick={buyCart}>
                   Pay
                 </Button>
               </Card.Body>
@@ -114,7 +91,7 @@ const Cart = () => {
         </Row>
       )}
     </Container>
-  );
-};
+  )
+}
 
-export default Cart;
+export default Cart
