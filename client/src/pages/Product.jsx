@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/CartContext";
 
 const mockProduct = {
   id: "p123",
@@ -67,7 +67,10 @@ const Product = () => {
 
   return (
     <div className="container mt-4 bg-white">
-      <button className="btn btn-link mb-3" onClick={() => window.history.back()}>
+      <button
+        className="btn btn-link mb-3"
+        onClick={() => window.history.back()}
+      >
         ← Back to products
       </button>
 
@@ -75,7 +78,11 @@ const Product = () => {
         {/* Columna izquierda para imágenes y tabs */}
         <div className="col-md-6">
           <div className="position-relative mb-3">
-            <img src={product.images[0]} alt={product.name} className="img-fluid rounded" />
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className="img-fluid rounded"
+            />
             {discounted && (
               <span className="badge bg-danger position-absolute top-0 start-0 m-2">
                 -{product.discount * 100}%
@@ -84,7 +91,13 @@ const Product = () => {
           </div>
           <div className="d-flex gap-2 mb-4">
             {product.images.map((img, i) => (
-              <img key={i} src={img} alt={`View ${i}`} className="img-thumbnail" style={{ width: "70px" }} />
+              <img
+                key={i}
+                src={img}
+                alt={`View ${i}`}
+                className="img-thumbnail"
+                style={{ width: "70px" }}
+              />
             ))}
           </div>
 
@@ -92,7 +105,11 @@ const Product = () => {
           <ul className="nav nav-tabs mb-3" id="productTabs" role="tablist">
             <li className="nav-item" role="presentation">
               <button
-                className={`nav-link ${activeTab === "desc" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
+                className={`nav-link ${
+                  activeTab === "desc"
+                    ? "active bg-primary text-white fw-bold"
+                    : "bg-light text-dark"
+                }`}
                 type="button"
                 onClick={() => setActiveTab("desc")}
               >
@@ -101,7 +118,11 @@ const Product = () => {
             </li>
             <li className="nav-item" role="presentation">
               <button
-                className={`nav-link ${activeTab === "reviews" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
+                className={`nav-link ${
+                  activeTab === "reviews"
+                    ? "active bg-primary text-white fw-bold"
+                    : "bg-light text-dark"
+                }`}
                 type="button"
                 onClick={() => setActiveTab("reviews")}
               >
@@ -110,7 +131,11 @@ const Product = () => {
             </li>
             <li className="nav-item" role="presentation">
               <button
-                className={`nav-link ${activeTab === "features" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
+                className={`nav-link ${
+                  activeTab === "features"
+                    ? "active bg-primary text-white fw-bold"
+                    : "bg-light text-dark"
+                }`}
                 type="button"
                 onClick={() => setActiveTab("features")}
               >
@@ -142,7 +167,9 @@ const Product = () => {
               <div>
                 <ul className="list-group list-group-flush">
                   {product.features.map((f, i) => (
-                    <li key={i} className="list-group-item">{f}</li>
+                    <li key={i} className="list-group-item">
+                      {f}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -155,7 +182,8 @@ const Product = () => {
           <div className="text-muted small mb-2">Food / Dogs / New</div>
           <h2>{product.name}</h2>
           <div className="mb-2">
-            <span className="text-warning">★</span> {product.rating} ({product.reviews.length} reviews)
+            <span className="text-warning">★</span> {product.rating} (
+            {product.reviews.length} reviews)
           </div>
 
           <div className="d-flex align-items-baseline gap-2 mb-2">
@@ -163,33 +191,52 @@ const Product = () => {
             {discounted && <del className="text-muted">${product.price}</del>}
           </div>
 
-          <div className={`mb-2 ${product.stock > 0 ? "text-success" : "text-danger"}`}>
+          <div
+            className={`mb-2 ${
+              product.stock > 0 ? "text-success" : "text-danger"
+            }`}
+          >
             {product.stock > 0
               ? `In stock (${product.stock} available)`
               : "Out of stock"}
           </div>
 
           <div className="input-group mb-3" style={{ width: "150px" }}>
-            <button className="btn btn-outline-secondary" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
+            <button
+              className="btn btn-outline-secondary"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            >
               -
             </button>
-            <input type="text" className="form-control text-center" value={quantity} readOnly />
-            <button className="btn btn-outline-secondary" onClick={() => setQuantity(q => q + 1)}>
+            <input
+              type="text"
+              className="form-control text-center"
+              value={quantity}
+              readOnly
+            />
+            <button
+              className="btn btn-outline-secondary"
+              onClick={() => setQuantity((q) => q + 1)}
+            >
               +
             </button>
           </div>
 
           <button
             className="btn btn-primary mb-3"
-            onClick={() => addToCart(product, quantity)}
+            onClick={() => addToCart({ ...product, quantity })}
             disabled={product.stock === 0}
           >
             🛒 Add to cart
           </button>
 
           <ul className="list-unstyled text-muted small">
-            <li><strong>Brand:</strong> {product.brand}</li>
-            <li><strong>Seller:</strong> <a href="#">{product.seller}</a></li>
+            <li>
+              <strong>Brand:</strong> {product.brand}
+            </li>
+            <li>
+              <strong>Seller:</strong> <a href="#">{product.seller}</a>
+            </li>
             <li>🚚 Free shipping on orders over $999</li>
           </ul>
         </div>

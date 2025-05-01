@@ -14,7 +14,7 @@ const Cart = () => {
     useCart();
 
   const [shippingMethod, setShippingMethod] = useState("pickup");
-  const shippingCost = shippingMethod === "delivery" ? 2000 : 0;
+  const shippingCost = shippingMethod === "delivery" ? 3 : 0;
   const totalWithShipping = cartTotal + shippingCost;
 
   return (
@@ -122,7 +122,7 @@ const Cart = () => {
                     <Form.Check
                       type="radio"
                       name="shipping"
-                      label="price fixed: $2000"
+                      label="price fixed: $3"
                       checked={shippingMethod === "delivery"}
                       onChange={() => setShippingMethod("delivery")}
                       className="mt-2"
