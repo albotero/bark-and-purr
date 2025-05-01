@@ -28,12 +28,12 @@
   width: 3rem !important;
   height: 3rem !important;
   font-size: 1.6rem;
-  background-color: rgb(190, 190, 190);
+  background-color: var(--bs-gray-500);
   color: var(--bs-light);
 }
 
 .avatar-icon:hover {
-  background-color: var(--bs-gray-300);
+  background-color: var(--bs-gray-200);
 }
 
 .personal-info {

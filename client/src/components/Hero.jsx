@@ -1,7 +1,8 @@
 import Container from "react-bootstrap/esm/Container"
 import Row from "react-bootstrap/esm/Row"
 import Col from "react-bootstrap/esm/Col"
-import "../styles/index.css"
+import "../styles/Hero.css"
+
 const Hero = () => {
   return (
     <section className="hero bg-primary text-white py-5">
@@ -14,6 +15,7 @@ const Hero = () => {
         </Row>
       </Container>
     </section>
-  );
-};
-export default Hero;
+  )
+}
+
+export default Hero
