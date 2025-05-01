@@ -2,9 +2,9 @@
   "profile": "Profile",
   "save_changes": "Save changes",
   "user_info": {
-    "favorites": "Favorites",
-    "purchases": "Purchases",
-    "publications": "Publications"
+    "favorites": "My Favorites",
+    "purchases": "My Purchases",
+    "publications": "My Publications"
   },
   "address": {
     "title": "Shipping Address",

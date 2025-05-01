@@ -2,9 +2,9 @@
   "profile": "Perfil",
   "save_changes": "Guardar cambios",
   "user_info": {
-    "favorites": "Favoritos",
-    "purchases": "Compras",
-    "publications": "Publicaciones"
+    "favorites": "Mis Favoritos",
+    "purchases": "Mis Compras",
+    "publications": "Mis Publicaciones"
   },
   "address": {
     "title": "Dirección de Envío",

@@ -12,7 +12,6 @@ import Discover from "./pages/Discover"
 import { useUser } from "./context/UserContext"
 import Favorites from "./pages/Favorites"
 
-
 function App() {
   const { token } = useUser()
 
@@ -26,9 +25,9 @@ function App() {
           <Route path="register" element={<Register />} />
           <Route path="discover" element={<Discover />} />
           <Route path="product/:productId" element={<Product />} />
+          <Route path="cart" element={<Cart />} />
           <Route path="user">
             <Route index element={<Profile />} />
-            <Route path="cart" element={<Cart />} />
             <Route path="favorites" element={<Favorites />} />
             <Route path="notifications" element={<></>} />
             <Route path="purchases" element={<></>} />
