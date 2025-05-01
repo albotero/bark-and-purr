@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
@@ -5,10 +6,16 @@ import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import ListGroup from "react-bootstrap/ListGroup";
 
 const Cart = () => {
   const { cart, removeFromCart, buyCart, cartTotal, increaseQty, decreaseQty } =
     useCart();
+
+  const [shippingMethod, setShippingMethod] = useState("pickup");
+  const shippingCost = shippingMethod === "delivery" ? 3 : 0;
+  const totalWithShipping = cartTotal + shippingCost;
 
   return (
     <Container className="my-5">
@@ -16,9 +23,12 @@ const Cart = () => {
         <Link to="/" className="text-decoration-none text-muted">
           Home
         </Link>{" "}
-        &gt; <b>Cart</b>
+        &gt; <strong>Cart</strong>
       </p>
-      <h5 className="mb-4">{cart.length} products in your Cart:</h5>
+
+      <Card.Title as="h5" className="mb-4">
+        {cart.length} products in your Cart:
+      </Card.Title>
 
       {cart.length === 0 ? (
         <Row>
@@ -34,7 +44,6 @@ const Cart = () => {
               <Card key={item.id} className="mb-3 shadow-sm rounded-4">
                 <Card.Body>
                   <Row className="align-items-center">
-                    {/* Product image */}
                     <Col xs={3} className="text-center">
                       <div
                         className="bg-light border rounded d-flex justify-content-center align-items-center"
@@ -44,14 +53,12 @@ const Cart = () => {
                       </div>
                     </Col>
 
-                    {/* Product details */}
                     <Col xs={6}>
-                      <h5 className="mb-1">{item.title}</h5>
-                      <p className="mb-1 text-muted">
+                      <Card.Title as="h6">{item.title}</Card.Title>
+                      <Card.Text className="text-muted">
                         Unitary Price: ${item.price}
-                      </p>
+                      </Card.Text>
 
-                      {/* Quantity controls */}
                       <div className="d-flex align-items-center gap-2">
                         <Button
                           variant="secondary"
@@ -71,11 +78,10 @@ const Cart = () => {
                       </div>
                     </Col>
 
-                    {/* Total */}
                     <Col xs={3} className="text-end">
-                      <p className="fw-semibold mb-0">
+                      <Card.Text className="fw-semibold mb-1">
                         Total: ${(item.price * item.quantity).toFixed(2)}
-                      </p>
+                      </Card.Text>
                       <Button
                         variant="outline-danger"
                         size="sm"
@@ -94,13 +100,39 @@ const Cart = () => {
           <Col md={4}>
             <Card className="shadow-sm rounded-4">
               <Card.Body>
-                <h5 className="mb-3">
+                <Card.Title as="h5" className="mb-3">
                   🛒 <strong>Summary</strong>
-                </h5>
-                <p>Subtotal</p>
-                <h5 className="fw-bold mb-4">
-                  Total Amount: ${cartTotal.toFixed(2)}
-                </h5>
+                </Card.Title>
+
+                <ListGroup className="mb-3">
+                  <ListGroup.Item>
+                    Subtotal: ${cartTotal.toFixed(2)}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Card.Subtitle className="mb-2 fw-bold">
+                      shipping
+                    </Card.Subtitle>
+                    <Form.Check
+                      type="radio"
+                      name="shipping"
+                      label="store pick up (free) - Av. Siempre Viva 123"
+                      checked={shippingMethod === "pickup"}
+                      onChange={() => setShippingMethod("pickup")}
+                    />
+                    <Form.Check
+                      type="radio"
+                      name="shipping"
+                      label="price fixed: $3"
+                      checked={shippingMethod === "delivery"}
+                      onChange={() => setShippingMethod("delivery")}
+                      className="mt-2"
+                    />
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    Total: ${totalWithShipping.toFixed(2)}
+                  </ListGroup.Item>
+                </ListGroup>
+
                 <Button
                   variant="primary"
                   className="w-100 rounded-pill"
