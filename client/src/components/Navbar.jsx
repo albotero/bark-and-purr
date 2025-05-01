@@ -18,8 +18,17 @@ const Navbar = () => {
   return (
     <BsNavbar expand="lg" variant="dark" className="bg-primary">
       <Container>
-        <BsNavbar.Brand as={Link} to="/">
-          B & P
+        <BsNavbar.Brand
+          as={Link}
+          to="/"
+          className="d-flex align-items-center gap-2"
+        >
+          <img
+            src="/logo.png"
+            alt="Logo"
+            width="60"
+            height="60"
+          />
         </BsNavbar.Brand>
         <BsNavbar.Toggle aria-controls="responsive-navbar-nav" />
         <BsNavbar.Collapse>
@@ -51,7 +60,7 @@ const Navbar = () => {
               <>
                 {/* Cart Counter always visible when logged in */}
                 <Nav.Item className="me-3">
-                  <CartCounter /> 
+                  <CartCounter />
                 </Nav.Item>
                 <NavLink to="/user" className={linkClassName}>
                   Profile
@@ -59,7 +68,11 @@ const Navbar = () => {
                 <NavLink to="/user/cart" className={linkClassName}>
                   Cart
                 </NavLink>
-                <button onClick={handleLogout} className="btn btn-link nav-link" style={{ padding: 0 }}>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-link nav-link"
+                  style={{ padding: 0 }}
+                >
                   Logout
                 </button>
                 {/* <NavLink to="/logout" className="nav-link">
@@ -71,7 +84,7 @@ const Navbar = () => {
         </BsNavbar.Collapse>
       </Container>
     </BsNavbar>
-  )
+  );
 }
 
 export default Navbar
