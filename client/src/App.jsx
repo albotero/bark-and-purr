@@ -11,6 +11,8 @@ import Footer from "./components/Footer"
 import Discover from "./pages/Discover"
 import { useUser } from "./context/UserContext"
 import Favorites from "./pages/Favorites"
+import NewProduct from "./pages/NewProduct"
+import Publications from "./pages/Publications"
 
 function App() {
   const { token } = useUser()
@@ -31,14 +33,15 @@ function App() {
             <Route path="favorites" element={<Favorites />} />
             <Route path="notifications" element={<></>} />
             <Route path="purchases" element={<></>} />
-            <Route path="publications" element={<></>} />
+            <Route path="publications" element={<Publications />} />
+            <Route path="new-product" element={<NewProduct />} />
           </Route>
           <Route path="*" element={<div>Page not found!</div>} />
         </Routes>
       </Container>
       <Footer />
     </>
-  )
+  );
 }
 
 export default App
