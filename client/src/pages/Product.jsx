@@ -1,6 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/CartContext";
+import Swal from "sweetalert2";
+import { useUser } from "../context/UserContext"
+import { useNavigate } from "react-router-dom";
+
 
 const mockProduct = {
   id: "p123",
@@ -35,9 +39,9 @@ const mockProduct = {
     }
   ],
   images: [
-    'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1581539250439-c96689b516dd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+    'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1605897472359-85e4b94d685d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   ],
   description: 'Royal Canin Medium Adult is a high-quality dry food for medium-sized adult dogs (11–25 kg) from 12 months of age. Specifically formulated to meet the nutritional needs of medium breed dogs.',
   features: [
@@ -55,6 +59,9 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("desc");
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const { token } = useUser(); 
+
 
   useEffect(() => {
     setTimeout(() => setProduct(mockProduct), 300);
@@ -67,13 +74,11 @@ const Product = () => {
 
   return (
     <div className="container mt-4 bg-white">
-      <button className="btn btn-link mb-3" onClick={() => window.history.back()}>
-        ← Back to products
-      </button>
-
-      <div className="row">
+      <button className="btn btn-link mb-3" onClick={() => window.history.back()}> ← Back to products  </button>
+      <div className="row"> 
         {/* Columna izquierda para imágenes y tabs */}
         <div className="col-md-6">
+          {/*Imagen grande */}
           <div className="position-relative mb-3">
             <img src={product.images[0]} alt={product.name} className="img-fluid rounded" />
             {discounted && (
@@ -82,76 +87,21 @@ const Product = () => {
               </span>
             )}
           </div>
+          {/*Imágenes pequeñas (galería) */}
           <div className="d-flex gap-2 mb-4">
             {product.images.map((img, i) => (
-              <img key={i} src={img} alt={`View ${i}`} className="img-thumbnail" style={{ width: "70px" }} />
+              <img
+                key={i}
+                src={img}
+                alt={`View ${i}`}
+                className="img-thumbnail object-fit-cover"
+                style={{ width: "70px", height: "70px", objectFit: "cover" }}
+              />
             ))}
           </div>
-
-          {/* 3 Tabs */}
-          <ul className="nav nav-tabs mb-3" id="productTabs" role="tablist">
-            <li className="nav-item" role="presentation">
-              <button
-                className={`nav-link ${activeTab === "desc" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
-                type="button"
-                onClick={() => setActiveTab("desc")}
-              >
-                Description
-              </button>
-            </li>
-            <li className="nav-item" role="presentation">
-              <button
-                className={`nav-link ${activeTab === "reviews" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
-                type="button"
-                onClick={() => setActiveTab("reviews")}
-              >
-                Reviews ({product.reviews.length})
-              </button>
-            </li>
-            <li className="nav-item" role="presentation">
-              <button
-                className={`nav-link ${activeTab === "features" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
-                type="button"
-                onClick={() => setActiveTab("features")}
-              >
-                Features
-              </button>
-            </li>
-          </ul>
-
-          {/* Contenido de los Tabs */}
-          <div className="tab-content border p-3">
-            {activeTab === "desc" && ( //descripción
-              <div>
-                <p>{product.description}</p>
-              </div>
-            )}
-            {activeTab === "reviews" && ( //review
-              <div>
-                {product.reviews.map((r) => (
-                  <div key={r.id} className="mb-3 border-bottom pb-2">
-                    <strong>{r.user}</strong>{" "}
-                    <span className="text-warning">{"★".repeat(r.rating)}</span>
-                    <div className="text-muted small">{r.date}</div>
-                    <p className="mb-1">{r.content}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-            {activeTab === "features" && ( //características falta poner más bonito
-              <div>
-                <ul className="list-group list-group-flush">
-                  {product.features.map((f, i) => (
-                    <li key={i} className="list-group-item">{f}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
         </div>
-
-        {/* Columna de la derecha - Datos de la compra*/}
-        <div className="col-md-6">
+                {/* Columna de la derecha - Datos de la compra*/}
+                <div className="col-md-6">
           <div className="text-muted small mb-2">Food / Dogs / New</div>
           <h2>{product.name}</h2>
           <div className="mb-2">
@@ -180,12 +130,38 @@ const Product = () => {
           </div>
 
           <button
-            className="btn btn-primary mb-3"
-            onClick={() => addToCart(product, quantity)}
-            disabled={product.stock === 0}
-          >
-            🛒 Add to cart
-          </button>
+  className="btn btn-primary mb-3"
+  onClick={() => {
+    if (!token) {
+      Swal.fire({
+        icon: "warning",
+        title: "You're not logged in",
+        text: "Please log in or register to add items to your cart.",
+        showCancelButton: true,
+        confirmButtonText: "Go to Login",
+        cancelButtonText: "Cancel"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
+
+    addToCart({
+      id: product.id,
+      title: product.name,
+      price: parseFloat(finalPrice),
+      img: product.images?.[0],
+      quantity
+    });
+  }}
+  disabled={product.stock === 0}
+>
+  🛒 Add to cart
+</button>
+
+
 
           <ul className="list-unstyled text-muted small">
             <li><strong>Brand:</strong> {product.brand}</li>
@@ -194,6 +170,69 @@ const Product = () => {
           </ul>
         </div>
       </div>
+      <div className="mt-4">
+        {/* 3 Tabs */}
+        <ul className="nav nav-tabs mb-3" id="productTabs" role="tablist">
+          <li className="nav-item" role="presentation">
+            <button
+              className={`nav-link ${activeTab === "desc" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
+              type="button"
+              onClick={() => setActiveTab("desc")}
+            >
+              Description
+            </button>
+          </li>
+          <li className="nav-item" role="presentation">
+            <button
+              className={`nav-link ${activeTab === "reviews" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
+              type="button"
+              onClick={() => setActiveTab("reviews")}
+            >
+              Reviews ({product.reviews.length})
+            </button>
+          </li>
+          <li className="nav-item" role="presentation">
+            <button
+              className={`nav-link ${activeTab === "features" ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
+              type="button"
+              onClick={() => setActiveTab("features")}
+            >
+              Features
+            </button>
+          </li>
+        </ul>
+        {/* Contenido de los Tabs */}
+        <div className="tab-content border p-3">
+            {activeTab === "desc" && ( //descripción
+              <div>
+                <p>{product.description}</p>
+              </div>
+            )}
+            {activeTab === "reviews" && ( //review
+              <div>
+                {product.reviews.map((r) => (
+                  <div key={r.id} className="mb-3 border-bottom pb-2">
+                    <strong>{r.user}</strong>{" "}
+                    <span className="text-warning">{"★".repeat(r.rating)}</span>
+                    <div className="text-muted small">{r.date}</div>
+                    <p className="mb-1">{r.content}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {activeTab === "features" && ( //características falta poner más bonito
+              <div>
+                <ul className="list-group list-group-flush">
+                  {product.features.map((f, i) => (
+                    <li key={i} className="list-group-item">{f}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+        </div>
+
+      </div>
+
     </div>
   );
 };
