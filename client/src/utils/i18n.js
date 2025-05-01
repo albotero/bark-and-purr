@@ -8,12 +8,14 @@ import enProfile from "../locales/en/profile.json"
 import enNavbar from "../locales/en/navbar.json"
 import enFavorites from "../locales/en/favorites.json"
 import enHome from "../locales/en/home.json"
+import enDiscover from "../locales/en/discover.json"
 
 import esAuth from "../locales/es/auth.json"
 import esProfile from "../locales/es/profile.json"
 import esNavbar from "../locales/es/navbar.json"
 import esFavorites from "../locales/es/favorites.json"
 import esHome from "../locales/es/home.json"
+import esDiscover from "../locales/es/discover.json"
 
 i18n
   .use(LanguageDetector)
@@ -30,6 +32,7 @@ i18n
         navbar: enNavbar,
         favorites: enFavorites,
         home: enHome,
+        discover: enDiscover,
       },
       es: {
         auth: esAuth,
@@ -37,6 +40,7 @@ i18n
         navbar: esNavbar,
         favorites: esFavorites,
         home: esHome,
+        discover: esDiscover,
       },
     },
   })

@@ -1,0 +1,17 @@
+{
+  "search": "Buscar",
+  "products": "productos",
+  "filter": {
+    "title": "Filtrar",
+    "price": "Por precio",
+    "stock": "Por unidades disponibles",
+    "stock_a": "Más de",
+    "stock_b": "unidades"
+  },
+  "order": {
+    "title": "Ordenar Por",
+    "price": "Precio",
+    "rating": "Calificación",
+    "date": "Fecha"
+  }
+}

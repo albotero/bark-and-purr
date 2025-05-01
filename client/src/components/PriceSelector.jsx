@@ -2,10 +2,13 @@ import "react-range-slider-input/dist/style.css"
 import RangeSlider from "react-range-slider-input"
 import { Chart as ChartJS, BarElement, Tooltip, CategoryScale, LinearScale } from "chart.js"
 import { Bar } from "react-chartjs-2"
+import { useTranslation } from "react-i18next"
 
 ChartJS.register(BarElement, Tooltip, CategoryScale, LinearScale)
 
 const PriceSelector = () => {
+  const { t } = useTranslation("discover")
+
   const options = {
     responsive: true,
     scales: {
@@ -20,7 +23,7 @@ const PriceSelector = () => {
       tooltip: {
         displayColors: false,
         callbacks: {
-          label: ({ raw }) => `${raw} products`,
+          label: ({ raw }) => `${raw} ${t("products")}`,
           title: ([{ label }]) => `$ ${label}`,
         },
       },

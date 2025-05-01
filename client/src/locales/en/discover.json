@@ -1,0 +1,17 @@
+{
+  "search": "Search",
+  "products": "products",
+  "filter": {
+    "title": "Filter Results",
+    "price": "By price",
+    "stock": "By available stock",
+    "stock_a": "More than",
+    "stock_b": "units"
+  },
+  "order": {
+    "title": "Order By",
+    "price": "Price",
+    "rating": "Rating",
+    "date": "Date"
+  }
+}

@@ -11,10 +11,14 @@ import EditIcon from "../components/EditIcon"
 import OrderItem from "../components/OrderItem"
 import PriceSelector from "../components/PriceSelector"
 import { ProductCard } from "../components/ProductCard"
+import { useTranslation } from "react-i18next"
+
+const orderOptions = ["price", "rating", "date"]
 
 const Discover = () => {
   const [order, setOrder] = useState("price_desc")
   const [searchQuery, setSearchQuery] = useState("")
+  const { t } = useTranslation("discover")
 
   const handleSearchQueryChange = ({ target: { value } }) => setSearchQuery(value)
 
@@ -28,11 +32,6 @@ const Discover = () => {
   }
 
   /* Mock Data */
-  const orderOptions = [
-    { id: 1001, key: "price", text: "Price" },
-    { id: 1002, key: "rating", text: "Rating" },
-    { id: 1003, key: "date", text: "Date" },
-  ]
   const products = [
     { id: "p001", title: "Product1", price: 10200 },
     { id: "p002", title: "Product2", price: 8200 },
@@ -49,7 +48,7 @@ const Discover = () => {
         <Form className="search-bar mx-auto my-2 my-lg-4" onSubmit={handleSearch}>
           <Form.Control
             type="text"
-            placeholder="🔍 Search"
+            placeholder={"🔍 " + t("search")}
             className="rounded-pill"
             value={searchQuery}
             onChange={handleSearchQueryChange}
@@ -88,22 +87,22 @@ const Discover = () => {
       {/* Filter => Desktop view */}
       <aside className="filter-results d-none d-lg-block order-2">
         <h4 className="d-flex">
-          Filter Results
+          {t("filter.title")}
           <EditIcon callback={handleClearFilters} type="clean" />
         </h4>
-        <h6>By price</h6>
+        <h6>{t("filter.price")}</h6>
         <PriceSelector />
-        <h6>By available stock</h6>
+        <h6>{t("filter.stock")}</h6>
         <div className="d-flex gap-2 align-items-center">
-          <span className="flex-shrink-0">More than</span>
+          <span className="flex-shrink-0">{t("filter.stock_a")}</span>
           <Form.Control type="number" min={0} size="sm" className="w-25" />
-          <span className="flex-shrink-0">units</span>
+          <span className="flex-shrink-0">{t("filter.stock_b")}</span>
         </div>
         <hr />
-        <h4>Order By</h4>
+        <h4>{t("order.title")}</h4>
         <div className="w-100 d-flex justify-content-evenly">
-          {orderOptions.map(({ id: orderId, key, text }) => (
-            <OrderItem key={orderId} data={{ key, text, order, setOrder }} />
+          {orderOptions.map((key) => (
+            <OrderItem key={`order_${key}`} data={{ key, text: t(`order.${key}`), order, setOrder }} />
           ))}
         </div>
       </aside>
@@ -111,8 +110,8 @@ const Discover = () => {
       {/* Filter => Mobile view */}
       <aside className="filter-results mobile d-lg-none order-1">
         <div className="d-flex gap-3">
-          {orderOptions.map(({ id: orderId, key, text }) => (
-            <OrderItem key={orderId} data={{ key, text, order, setOrder }} />
+          {orderOptions.map((key) => (
+            <OrderItem key={`order_${key}`} data={{ key, text: t(`order.${key}`), order, setOrder }} />
           ))}
         </div>
         <div className="border-start border-secondary m-2">&nbsp;</div>
