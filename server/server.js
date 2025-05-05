@@ -1,6 +1,8 @@
 import express from "express"
 import cors from "cors"
 import envs from "./config/envs.js"
+import authRoutes from './config/routes/auth.routes.js';
+
 
 const whiteList = [envs.SERVER_URL, envs.CLIENT_URL]
 const port = envs.PORT || 3000
@@ -16,5 +18,6 @@ app.use(
   })
 )
 app.use(express.json())
+app.use('/auth', authRoutes);
 
 app.listen(port, () => console.log(`Listening on Port ${port}`))

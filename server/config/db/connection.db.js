@@ -1,4 +1,5 @@
 import pg from "pg"
+import "dotenv/config"
 import envs from "../envs.js"
 
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = envs
@@ -10,3 +11,5 @@ export default new pg.Pool({
   database: DB_NAME,
   allowExitOnIdle: true,
 })
+
+
