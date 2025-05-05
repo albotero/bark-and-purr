@@ -1,0 +1,138 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+// ===== Light Mode Colors =====
+$primary-light: #866557; // Original bark brown
+$secondary-light: #969b9c; // Original purr blue
+$accent-light: #d4a59a; // Original salmon
+$bg-light: #f8f5f2; // Cream background
+$text-light: #3a322b; // Dark text
+
+// ===== Dark Mode Colors =====
+$primary-dark: #a78a7a; // Lighter, warmer brown
+$secondary-dark: #535455; // Brighter, more vibrant blue
+$accent-dark: #e2b8ad; // Softened salmon
+$bg-dark: #121212; // Rich dark background
+$text-dark: #f0f0f0; // Light text
+
+// ===== Theme Configuration =====
+$theme-colors: (
+  "primary": $primary-light,
+  "secondary": $secondary-light,
+  "success": #6b8e23,
+  "info": #9bc4cb,
+  "warning": #f4a261,
+  "danger": #e76f51,
+  "light": $bg-light,
+  "dark": $text-light,
+  "accent": $accent-light,
+);
+
+// ===== Light Mode Defaults =====
+:root {
+  --bs-primary: #{$primary-light};
+  --bs-primary-rgb: #{to-rgb($primary-light)};
+  --bs-secondary: #{$secondary-light};
+  --bs-accent: #{$accent-light};
+  --bs-body-bg: #{$bg-light};
+  --bs-body-color: #{$text-light};
+  --bs-border-color: #{lighten($primary-light, 40%)};
+}
+
+// ===== Fix for Links =====
+:not(.navbar-nav) > a,
+:not(.navbar-nav) > .btn-link {
+  &:not(:hover) {
+    color: var(--bs-primary) !important;
+  }
+  &:hover {
+    color: var(--bs-accent) !important;
+  }
+}
+
+// ===== Fix for React-Bootstrap Pagination =====
+.pagination {
+  --bs-pagination-color: var(--bs-primary) !important;
+  --bs-pagination-hover-color: var(--bs-primary) !important;
+  --bs-pagination-active-bg: var(--bs-primary) !important;
+  --bs-pagination-active-border-color: var(--bs-primary) !important;
+  --bs-pagination-focus-color: var(--bs-primary) !important;
+
+  .page-link {
+    &:hover {
+      color: var(--bs-accent);
+    }
+  }
+}
+
+// ===== Dark Mode Overrides =====
+[data-bs-theme="dark"] {
+  // Core Colors
+  --bs-primary: #{$primary-dark};
+  --bs-primary-rgb: #{to-rgb($primary-dark)};
+  --bs-secondary: #{$secondary-dark};
+  --bs-accent: #{$accent-dark};
+  --bs-body-bg: #{$bg-dark};
+  --bs-body-color: #{$text-dark};
+  --bs-border-color: #{transparentize($text-dark, 0.7)};
+
+  // Component Colors
+  --bs-card-bg: #{lighten($bg-dark, 5%)};
+  --bs-dropdown-bg: #{lighten($bg-dark, 7%)};
+  --bs-navbar-bg: #{lighten($bg-dark, 3%)};
+
+  // State Colors
+  --bs-success: #{lighten(#6b8e23, 10%)};
+  --bs-info: #{lighten(#9bc4cb, 5%)};
+  --bs-warning: #{saturate(#f4a261, 15%)};
+  --bs-danger: #{lighten(#e76f51, 5%)};
+
+  // Fix for Links
+  a,
+  .btn-link {
+    &:not(.btn):not(:hover) {
+      color: white !important;
+    }
+    &:hover {
+      color: var(--bs-accent);
+    }
+  }
+
+  .pagination {
+    --bs-pagination-bg: #{lighten($bg-dark, 5%)};
+    --bs-pagination-disabled-bg: #{lighten($bg-dark, 3%)};
+  }
+}
+
+@import "bootstrap/scss/bootstrap";
+
+// ===== Dark Mode Component Tweaks =====
+[data-bs-theme="dark"] {
+  .btn-primary {
+    --bs-btn-bg: var(--bs-primary);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-bg: #{darken($primary-dark, 7%)};
+    --bs-btn-hover-border-color: #{darken($primary-dark, 7%)};
+    --bs-btn-active-bg: #{darken($primary-dark, 10%)};
+  }
+
+  .navbar {
+    --bs-navbar-color: #{$text-dark};
+    --bs-navbar-brand-color: #{$text-dark};
+  }
+
+  .card {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--bs-border-color);
+  }
+
+  .filter-results {
+    background-color: var(--bs-tertiary-color);
+  }
+
+  .range-slider__thumb,
+  .range-slider__range {
+    background-color: var(--bs-warning) !important;
+  }
+}

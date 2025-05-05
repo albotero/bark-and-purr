@@ -6,6 +6,7 @@ import BsNavbar from "react-bootstrap/esm/Navbar"
 import { useUser } from "../context/UserContext"
 import { CartCounter } from "../components/CartCounter"
 import { useTranslation } from "react-i18next"
+import ThemeToggle from "./ThemeToggle"
 
 const Navbar = () => {
   const { token, logout } = useUser()
@@ -33,9 +34,6 @@ const Navbar = () => {
             <NavLink to="/discover" className={linkClassName}>
               {t("discover")}
             </NavLink>
-            <NavLink to="/product/p123" className={linkClassName}>
-              ***product
-            </NavLink>
           </Nav>
           {/* Links at the right */}
           <Nav>
@@ -52,7 +50,7 @@ const Navbar = () => {
               // Si hay token, se muestra Profile y Logout
               <>
                 {/* Cart Counter always visible when logged in */}
-                <Nav.Item className="me-3">
+                <Nav.Item className="nav-link me-3">
                   <CartCounter />
                 </Nav.Item>
                 <NavLink to="/user" className={linkClassName}>
@@ -69,6 +67,7 @@ const Navbar = () => {
                 </NavLink> */}
               </>
             )}
+            <ThemeToggle />
           </Nav>
         </BsNavbar.Collapse>
       </Container>

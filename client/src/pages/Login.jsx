@@ -60,7 +60,7 @@ const Login = () => {
 
   return (
     <div className="d-flex align-items-center justify-content-center vh-100">
-      <div className="p-5 border rounded" style={{ backgroundColor: "white", width: "100%", maxWidth: "400px" }}>
+      <div className="p-5 border rounded" style={{ width: "100%", maxWidth: "400px" }}>
         <h2 className="text-center mb-4">{t("login")}</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
