@@ -84,24 +84,27 @@ export const findProducts = async ({
   if (minPrice) addFilter("price", ">=", minPrice)
   if (maxPrice) addFilter("price", "<=", maxPrice)
 
+  const countProducts = await executeQuery(
+    "SELECT COUNT(id) FROM products" +
+      // Add filter
+      (filters.length ? format(` WHERE ${filters.join(" AND ")}`, ...values) : "")
+  )
+  const totalProducts = Number(countProducts[0]?.count || 0)
+
   // Build query
   const [orderColumn, orderDirection] = orderBy.split("_")
-  let query =
+  const products = await executeQuery(
     "SELECT * FROM products" +
-    // Add filter
-    (filters.length ? format(` WHERE ${filters.join(" AND ")}`, ...values) : "")
+      // Add filter
+      (filters.length ? format(` WHERE ${filters.join(" AND ")}`, ...values) : "") +
+      // Add order
+      (orderBy ? format(` ORDER BY %s %s`, orderColumn, orderDirection.toUpperCase()) : "") +
+      // Add pagination
+      format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
+  )
 
-  const totalProducts = await executeQuery(query)
-
-  query +=
-    // Add order
-    (orderBy ? format(` ORDER BY %s %s`, orderColumn, orderDirection.toUpperCase()) : "") +
-    // Add pagination
-    format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
-
-  const products = await executeQuery(query)
   return prepareHATEOAS({
-    totalProducts: totalProducts.length,
+    totalProducts,
     products,
     filters: { minPrice, maxPrice, minStock },
     orderBy,
