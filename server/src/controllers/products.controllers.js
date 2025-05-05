@@ -9,9 +9,10 @@ export const getProduct = (req, res) =>
     args: req.params,
   })
 
-export const getProducts = (_, res) =>
+export const getProducts = (req, res) =>
   execute({
     res,
     success: 200,
     callback: findProducts,
+    args: req.query,
   })
