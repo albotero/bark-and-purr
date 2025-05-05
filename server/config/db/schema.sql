@@ -111,9 +111,9 @@ VALUES
 -- Insert mock carts
 INSERT INTO carts (user_id, status, status_time)
 VALUES
-(1, 'active', CURRENT_TIMESTAMP - INTERVAL '2 days'),
-(1, 'abandoned', CURRENT_TIMESTAMP - INTERVAL '10 days'),
-(3, 'active', CURRENT_TIMESTAMP - INTERVAL '1 hour'),
+(1, 'paid', CURRENT_TIMESTAMP - INTERVAL '2 days'),
+(1, 'canceled', CURRENT_TIMESTAMP - INTERVAL '10 days'),
+(3, 'updated', CURRENT_TIMESTAMP - INTERVAL '1 hour'),
 (5, 'empty', CURRENT_TIMESTAMP);
 
 -- Insert products into carts (Chilean pesos values)
