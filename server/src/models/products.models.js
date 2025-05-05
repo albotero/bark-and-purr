@@ -2,10 +2,8 @@ import format from "pg-format"
 import executeQuery from "./executeQuery.js"
 
 export const findProduct = async ({ id }) => {
-  const rows = await executeQuery({
-    text: "SELECT * FROM products WHERE id=$1",
-    values: [id],
-  })
+  const query = format("SELECT * FROM products WHERE id=%s", id)
+  const rows = await executeQuery(query)
   return rows[0] || {}
 }
 
