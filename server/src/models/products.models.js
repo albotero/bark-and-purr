@@ -36,7 +36,7 @@ export const findProducts = async ({
   // Add requested filters
   if (minStock) addFilter("stock", ">=", minStock)
   if (minPrice) addFilter("price", ">=", minPrice)
-  if (maxPrice) addFilter("price", ">=", maxPrice)
+  if (maxPrice) addFilter("price", "<=", maxPrice)
 
   // Build query
   const [orderColumn, orderDirection] = orderBy.split("_")
