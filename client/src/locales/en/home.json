@@ -1,0 +1,11 @@
+{
+  "hero": {
+    "title": "Special offers for your best friend",
+    "subtitle": "Discover the best products for your pets"
+  },
+  "featured": {
+    "title": "Featured Products",
+    "no_products": "There are no products yet"
+  },
+  "rights_reserved": "All rights reserved"
+}

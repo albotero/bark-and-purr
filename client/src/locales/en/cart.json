@@ -1,0 +1,11 @@
+{
+  "title": "{{count}} products in your Cart",
+  "empty": "Your cart is empty",
+  "unit_price": "Unitary price",
+  "total": "Total",
+  "remove": "Remove from Cart",
+  "summary": "Order Summary",
+  "subtotal": "Subtotal",
+  "total_amount": "Total amount",
+  "pay": "Pay"
+}

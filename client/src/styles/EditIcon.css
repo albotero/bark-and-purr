@@ -1,0 +1,20 @@
+.edit-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.edit-icon:not(.avatar-icon) {
+  color: var(--bs-tertiary-color);
+}
+
+.edit-icon:hover {
+  color: var(--bs-warning);
+}
+
+.edit-icon:has(.icon-danger):hover {
+  color: var(--bs-danger);
+}

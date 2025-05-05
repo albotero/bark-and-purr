@@ -14,20 +14,6 @@
   border-radius: 50%;
 }
 
-.edit-icon {
-  width: 1.3rem;
-  height: 1.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--bs-tertiary-color);
-}
-
-.edit-icon:hover {
-  color: var(--bs-warning);
-}
-
 .avatar-img {
   width: 13rem;
   height: 13rem;
@@ -39,15 +25,15 @@
 .avatar-icon {
   border-width: 0.2rem;
   transform: translate(3.75rem, 3.1rem);
-  width: 3rem;
-  height: 3rem;
+  width: 3rem !important;
+  height: 3rem !important;
   font-size: 1.6rem;
-  background-color: rgb(190, 190, 190);
+  background-color: var(--bs-gray-500);
   color: var(--bs-light);
 }
 
 .avatar-icon:hover {
-  background-color: var(--bs-gray-300);
+  background-color: var(--bs-gray-200);
 }
 
 .personal-info {
@@ -62,7 +48,7 @@ h4.user-name {
 
 .profile-section {
   position: relative;
-  border: 1px solid rgba(50, 50, 50, 0.5);
+  border: 1px solid var(--bs-tertiary-color);
   margin: 2rem 1rem 2.5rem;
   padding: 1rem 1.5rem;
   border-radius: 0.5rem;
@@ -74,7 +60,7 @@ h4.user-name {
   left: 2rem;
   transform: translateY(-50%);
   padding: 0 0.4rem;
-  background-color: var(--bs-white);
+  background-color: var(--bs-body-bg);
   font-size: 1.8rem;
   font-weight: 400;
   letter-spacing: -0.05rem;

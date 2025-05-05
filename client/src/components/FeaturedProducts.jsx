@@ -1,31 +1,36 @@
-//import { Link } from "react-router-dom";
+import { ProductCard } from "./ProductCard"
+import Row from "react-bootstrap/esm/Row"
+import Col from "react-bootstrap/esm/Col"
+import { useTranslation } from "react-i18next"
 
 const FeaturedProducts = () => {
-  //array vacío por ahora
-  const featured = [];
+  const { t } = useTranslation("home")
+
+  // array de prueba
+  const featured = [
+    { id: 1, title: "Producto 1", price: 10, img: "img1.jpg" },
+    { id: 2, title: "Producto 2", price: 15, img: "img2.jpg" },
+    { id: 3, title: "Producto 3", price: 20, img: "img3.jpg" },
+    { id: 4, title: "Producto 4", price: 25, img: "img4.jpg" },
+    { id: 5, title: "Producto 5", price: 30, img: "img5.jpg" },
+  ]
 
   return (
-    <section className="featured-products">
-      <h2>Featured Products</h2>
-      <div className="product-carousel">
+    <section className="featured-products my-5">
+      <h2 className="text-center mb-4">{t("featured.title")}</h2>
+      <Row className="d-flex flex-nowrap justify-content-start">
         {featured.length === 0 ? (
-          <p>No featured products yet 🐾</p>
+          <p className="text-center">{t("featured.no_products")}</p>
         ) : (
           featured.map((product) => (
-            <div key={product.id} className="product-card">
-              <h3>{product.title}</h3>
-              <p>{product.description}</p>
-              <p>{product.price}</p>
-              <p>
-                <strong>Stock: </strong>
-                {product.stock}
-              </p>
-              <a href="/products">See more</a>
-            </div>
+            <Col key={product.id} style={{ flex: "0 0 20%" }} className="mb-4">
+              <ProductCard product={product} showAddToCart={false} />
+            </Col>
           ))
         )}
-      </div>
+      </Row>
     </section>
-  );
-};
-export default FeaturedProducts;
+  )
+}
+
+export default FeaturedProducts

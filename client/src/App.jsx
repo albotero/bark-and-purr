@@ -7,10 +7,16 @@ import Register from "./pages/Register"
 import Profile from "./pages/Profile"
 import Product from "./pages/Product"
 import Cart from "./pages/Cart"
-import { useUser } from "./context/UserContext"; 
+import Footer from "./components/Footer"
+import Discover from "./pages/Discover"
+import { useUser } from "./context/UserContext"
+import Favorites from "./pages/Favorites"
+import NewProduct from "./pages/NewProduct"
+import Publications from "./pages/Publications"
 
 function App() {
-  const { token } = useUser(); 
+  const { token } = useUser()
+
   return (
     <>
       <Navbar token={token} />
@@ -19,19 +25,21 @@ function App() {
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
-          <Route path="search" element={<></>} />
+          <Route path="discover" element={<Discover />} />
           <Route path="product/:productId" element={<Product />} />
+          <Route path="cart" element={<Cart />} />
           <Route path="user">
             <Route index element={<Profile />} />
-            <Route path="cart" element={<Cart/>} />
-            <Route path="favorites" element={<></>} />
+            <Route path="favorites" element={<Favorites />} />
             <Route path="notifications" element={<></>} />
             <Route path="purchases" element={<></>} />
-            <Route path="publications" element={<></>} />
+            <Route path="publications" element={<Publications />} />
+            <Route path="new-product" element={<NewProduct />} />
           </Route>
           <Route path="*" element={<div>Page not found!</div>} />
         </Routes>
       </Container>
+      <Footer />
     </>
   );
 }

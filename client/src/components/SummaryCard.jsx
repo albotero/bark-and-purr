@@ -1,4 +1,5 @@
-import { Card, Button } from "react-bootstrap";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
 
 export function SummaryCard({ products }) {
   const subtotal = products.reduce(
@@ -10,7 +11,7 @@ export function SummaryCard({ products }) {
     <Card className="shadow-sm">
       <Card.Body>
         <h5>
-          <i className="bi bi-cart"></i> Summary
+          <i className="bi bi-cart"></i> Order Summary
         </h5>
         <hr />
         <p>Subtotal: ${subtotal.toFixed(2)}</p>
