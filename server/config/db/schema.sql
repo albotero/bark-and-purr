@@ -158,4 +158,5 @@ VALUES
 (3, 3, 5, 'El rascador es de excelente calidad, típico chileno, bien hecho'),
 (3, 8, 3, 'Está bueno el juguete pero se rompió rápido, podría ser más resistente'),
 (5, 1, 4, 'Funciona bacán pero la app a veces se tranca'),
-(1, 7, 5, 'La mejor compra! Mi perro ahora duerme calentito en las noches frías de Concepción');
+(1, 7, 5, 'La mejor compra! Mi perro ahora duerme calentito en las noches frías de Concepción'),
+(4, 1, 3, 'Aunque funciona, no es tan buena. Le doy 3 estrellas');
