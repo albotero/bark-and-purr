@@ -1,7 +1,9 @@
 export default async ({ res, success, callback, args }) => {
   try {
-    res.status(success).json(await callback(args))
+    const result = await callback(args)
+    res.status(success).json(result)
   } catch (error) {
-    res.status(500).json(error)
+    const status = error.status || 500
+    res.status(status).json({ message: error.message || "Internal Server Error" })
   }
 }

@@ -1,3 +1,6 @@
+import dotenv from "dotenv"
+dotenv.config() 
+
 import express from "express"
 import cors from "cors"
 import envs from "./config/envs.js"
@@ -20,7 +23,7 @@ app.use(
   })
 )
 app.use(express.json())
-app.use("/auth", authRoutes)
+app.use("/api/auth", authRoutes)
 app.use("/api", productRoutes)
 app.use('/favorites', favoritesRoutes)
 app.use('/users', usersRoutes)
