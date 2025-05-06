@@ -9,7 +9,7 @@ CREATE DATABASE bark_and_purr;
 
 -- CREATE ENUMS
 
-CREATE TYPE cart_status AS ENUM ('empty', 'updated', 'canceled', 'payment_pending', 'payment_rejected', 'paid');
+CREATE TYPE cart_status AS ENUM ('active', 'canceled', 'payment_pending', 'payment_rejected', 'paid');
 
 -- CREATE TABLES
 
@@ -41,8 +41,9 @@ CREATE TABLE users (
 CREATE TABLE carts (
   id SERIAL NOT NULL PRIMARY KEY,
   user_id INT NOT NULL REFERENCES users(id),
-  status cart_status DEFAULT 'empty',
-  status_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  status cart_status DEFAULT 'active',
+  status_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expiration TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + '1 day')
 );
 
 CREATE TABLE products (
@@ -113,8 +114,8 @@ INSERT INTO carts (user_id, status, status_time)
 VALUES
 (1, 'paid', CURRENT_TIMESTAMP - INTERVAL '2 days'),
 (1, 'canceled', CURRENT_TIMESTAMP - INTERVAL '10 days'),
-(3, 'updated', CURRENT_TIMESTAMP - INTERVAL '1 hour'),
-(5, 'empty', CURRENT_TIMESTAMP);
+(3, 'active', CURRENT_TIMESTAMP - INTERVAL '1 hour'),
+(5, 'active', CURRENT_TIMESTAMP);
 
 -- Insert products into carts (Chilean pesos values)
 INSERT INTO products_by_cart (cart_id, product_id, quantity)
