@@ -97,15 +97,7 @@ export const findReviews = async ({
 
   // Build query
   const [orderColumn, orderDirection] = orderBy.split("_").map((el) => el.replace("date", "created_at"))
-  console.log(
-    "SELECT * FROM reviews" +
-      // Add filter
-      format(` WHERE ${filters.join(" AND ")}`, ...values) +
-      // Add order
-      (orderBy ? format(` ORDER BY %s %s`, orderColumn, orderDirection.toUpperCase()) : "") +
-      // Add pagination
-      format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
-  )
+
   const reviews = await executeQuery(
     "SELECT * FROM reviews" +
       // Add filter
@@ -115,8 +107,6 @@ export const findReviews = async ({
       // Add pagination
       format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
   )
-
-  console.log(reviews)
 
   return prepareHATEOAS({
     productId,
