@@ -2,7 +2,7 @@ import format from "pg-format"
 import executeQuery from "./executeQuery.js"
 
 export const findRating = async ({ productId }) => {
-  const query = format("SELECT AVG(rating) FROM reviews WHERE product_id=%s", productId)
+  const query = format("SELECT AVG(rating) AS rating FROM reviews WHERE product_id=%s", productId)
   const rows = await executeQuery(query)
   return rows[0]
 }
