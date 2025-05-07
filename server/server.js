@@ -6,6 +6,7 @@ import cors from "cors"
 import envs from "./config/envs.js"
 import authRoutes from "./src/routes/auth.routes.js"
 import productRoutes from "./src/routes/products.routes.js"
+import cartRoutes from "./src/routes/cart.routes.js"
 
 const whiteList = [envs.SERVER_URL, envs.CLIENT_URL]
 const port = envs.PORT || 3000
@@ -23,5 +24,10 @@ app.use(
 app.use(express.json())
 app.use("/api/auth", authRoutes)
 app.use("/api", productRoutes)
+app.use("/api/cart", cartRoutes)
+
+// app.get("/", (req, res) => {
+//   res.send("Servidor funcionando 🚀");
+// });
 
 app.listen(port, () => console.log(`Listening on Port ${port}`))
