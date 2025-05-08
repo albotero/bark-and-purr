@@ -105,25 +105,27 @@ const Discover = () => {
       </Container>
 
       {/* Filter => Desktop view */}
-      <aside className="filter-results d-none d-lg-block order-2">
-        <h4 className="d-flex">
-          {t("filter.title")}
-          <EditIcon callback={handleClearFilters} type="clean" />
-        </h4>
-        <h6>{t("filter.price")}</h6>
-        <PriceSelector />
-        <h6>{t("filter.stock")}</h6>
-        <div className="d-flex gap-2 align-items-center">
-          <span className="flex-shrink-0">{t("filter.stock_a")}</span>
-          <Form.Control type="number" min={0} size="sm" className="filter-input" />
-          <span className="flex-shrink-0">{t("filter.stock_b")}</span>
-        </div>
-        <hr />
-        <h4>{t("order.title")}</h4>
-        <div className="w-100 d-flex justify-content-evenly">
-          {orderOptions.map((key) => (
-            <OrderItem key={`order_${key}`} data={{ key, text: t(`order.${key}`), order, setOrder }} />
-          ))}
+      <aside className="filter-results-container order-2">
+        <div className="filter-results d-none d-lg-block">
+          <h4 className="d-flex">
+            {t("filter.title")}
+            <EditIcon callback={handleClearFilters} type="clean" />
+          </h4>
+          <h6>{t("filter.price")}</h6>
+          <PriceSelector />
+          <h6>{t("filter.stock")}</h6>
+          <div className="d-flex gap-2 align-items-center">
+            <span className="flex-shrink-0">{t("filter.stock_a")}</span>
+            <Form.Control type="number" min={0} size="sm" className="filter-input" />
+            <span className="flex-shrink-0">{t("filter.stock_b")}</span>
+          </div>
+          <hr />
+          <h4>{t("order.title")}</h4>
+          <div className="w-100 d-flex justify-content-evenly">
+            {orderOptions.map((key) => (
+              <OrderItem key={`order_${key}`} data={{ key, text: t(`order.${key}`), order, setOrder }} />
+            ))}
+          </div>
         </div>
       </aside>
 

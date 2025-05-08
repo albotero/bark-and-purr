@@ -1,14 +1,24 @@
+.filter-results-container {
+  position: relative;
+  width: 16rem;
+  flex-shrink: 0;
+}
+
 .filter-results {
   background-color: var(--bs-warning);
-  min-width: 16rem;
-  position: relative;
+  position: sticky;
+  top: 1rem;
+  margin-top: 1rem;
+  width: 100%;
 }
 
 .filter-results.mobile {
+  position: unset;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+  margin: 0;
   padding: 0 1rem;
 }
 

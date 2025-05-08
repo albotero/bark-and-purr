@@ -7,7 +7,7 @@ const Footer = () => {
   const { t } = useTranslation("home")
 
   return (
-    <footer className="footer text-white py-3">
+    <footer className="bg-primary text-light py-3">
       <Container>
         <Row className="justify-content-center">
           <Col className="text-center">

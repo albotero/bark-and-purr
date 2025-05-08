@@ -2,15 +2,21 @@
 body {
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
-  min-height: 100vh;
   margin: 0;
   font-family: "Nunito", system-ui, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Your layout classes */
 .container-main {
   background-color: var(--bs-body-bg);
   padding: 0;
+  flex-grow: 1;
 }
 
 .section-padding {
