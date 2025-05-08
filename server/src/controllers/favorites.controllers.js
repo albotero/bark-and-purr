@@ -3,7 +3,7 @@ import connectionDb from "../../config/db/connection.db.js"
 export const addFavorite = async (req, res) => {
   const { user_id, product_id } = req.body
   try {
-    const result = await db.query(
+    const result = await connectionDb.query(
       'INSERT INTO favorites (user_id, product_id) VALUES ($1, $2) RETURNING *',
       [user_id, product_id]
     )
@@ -16,7 +16,7 @@ export const addFavorite = async (req, res) => {
 export const getFavoritesByUser = async (req, res) => {
   const { user_id } = req.params
   try {
-    const result = await db.query(
+    const result = await connectionDb.query(
       `SELECT f.id, p.* FROM favorites f
        JOIN products p ON f.product_id = p.id
        WHERE f.user_id = $1`,
