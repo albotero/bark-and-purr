@@ -13,5 +13,7 @@
     "price": "Precio",
     "rating": "Calificación",
     "date": "Fecha"
-  }
+  },
+  "current_page": "Página {{current}} de {{total}}",
+  "error_fetching": "No se pudo obtener la lista de productos"
 }

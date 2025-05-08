@@ -35,7 +35,6 @@ export const useApi = () => {
    */
   const consumeApi = useCallback(
     async ({ method = "GET", fullUrl, endpoint, query, body, token, error = "Error Fetching" }) => {
-      console.log("Consuming API", { method, fullUrl, endpoint, query, body, token, error })
       for (let retry = 0; retry <= fetchRetries; retry++) {
         const data = await fetchApi({ method, fullUrl, endpoint, query, body, token })
         return data

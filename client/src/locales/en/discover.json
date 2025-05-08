@@ -13,5 +13,7 @@
     "price": "Price",
     "rating": "Rating",
     "date": "Date"
-  }
+  },
+  "current_page": "Page {{current}} of {{total}}",
+  "error_fetching": "Couldn't fetch the products list"
 }

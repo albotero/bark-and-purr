@@ -12,33 +12,47 @@ import OrderItem from "../components/OrderItem"
 import PriceSelector from "../components/PriceSelector"
 import { ProductCard } from "../components/ProductCard"
 import { useTranslation } from "react-i18next"
-import { fetchApi } from "../utils/fetchApi"
+import { useApi } from "../hooks/useApi"
 
 const orderOptions = ["price", "rating", "date"]
 
 const Discover = () => {
   const [order, setOrder] = useState("price_desc")
   const [searchQuery, setSearchQuery] = useState("")
-  const [productsData, setProductsData] = useState({ isLoading: true })
+  const [isLoading, setIsLoading] = useState(true)
+  const [productsData, setProductsData] = useState({})
+  const { total_products: totalProducts, filters, order_by: orderBy, pages, results: products } = productsData
+  console.log({ totalProducts, filters, orderBy, pages, products })
   const { t } = useTranslation("discover")
+  const [fetchProducts] = useApi()
 
   // Consume API every time searchQuery changes
   useEffect(() => {
-    const consumeApi = async () => {
-      setProductsData({ isLoading: true })
-      const data = await fetchApi({ endpoint: "products" })
+    const fetchData = async () => {
+      setIsLoading(true)
+      const data = await fetchProducts({
+        endpoint: "products",
+        query: { results_per_page: 3 },
+        error: t("error_fetching"),
+      })
       setProductsData(data)
+      setIsLoading(false)
     }
-    consumeApi()
-  }, [searchQuery])
-  const { total_products: totalProducts, filters, order_by: orderBy, pages, results: products } = productsData
-  console.log({ totalProducts, filters, orderBy, pages, products })
+    fetchData()
+  }, [fetchProducts, searchQuery, t])
 
   const handleSearchQueryChange = ({ target: { value } }) => setSearchQuery(value)
 
   const handleSearch = (e) => {
     alert(`Searching... ${searchQuery}`)
     e.preventDefault()
+  }
+
+  const handlePageChange = async (fullUrl) => {
+    setIsLoading(true)
+    const data = await fetchProducts({ fullUrl, error: t("error_fetching") })
+    setProductsData(data)
+    setIsLoading(false)
   }
 
   const handleClearFilters = () => {
@@ -61,8 +75,10 @@ const Discover = () => {
 
         <Row className="mx-3 my-4">
           {/* Gallery of filtered Products */}
-          {productsData.isLoading
+          {isLoading
             ? "LOADING..."
+            : productsData.error
+            ? "ERROR FETCHING"
             : products?.map((product) => (
                 <Col key={product.id} xs={12} lg={6} xl={4} xxl={3} className="py-4 pt-lg-2 pb-lg-3">
                   <ProductCard product={product} />
@@ -70,23 +86,22 @@ const Discover = () => {
               ))}
         </Row>
 
-        <Row>
-          <Col className="d-flex justify-content-center mb-4">
-            <Pagination>
-              <Pagination.First />
-              <Pagination.Prev />
-
-              <Pagination.Item>{4}</Pagination.Item>
-              <Pagination.Item>{5}</Pagination.Item>
-              <Pagination.Item active>{6}</Pagination.Item>
-              <Pagination.Item>{7}</Pagination.Item>
-              <Pagination.Item disabled>{8}</Pagination.Item>
-
-              <Pagination.Next />
-              <Pagination.Last />
-            </Pagination>
-          </Col>
-        </Row>
+        {pages && (
+          <Row>
+            <Col className="d-flex justify-content-center mb-4">
+              <div className="d-flex flex-column align-items-center">
+                <p className="m-0">{t("current_page", { current: pages.page, total: pages.total })}</p>
+                <Pagination>
+                  {pages.first && <Pagination.First onClick={() => handlePageChange(pages.first)} />}
+                  {pages.prev && <Pagination.Prev onClick={() => handlePageChange(pages.prev)} />}
+                  {pages.total > 1 && <Pagination.Item active>{pages.page}</Pagination.Item>}
+                  {pages.next && <Pagination.Next onClick={() => handlePageChange(pages.next)} />}
+                  {pages.last && <Pagination.Last onClick={() => handlePageChange(pages.last)} />}
+                </Pagination>
+              </div>
+            </Col>
+          </Row>
+        )}
       </Container>
 
       {/* Filter => Desktop view */}
