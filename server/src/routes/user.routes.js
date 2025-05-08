@@ -8,6 +8,12 @@ const router = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.put("/:id/avatar", authenticate, upload.single("avatar"), validateImage, updateAvatarController);
+router.put(
+  "/:id/avatar",
+  authenticate,
+  upload.single("avatar"),
+  validateImage,
+  updateAvatarController
+);
 
 export default router;

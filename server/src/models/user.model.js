@@ -8,7 +8,7 @@ export const updateAvatar = async (id, avatar_url, avatar_key) => {
     }
 
     await connectionDb.query(
-      'UPDATE users SET avatar_url = $1, avatar_key = $2 WHERE id = $3',
+      "UPDATE users SET avatar_url = $1, avatar_key = $2 WHERE id = $3",
       [avatar_url, avatar_key, id]
     );
   } catch (error) {
@@ -17,6 +17,8 @@ export const updateAvatar = async (id, avatar_url, avatar_key) => {
 };
 
 const getUserById = async (id) => {
-  const result = await connectionDb.query('SELECT * FROM users WHERE id = $1', [id]);
+  const result = await connectionDb.query("SELECT * FROM users WHERE id = $1", [
+    id,
+  ]);
   return result.rows[0];
 };

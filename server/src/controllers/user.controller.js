@@ -17,7 +17,8 @@ const updateAvatarHandler = async ({ req, res }) => {
   const { id } = req.params;
   const file = req.file;
 
-  if (!file) return res.status(400).json({ error: "No se subió ninguna imagen" });
+  if (!file)
+    return res.status(400).json({ error: "No se subió ninguna imagen" });
 
   try {
     // Optimizar imagen con Sharp
@@ -36,16 +37,15 @@ const updateAvatarHandler = async ({ req, res }) => {
     // Respuesta
     res.json({ message: "Avatar actualizado", avatar_url });
   } catch (err) {
-    res.status(500).json({ error: `Error al actualizar el avatar: ${err.message}` });
+    res
+      .status(500)
+      .json({ error: `Error al actualizar el avatar: ${err.message}` });
   }
 };
 
 // Optimizar la imagen
 const optimizeImage = (buffer) => {
-  return sharp(buffer)
-    .resize(300)  
-    .jpeg({ quality: 80 })  
-    .toBuffer();  
+  return sharp(buffer).resize(300).jpeg({ quality: 80 }).toBuffer();
 };
 
 // Subir la imagen a Cloudinary
