@@ -1,5 +1,5 @@
 import "../styles/Discover.css"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaArrowRight } from "react-icons/fa6"
 import { FiFilter } from "react-icons/fi"
 import Col from "react-bootstrap/esm/Col"
@@ -12,13 +12,27 @@ import OrderItem from "../components/OrderItem"
 import PriceSelector from "../components/PriceSelector"
 import { ProductCard } from "../components/ProductCard"
 import { useTranslation } from "react-i18next"
+import { fetchApi } from "../utils/fetchApi"
 
 const orderOptions = ["price", "rating", "date"]
 
 const Discover = () => {
   const [order, setOrder] = useState("price_desc")
   const [searchQuery, setSearchQuery] = useState("")
+  const [productsData, setProductsData] = useState({ isLoading: true })
   const { t } = useTranslation("discover")
+
+  // Consume API every time searchQuery changes
+  useEffect(() => {
+    const consumeApi = async () => {
+      setProductsData({ isLoading: true })
+      const data = await fetchApi({ endpoint: "products" })
+      setProductsData(data)
+    }
+    consumeApi()
+  }, [searchQuery])
+  const { total_products: totalProducts, filters, order_by: orderBy, pages, results: products } = productsData
+  console.log({ totalProducts, filters, orderBy, pages, products })
 
   const handleSearchQueryChange = ({ target: { value } }) => setSearchQuery(value)
 
@@ -30,17 +44,6 @@ const Discover = () => {
   const handleClearFilters = () => {
     alert("Filters cleared!")
   }
-
-  /* Mock Data */
-  const products = [
-    { id: "p001", title: "Product1", price: 10200 },
-    { id: "p002", title: "Product2", price: 8200 },
-    { id: "p003", title: "Product3", price: 4000 },
-    { id: "p004", title: "Product4", price: 13400 },
-    { id: "p005", title: "Product5", price: 1200 },
-    { id: "p006", title: "Product6", price: 6700, img: "/vite.svg" },
-    { id: "p007", title: "Product7", price: 4500 },
-  ]
 
   return (
     <div className="d-flex flex-column flex-lg-row">
@@ -58,11 +61,13 @@ const Discover = () => {
 
         <Row className="mx-3 my-4">
           {/* Gallery of filtered Products */}
-          {products.map((product) => (
-            <Col key={product.id} xs={12} lg={6} xl={4} xxl={3} className="py-4 pt-lg-2 pb-lg-3">
-              <ProductCard product={product} />
-            </Col>
-          ))}
+          {productsData.isLoading
+            ? "LOADING..."
+            : products?.map((product) => (
+                <Col key={product.id} xs={12} lg={6} xl={4} xxl={3} className="py-4 pt-lg-2 pb-lg-3">
+                  <ProductCard product={product} />
+                </Col>
+              ))}
         </Row>
 
         <Row>

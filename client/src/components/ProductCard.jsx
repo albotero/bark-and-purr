@@ -8,7 +8,7 @@ import { useCart } from "../context/CartContext"
 
 export function ProductCard({ product, showAddToCart = true }) {
   // Prop showAddToCart agregado
-  const { id: productId, title, price, img } = product
+  const { id: productId, title, price, thumbnail } = product
   const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart()
 
   const cartItem = cart.find((item) => item.id === productId)
@@ -25,7 +25,7 @@ export function ProductCard({ product, showAddToCart = true }) {
             backgroundColor: "#d3d3d3",
           }}
         >
-          {img}
+          {thumbnail}
         </div>
         <div className="flex-grow-1">
           <h5>{title}</h5>
@@ -61,8 +61,8 @@ export function ProductCard({ product, showAddToCart = true }) {
     <Card>
       <Card.Img
         variant="top"
-        src={img || "/"}
-        className={"ratio ratio-16x9 shadow-sm" + (img ? "" : " bg-secondary")}
+        src={thumbnail || "/"}
+        className={"ratio ratio-16x9 shadow-sm" + (thumbnail ? "" : " bg-secondary")}
       />
       <Card.Body>
         <Card.Title>{title}</Card.Title>
