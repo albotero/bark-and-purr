@@ -125,8 +125,6 @@ export const findProducts = async ({
       format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
   )
 
-  console.log(products)
-
   return prepareHATEOAS({
     totalProducts,
     products,
