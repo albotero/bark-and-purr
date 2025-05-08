@@ -109,6 +109,34 @@ VALUES
 (2, TRUE, 'Cama térmica para perros del sur', 'Cama aislante para climas fríos del sur de Chile', 45990, 12),
 (4, TRUE, 'Juguete interactivo Gato Chileno', 'Juguete con plumas de aves nacionales', 8990, 30);
 
+-- Insert mock images for the products
+INSERT INTO product_images (product_id, url, key) VALUES
+-- Product 1: Comedero automático (Pet Feeder)
+(1, 'https://images.pexels.com/photos/4588047/pexels-photo-4588047.jpeg', 'auto_feeder_1'),
+(1, 'https://images.pexels.com/photos/4588059/pexels-photo-4588059.jpeg', 'auto_feeder_2'),
+-- Product 2: Arnés (Dog Harness)
+(2, 'https://images.pexels.com/photos/5731864/pexels-photo-5731864.jpeg', 'harness_1'),
+(2, 'https://images.pexels.com/photos/3361739/pexels-photo-3361739.jpeg', 'harness_2'),
+-- Product 3: Rascador (Cat Scratcher)
+(3, 'https://images.pexels.com/photos/96428/pexels-photo-96428.jpeg', 'scratch_post_1'),
+(3, 'https://images.pexels.com/photos/6853286/pexels-photo-6853286.jpeg', 'scratch_post_2'),
+-- Product 4: Acuario (Aquarium)
+(4, 'https://images.pexels.com/photos/2156311/pexels-photo-2156311.jpeg', 'aquarium_1'),
+(4, 'https://images.pexels.com/photos/2156316/pexels-photo-2156316.jpeg', 'aquarium_2'),
+-- Product 5: Transportín (Pet Carrier)
+(5, 'https://images.pexels.com/photos/1904105/pexels-photo-1904105.jpeg', 'carrier_1'),
+(5, 'https://images.pexels.com/photos/1904106/pexels-photo-1904106.jpeg', 'carrier_2'),
+-- Product 6: Snacks (Dog Treats)
+(6, 'https://images.pexels.com/photos/4587978/pexels-photo-4587978.jpeg', 'treats_1'),
+(6, 'https://images.pexels.com/photos/5515881/pexels-photo-5515881.jpeg', 'treats_2'),
+-- Product 7: Cama térmica (Dog Bed)
+(7, 'https://images.pexels.com/photos/7752794/pexels-photo-7752794.jpeg', 'bed_1'),
+(7, 'https://images.pexels.com/photos/7752796/pexels-photo-7752796.jpeg', 'bed_2'),
+-- Product 8: Juguete (Cat Toy)
+(8, 'https://images.pexels.com/photos/6853287/pexels-photo-6853287.jpeg', 'toy_1'),
+(8, 'https://images.pexels.com/photos/6853288/pexels-photo-6853288.jpeg', 'toy_2');
+
+
 -- Insert mock carts
 INSERT INTO carts (user_id, status, status_time)
 VALUES

@@ -2,7 +2,19 @@ import format from "pg-format"
 import executeQuery from "./executeQuery.js"
 
 export const findProduct = async ({ id }) => {
-  const query = format("SELECT * FROM products WHERE id=%s", id)
+  const query = format(
+    `SELECT
+        *,
+        ARRAY (
+          SELECT imgs.url
+          FROM product_images imgs
+          WHERE imgs.product_id = products.id
+          ORDER BY imgs.id
+        ) AS images
+      FROM products
+      WHERE id = %s`,
+    id
+  )
   const rows = await executeQuery(query)
   return rows[0] || {}
 }
@@ -29,9 +41,11 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
     // Build URL
     return "/api/products?" + params.join("&")
   }
-  const results = products.map(({ id, title, price }) => ({
+  const results = products.map(({ id, title, price, thumbnail }) => ({
+    id,
     title,
     price,
+    thumbnail,
     link: `/api/product/${id}`,
   }))
   const firstPage = prepareProductsUrl(1)
@@ -41,7 +55,7 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
 
   return {
     total_products: totalProducts,
-    orderBy,
+    order_by: orderBy,
     filters: queryFilters,
     results,
     pages: {
@@ -94,7 +108,15 @@ export const findProducts = async ({
   // Build query
   const [orderColumn, orderDirection] = orderBy.split("_")
   const products = await executeQuery(
-    "SELECT * FROM products" +
+    `SELECT
+        *,
+        (SELECT imgs.url
+          FROM product_images imgs
+          WHERE imgs.product_id = products.id
+          ORDER BY imgs.id
+          LIMIT 1
+        ) AS thumbnail
+      FROM products` +
       // Add filter
       (filters.length ? format(` WHERE ${filters.join(" AND ")}`, ...values) : "") +
       // Add order
@@ -102,6 +124,8 @@ export const findProducts = async ({
       // Add pagination
       format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
   )
+
+  console.log(products)
 
   return prepareHATEOAS({
     totalProducts,

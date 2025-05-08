@@ -42,7 +42,7 @@ const prepareHATEOAS = ({ productId, totalReviews, reviews, filters, orderBy, re
 
   return {
     total_reviews: totalReviews,
-    orderBy,
+    order_by: orderBy,
     filters: queryFilters,
     results,
     product: `/api/products/${productId}`,
