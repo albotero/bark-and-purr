@@ -14,6 +14,10 @@
     "rating": "Calificación",
     "date": "Fecha"
   },
-  "current_page": "Página {{current}} de {{total}}",
+  "page": {
+    "title": "Páginas",
+    "current": "Productos {{start}}-{{end}} de {{total_products}}. Página {{current}} de {{total}}",
+    "results_per_page": "{{num}} resultados por página"
+  },
   "error_fetching": "No se pudo obtener la lista de productos"
 }

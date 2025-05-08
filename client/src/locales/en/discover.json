@@ -14,6 +14,10 @@
     "rating": "Rating",
     "date": "Date"
   },
-  "current_page": "Page {{current}} of {{total}}",
+  "page": {
+    "title": "Pages",
+    "current": "Products {{start}}-{{end}} of {{total_products}}. Page {{current}} of {{total}}",
+    "results_per_page": "{{num}} results per page"
+  },
   "error_fetching": "Couldn't fetch the products list"
 }

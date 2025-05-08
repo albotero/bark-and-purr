@@ -31,7 +31,7 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
 
   const prepareProductsUrl = (p) => {
     // Only send page links if are valid pages and different to current one
-    if (p < 1 || p > totalPages || p == currentPage) return
+    if (p < 1 || p > totalPages) return
     // Prepare GET link with params
     const params = [
       ...queryFilters.map(({ key, value }) => `${key}=${value}`),
@@ -49,8 +49,9 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
     thumbnail,
     link: `/api/product/${id}`,
   }))
-  const firstPage = prepareProductsUrl(1)
-  const lastPage = prepareProductsUrl(totalPages)
+  const thisPage = prepareProductsUrl(currentPage)
+  const firstPage = currentPage > 1 ? prepareProductsUrl(1) : undefined
+  const lastPage = currentPage < totalPages ? prepareProductsUrl(totalPages) : undefined
   const prevPage = currentPage - 1 > 1 ? prepareProductsUrl(currentPage - 1) : undefined
   const nextPage = currentPage + 1 < totalPages ? prepareProductsUrl(currentPage + 1) : undefined
 
@@ -62,6 +63,7 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
     pages: {
       page: currentPage,
       total: totalPages,
+      this: thisPage,
       first: firstPage,
       prev: prevPage,
       next: nextPage,
@@ -100,22 +102,6 @@ export const findProducts = async ({
   if (minStock) addFilter("stock", ">=", minStock)
   if (minPrice) addFilter("price", ">=", minPrice)
   if (maxPrice) addFilter("price", "<=", maxPrice)
-
-  console.log(
-    `SELECT
-        *,
-        (SELECT imgs.url
-          FROM product_images imgs
-          WHERE imgs.product_id = products.id
-          ORDER BY imgs.id
-          LIMIT 1
-        ) AS thumbnail
-      FROM products` +
-      // Add filter
-      (filters.length ? format(` WHERE ${filters.join(" AND ")}`, ...values) : "") +
-      // Add pagination
-      format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
-  )
 
   const countProducts = await executeQuery(
     "SELECT COUNT(id) FROM products" +
