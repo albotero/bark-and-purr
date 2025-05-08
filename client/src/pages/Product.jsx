@@ -1,8 +1,8 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useCart } from "../context/CartContext";
-import { useUser } from "../context/UserContext";
-import Swal from "sweetalert2";
+import { useParams, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useCart } from "../context/CartContext"
+import { useUser } from "../context/UserContext"
+import Swal from "sweetalert2"
 
 const mockProduct = {
   id: "p123",
@@ -19,8 +19,7 @@ const mockProduct = {
       user: "Alejandro B.",
       rating: 5,
       date: "2025-01-15",
-      content:
-        "Excellent product, my dog loves it and his coat has improved significantly.",
+      content: "Excellent product, my dog loves it and his coat has improved significantly.",
     },
     {
       id: 2,
@@ -34,8 +33,7 @@ const mockProduct = {
       user: "Pam Y.",
       rating: 5,
       date: "2025-03-21",
-      content:
-        "I always buy this one, it’s the only food that works well for my pet.",
+      content: "I always buy this one, it’s the only food that works well for my pet.",
     },
   ],
   images: [
@@ -52,28 +50,28 @@ const mockProduct = {
     "Optimal nutrient balance",
     "Promotes healthy bones and joints",
   ],
-};
+}
 
 const Product = () => {
-  const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState("desc");
-  const { addToCart } = useCart();
-  const { token } = useUser();
-  const navigate = useNavigate();
+  const { id } = useParams()
+  const [product, setProduct] = useState(null)
+  const [quantity, setQuantity] = useState(1)
+  const [activeTab, setActiveTab] = useState("desc")
+  const { addToCart } = useCart()
+  const { token } = useUser()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    setTimeout(() => setProduct(mockProduct), 300);
-  }, [id]);
+    setTimeout(() => setProduct(mockProduct), 300)
+  }, [id])
 
-  if (!product) return <div className="text-center mt-5">Loading product...</div>;
+  if (!product) return <div className="text-center mt-5">Loading product...</div>
 
-  const discounted = product.discount > 0;
-  const finalPrice = (product.price * (1 - product.discount)).toFixed(2);
+  const discounted = product.discount > 0
+  const finalPrice = (product.price * (1 - product.discount)).toFixed(2)
 
   return (
-    <div className="container mt-4 bg-white">
+    <div className="container mt-4 bg-tertiary">
       <button className="btn btn-link mb-3" onClick={() => window.history.back()}>
         ← Back to products
       </button>
@@ -82,9 +80,7 @@ const Product = () => {
           <div className="position-relative mb-3">
             <img src={product.images[0]} alt={product.name} className="img-fluid rounded" />
             {discounted && (
-              <span className="badge bg-danger position-absolute top-0 start-0 m-2">
-                -{product.discount * 100}%
-              </span>
+              <span className="badge bg-danger position-absolute top-0 start-0 m-2">-{product.discount * 100}%</span>
             )}
           </div>
           <div className="d-flex gap-2 mb-4">
@@ -117,11 +113,11 @@ const Product = () => {
           </div>
 
           <div className="input-group mb-3" style={{ width: "150px" }}>
-            <button className="btn btn-outline-secondary" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
+            <button className="btn btn-outline-secondary" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
               -
             </button>
             <input type="text" className="form-control text-center" value={quantity} readOnly />
-            <button className="btn btn-outline-secondary" onClick={() => setQuantity(q => q + 1)}>
+            <button className="btn btn-outline-secondary" onClick={() => setQuantity((q) => q + 1)}>
               +
             </button>
           </div>
@@ -139,10 +135,10 @@ const Product = () => {
                   cancelButtonText: "Cancel",
                 }).then((result) => {
                   if (result.isConfirmed) {
-                    navigate("/login");
+                    navigate("/login")
                   }
-                });
-                return;
+                })
+                return
               }
 
               addToCart({
@@ -151,7 +147,7 @@ const Product = () => {
                 price: parseFloat(finalPrice),
                 img: product.images?.[0],
                 quantity,
-              });
+              })
             }}
             disabled={product.stock === 0}
           >
@@ -159,8 +155,12 @@ const Product = () => {
           </button>
 
           <ul className="list-unstyled text-muted small">
-            <li><strong>Brand:</strong> {product.brand}</li>
-            <li><strong>Seller:</strong> <a href="#">{product.seller}</a></li>
+            <li>
+              <strong>Brand:</strong> {product.brand}
+            </li>
+            <li>
+              <strong>Seller:</strong> <a href="#">{product.seller}</a>
+            </li>
             <li>🚚 Free shipping on orders over $999</li>
           </ul>
         </div>
@@ -172,10 +172,12 @@ const Product = () => {
             { key: "desc", label: "Description" },
             { key: "reviews", label: `Reviews (${product.reviews.length})` },
             { key: "features", label: "Features" },
-          ].map(tab => (
+          ].map((tab) => (
             <li className="nav-item" role="presentation" key={tab.key}>
               <button
-                className={`nav-link ${activeTab === tab.key ? "active bg-primary text-white fw-bold" : "bg-light text-dark"}`}
+                className={`nav-link ${
+                  activeTab === tab.key ? "active bg-primary text-white fw-bold" : "bg-light text-dark"
+                }`}
                 type="button"
                 onClick={() => setActiveTab(tab.key)}
               >
@@ -203,14 +205,16 @@ const Product = () => {
           {activeTab === "features" && (
             <ul className="list-group list-group-flush">
               {product.features.map((f, i) => (
-                <li key={i} className="list-group-item">{f}</li>
+                <li key={i} className="list-group-item">
+                  {f}
+                </li>
               ))}
             </ul>
           )}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product

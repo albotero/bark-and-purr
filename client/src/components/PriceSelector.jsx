@@ -3,11 +3,13 @@ import RangeSlider from "react-range-slider-input"
 import { Chart as ChartJS, BarElement, Tooltip, CategoryScale, LinearScale } from "chart.js"
 import { Bar } from "react-chartjs-2"
 import { useTranslation } from "react-i18next"
+import { useTheme } from "../context/ThemeContext"
 
 ChartJS.register(BarElement, Tooltip, CategoryScale, LinearScale)
 
 const PriceSelector = () => {
   const { t } = useTranslation("discover")
+  const { theme } = useTheme()
 
   const options = {
     responsive: true,
@@ -52,7 +54,7 @@ const PriceSelector = () => {
     datasets: [
       {
         data: [0, 2, 8, 15, 26, 22, 19, 24, 10, 8, 3, 2],
-        backgroundColor: "rgba(38, 113, 252, 0.5)",
+        backgroundColor: theme === "dark" ? "rgba(245, 154, 49, 0.5)" : "rgba(38, 113, 252, 0.5)",
       },
     ],
   }

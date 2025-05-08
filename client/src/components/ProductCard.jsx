@@ -1,17 +1,18 @@
-import { Link } from "react-router-dom";
-import { BsCart4, BsTrash } from "react-icons/bs"; // 🆕 BsTrash importado
-import { IoArrowRedo } from "react-icons/io5";
-import Button from "react-bootstrap/esm/Button";
-import ButtonGroup from "react-bootstrap/esm/ButtonGroup";
-import Card from "react-bootstrap/esm/Card";
-import { useCart } from "../context/CartContext";
+import { Link } from "react-router-dom"
+import { BsCart4, BsTrash } from "react-icons/bs" // 🆕 BsTrash importado
+import { IoArrowRedo } from "react-icons/io5"
+import Button from "react-bootstrap/esm/Button"
+import ButtonGroup from "react-bootstrap/esm/ButtonGroup"
+import Card from "react-bootstrap/esm/Card"
+import { useCart } from "../context/CartContext"
 
-export function ProductCard({ product, showAddToCart = true }) {  // Prop showAddToCart agregado
-  const { id: productId, title, price, img } = product;
-  const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart();
+export function ProductCard({ product, showAddToCart = true }) {
+  // Prop showAddToCart agregado
+  const { id: productId, title, price, img } = product
+  const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart()
 
-  const cartItem = cart.find((item) => item.id === productId);
-  const isProductInCart = !!cartItem;
+  const cartItem = cart.find((item) => item.id === productId)
+  const isProductInCart = !!cartItem
 
   return isProductInCart ? (
     <Card className="mb-3 shadow-sm">
@@ -31,19 +32,13 @@ export function ProductCard({ product, showAddToCart = true }) {  // Prop showAd
           <small>Unitary Price: ${price}</small>
           <div className="mt-2 d-flex align-items-center gap-2">
             <ButtonGroup>
-              <Button
-                variant="secondary"
-                onClick={() => decreaseQuantity(productId)}
-              >
+              <Button variant="secondary" onClick={() => decreaseQuantity(productId)}>
                 -
               </Button>
               <Button variant="light" disabled>
                 {cartItem.quantity}
               </Button>
-              <Button
-                variant="secondary"
-                onClick={() => addToCart({ ...product, quantity: 1 })}
-              >
+              <Button variant="secondary" onClick={() => addToCart({ ...product, quantity: 1 })}>
                 +
               </Button>
             </ButtonGroup>
@@ -76,23 +71,16 @@ export function ProductCard({ product, showAddToCart = true }) {  // Prop showAd
 
           {/* Solo renderizar el botón si showAddToCart es true */}
           {showAddToCart && (
-            <Button
-              variant="outline-primary"
-              size="sm"
-              onClick={() => addToCart({ ...product, quantity: 1 })}
-            >
+            <Button variant="outline-primary" size="sm" onClick={() => addToCart({ ...product, quantity: 1 })}>
               <BsCart4 />
             </Button>
           )}
 
-          <Link
-            to={`/product/${productId}`}
-            className="btn btn-outline-primary btn-sm"
-          >
+          <Link to={`/product/${productId}`} className="btn btn-outline-primary btn-sm">
             <IoArrowRedo />
           </Link>
         </div>
       </Card.Body>
     </Card>
-  );
+  )
 }
