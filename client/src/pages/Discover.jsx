@@ -26,7 +26,7 @@ const Discover = () => {
   const { t } = useTranslation("discover")
   const [fetchProducts] = useApi()
 
-  // Consume API every time searchQuery changes
+  // Fetch products at load
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
@@ -39,13 +39,20 @@ const Discover = () => {
       setIsLoading(false)
     }
     fetchData()
-  }, [fetchProducts, searchQuery, t])
+  }, [fetchProducts, t])
 
   const handleSearchQueryChange = ({ target: { value } }) => setSearchQuery(value)
 
-  const handleSearch = (e) => {
-    alert(`Searching... ${searchQuery}`)
+  const handleSearch = async (e) => {
     e.preventDefault()
+    setIsLoading(true)
+    const data = await fetchProducts({
+      endpoint: "products",
+      query: { search: encodeURIComponent(searchQuery.toLowerCase()) },
+      error: t("error_fetching"),
+    })
+    setProductsData(data)
+    setIsLoading(false)
   }
 
   const handlePageChange = async (fullUrl) => {
@@ -72,41 +79,46 @@ const Discover = () => {
           />
           {searchQuery && <FaArrowRight className="search-button" onClick={handleSearch} />}
         </Form>
+        {totalProducts == 0 ? (
+          "Nothing here! :("
+        ) : (
+          <>
+            <Row className="mx-3 my-4">
+              {/* Gallery of filtered Products */}
+              {isLoading
+                ? "LOADING..."
+                : productsData.error
+                ? "ERROR FETCHING"
+                : products?.map((product) => (
+                    <Col key={product.id} xs={12} lg={6} xl={4} xxl={3} className="py-4 pt-lg-2 pb-lg-3">
+                      <ProductCard product={product} />
+                    </Col>
+                  ))}
+            </Row>
 
-        <Row className="mx-3 my-4">
-          {/* Gallery of filtered Products */}
-          {isLoading
-            ? "LOADING..."
-            : productsData.error
-            ? "ERROR FETCHING"
-            : products?.map((product) => (
-                <Col key={product.id} xs={12} lg={6} xl={4} xxl={3} className="py-4 pt-lg-2 pb-lg-3">
-                  <ProductCard product={product} />
+            {pages && (
+              <Row>
+                <Col className="d-flex justify-content-center mb-4">
+                  <div className="d-flex flex-column align-items-center">
+                    <p className="m-0">{t("current_page", { current: pages.page, total: pages.total })}</p>
+                    <Pagination>
+                      {pages.first && <Pagination.First onClick={() => handlePageChange(pages.first)} />}
+                      {pages.prev && <Pagination.Prev onClick={() => handlePageChange(pages.prev)} />}
+                      {pages.total > 1 && <Pagination.Item active>{pages.page}</Pagination.Item>}
+                      {pages.next && <Pagination.Next onClick={() => handlePageChange(pages.next)} />}
+                      {pages.last && <Pagination.Last onClick={() => handlePageChange(pages.last)} />}
+                    </Pagination>
+                  </div>
                 </Col>
-              ))}
-        </Row>
-
-        {pages && (
-          <Row>
-            <Col className="d-flex justify-content-center mb-4">
-              <div className="d-flex flex-column align-items-center">
-                <p className="m-0">{t("current_page", { current: pages.page, total: pages.total })}</p>
-                <Pagination>
-                  {pages.first && <Pagination.First onClick={() => handlePageChange(pages.first)} />}
-                  {pages.prev && <Pagination.Prev onClick={() => handlePageChange(pages.prev)} />}
-                  {pages.total > 1 && <Pagination.Item active>{pages.page}</Pagination.Item>}
-                  {pages.next && <Pagination.Next onClick={() => handlePageChange(pages.next)} />}
-                  {pages.last && <Pagination.Last onClick={() => handlePageChange(pages.last)} />}
-                </Pagination>
-              </div>
-            </Col>
-          </Row>
+              </Row>
+            )}
+          </>
         )}
       </Container>
 
       {/* Filter => Desktop view */}
       <aside className="filter-results-container order-2">
-        <div className="filter-results d-none d-lg-block">
+        <div className="filter-results d-none d-lg-block rounded">
           <h4 className="d-flex">
             {t("filter.title")}
             <EditIcon callback={handleClearFilters} type="clean" />
@@ -139,7 +151,7 @@ const Discover = () => {
         <div className="border-start border-secondary m-2">&nbsp;</div>
         <div className="d-flex gap-1">
           <FiFilter />
-          <div className="filter-indicator">1</div>
+          <div className="filter-indicator">{filters?.length}</div>
         </div>
       </aside>
     </div>

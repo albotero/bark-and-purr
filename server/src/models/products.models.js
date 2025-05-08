@@ -24,6 +24,7 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
   const totalPages = Math.ceil(totalProducts / resultsPerPage)
 
   const queryFilters = []
+  if (filters.search) queryFilters.push({ key: "search", value: filters.search })
   if (filters.minPrice) queryFilters.push({ key: "min_price", value: filters.minPrice })
   if (filters.maxPrice) queryFilters.push({ key: "max_price", value: filters.maxPrice })
   if (filters.minStock) queryFilters.push({ key: "min_stock", value: filters.minStock })
@@ -50,8 +51,8 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
   }))
   const firstPage = prepareProductsUrl(1)
   const lastPage = prepareProductsUrl(totalPages)
-  const prevPage = prepareProductsUrl(currentPage - 1)
-  const nextPage = prepareProductsUrl(currentPage + 1)
+  const prevPage = currentPage - 1 > 1 ? prepareProductsUrl(currentPage - 1) : undefined
+  const nextPage = currentPage + 1 < totalPages ? prepareProductsUrl(currentPage + 1) : undefined
 
   return {
     total_products: totalProducts,
@@ -77,6 +78,7 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
  * order_by: ${column}_${asc|desc}
  */
 export const findProducts = async ({
+  search,
   min_stock: minStock,
   min_price: minPrice,
   max_price: maxPrice,
@@ -89,14 +91,31 @@ export const findProducts = async ({
   const filters = []
   const values = []
   const addFilter = (column, operator, value) => {
-    filters.push(`${column}${operator}%s`)
+    filters.push(`${column} ${operator} %s`)
     values.push(value)
   }
 
   // Add requested filters
+  if (search) addFilter("LOWER(title)", "SIMILAR TO", `'%(${search.replace(/\s/g, "|")})%'`)
   if (minStock) addFilter("stock", ">=", minStock)
   if (minPrice) addFilter("price", ">=", minPrice)
   if (maxPrice) addFilter("price", "<=", maxPrice)
+
+  console.log(
+    `SELECT
+        *,
+        (SELECT imgs.url
+          FROM product_images imgs
+          WHERE imgs.product_id = products.id
+          ORDER BY imgs.id
+          LIMIT 1
+        ) AS thumbnail
+      FROM products` +
+      // Add filter
+      (filters.length ? format(` WHERE ${filters.join(" AND ")}`, ...values) : "") +
+      // Add pagination
+      format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
+  )
 
   const countProducts = await executeQuery(
     "SELECT COUNT(id) FROM products" +
@@ -128,7 +147,7 @@ export const findProducts = async ({
   return prepareHATEOAS({
     totalProducts,
     products,
-    filters: { minPrice, maxPrice, minStock },
+    filters: { search, minPrice, maxPrice, minStock },
     orderBy,
     resultsPerPage,
     page,
