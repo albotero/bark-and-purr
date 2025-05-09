@@ -119,15 +119,23 @@ export const findProducts = async ({
 
   // Build query
   const [orderColumn, orderDirection] = orderBy.split("_")
+
   const products = await executeQuery(
     `SELECT
         *,
-        (SELECT imgs.url
+        created_at AS date,
+        (
+          SELECT imgs.url
           FROM product_images imgs
           WHERE imgs.product_id = products.id
           ORDER BY imgs.id
           LIMIT 1
-        ) AS thumbnail
+        ) AS thumbnail,
+        (
+          SELECT AVG(rating)
+          FROM reviews
+          WHERE reviews.product_id = products.id
+        ) AS rating
       FROM products` +
       // Add filter
       (filters.length ? ` WHERE ${filtersTotal}` : "") +

@@ -53,7 +53,7 @@ const Discover = () => {
   }, [fetchProducts, resultsPerPage, t])
 
   const updateQuery = async (pageUrl, key, value) => {
-    const regex = new RegExp(`${key}=\\d+&?`, "g")
+    const regex = new RegExp(`${key}=[\\d\\w]+&?`, "g")
     const uriValue = encodeURIComponent(value)
     const fullUrl = pageUrl
       // Remove previous filters
@@ -102,6 +102,11 @@ const Discover = () => {
 
   const handleClearFilters = () => {
     alert("Filters cleared!")
+  }
+
+  const handleOrderClick = (pageUrl, value) => {
+    updateQuery(pageUrl, "order_by", value)
+    setOrder(value)
   }
 
   return (
@@ -193,7 +198,15 @@ const Discover = () => {
           <h4>{t("order.title")}</h4>
           <div className="w-100 d-flex justify-content-evenly">
             {orderOptions.map((key) => (
-              <OrderItem key={`order_${key}`} data={{ key, text: t(`order.${key}`), order, setOrder }} />
+              <OrderItem
+                key={`order_${key}`}
+                data={{
+                  key,
+                  text: t(`order.${key}`),
+                  order,
+                  setOrder: (val) => handleOrderClick(pages?.this, val),
+                }}
+              />
             ))}
           </div>
           <hr />
@@ -216,7 +229,15 @@ const Discover = () => {
       <aside className="filter-results mobile d-lg-none order-1">
         <div className="d-flex gap-3">
           {orderOptions.map((key) => (
-            <OrderItem key={`order_${key}`} data={{ key, text: t(`order.${key}`), order, setOrder }} />
+            <OrderItem
+              key={`order_${key}`}
+              data={{
+                key,
+                text: t(`order.${key}`),
+                order,
+                setOrder: (val) => handleOrderClick(pages?.this, val),
+              }}
+            />
           ))}
         </div>
         <div className="border-start border-secondary m-2">&nbsp;</div>

@@ -1,4 +1,4 @@
-import { FaArrowDownShortWide, FaArrowDownWideShort } from "react-icons/fa6"
+import { BsSortDown, BsSortDownAlt } from "react-icons/bs"
 
 const OrderItem = ({ data: { key, text, order, setOrder } }) => {
   const [orderKey, orderDirection] = order.split("_")
@@ -10,13 +10,9 @@ const OrderItem = ({ data: { key, text, order, setOrder } }) => {
 
   return (
     <p className="order-item" onClick={handleClick}>
-      {isOrderedByItem &&
-        (direction === "asc" ? (
-          <FaArrowDownShortWide className="order-icon" />
-        ) : (
-          <FaArrowDownWideShort className="order-icon" />
-        ))}
       {text}
+      {isOrderedByItem &&
+        (direction === "asc" ? <BsSortDownAlt className="order-icon" /> : <BsSortDown className="order-icon" />)}
     </p>
   )
 }
