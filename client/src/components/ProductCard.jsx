@@ -1,6 +1,8 @@
+import "../styles/ProductCard.css"
 import { Link } from "react-router-dom"
 import { BsCart4, BsTrash } from "react-icons/bs" // 🆕 BsTrash importado
 import { IoArrowRedo } from "react-icons/io5"
+import { TiStarFullOutline } from "react-icons/ti"
 import Button from "react-bootstrap/esm/Button"
 import ButtonGroup from "react-bootstrap/esm/ButtonGroup"
 import Card from "react-bootstrap/esm/Card"
@@ -8,7 +10,7 @@ import { useCart } from "../context/CartContext"
 
 export function ProductCard({ product, showAddToCart = true }) {
   // Prop showAddToCart agregado
-  const { id: productId, title, price, thumbnail } = product
+  const { id: productId, title, price, thumbnail, rating } = product
   const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart()
 
   const cartItem = cart.find((item) => item.id === productId)
@@ -59,11 +61,18 @@ export function ProductCard({ product, showAddToCart = true }) {
     </Card>
   ) : (
     <Card>
-      <Card.Img
-        variant="top"
-        src={thumbnail || "/"}
-        className={"ratio ratio-16x9 shadow-sm" + (thumbnail ? "" : " bg-secondary")}
-      />
+      <div className="position-relative">
+        <Card.Img
+          variant="top"
+          src={thumbnail || "/"}
+          className={"ratio ratio-16x9 shadow-sm" + (thumbnail ? "" : " bg-secondary")}
+        />
+        {rating && (
+          <div className="product-rating">
+            <TiStarFullOutline className="star" /> {Number(rating).toFixed(1)}
+          </div>
+        )}
+      </div>
       <Card.Body>
         <Card.Title>{title}</Card.Title>
         <div className="d-flex gap-3 w-100">

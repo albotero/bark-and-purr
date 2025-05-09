@@ -42,10 +42,11 @@ const prepareHATEOAS = ({ totalProducts, products, histogram, filters, orderBy, 
     // Build URL
     return "/api/products?" + params.join("&")
   }
-  const results = products.map(({ id, title, price, thumbnail }) => ({
+  const results = products.map(({ id, title, price, thumbnail, rating }) => ({
     id,
     title,
     price,
+    rating,
     thumbnail,
     link: `/api/product/${id}`,
   }))
