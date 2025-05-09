@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next"
 import { useTheme } from "../context/ThemeContext"
 import { useApi } from "../hooks/useApi"
 
+const totalSteps = 10
 ChartJS.register(BarElement, Tooltip, CategoryScale, LinearScale)
 
 const PriceSelector = ({ histogram, url, setIsLoading, setProductsData }) => {
@@ -15,11 +16,11 @@ const PriceSelector = ({ histogram, url, setIsLoading, setProductsData }) => {
   const { theme } = useTheme()
   const [fetchProducts] = useApi()
 
-  const maxPrice = Math.ceil(histogram?.max_price / 100) * 100
-  const step = maxPrice / 100
+  const maxPrice = Math.floor(histogram?.max_price / 100) * 100
+  const step = maxPrice / totalSteps
 
   useEffect(() => {
-    if (maxPrice) setSelPrice([0, maxPrice])
+    if (maxPrice) setSelPrice([1, maxPrice + step])
   }, [maxPrice, step])
 
   const options = {
@@ -40,7 +41,7 @@ const PriceSelector = ({ histogram, url, setIsLoading, setProductsData }) => {
   }
 
   const handleSlide = ([min, max]) => {
-    setSelPrice([min, max])
+    setSelPrice([min, max === min ? max : max - 1])
   }
 
   const handleDrag = async () => {
@@ -73,8 +74,8 @@ const PriceSelector = ({ histogram, url, setIsLoading, setProductsData }) => {
     <div className="w-100">
       <Bar options={options} data={barData} className="price-chart" />
       <RangeSlider
-        min={0}
-        max={maxPrice}
+        min={1}
+        max={maxPrice + step + totalSteps}
         step={step}
         value={selPrice}
         onThumbDragEnd={handleDrag}

@@ -155,7 +155,7 @@ export const findProducts = async ({
       ),
       ranges AS (
         SELECT 
-          range_start, 
+          (range_start + 1) AS range_start, 
           (range_start + (SELECT range_size FROM stats)) AS range_end 
         FROM series
         WHERE range_start < (SELECT max_price FROM stats)
