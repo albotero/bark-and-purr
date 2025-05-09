@@ -22,20 +22,12 @@ const resultsPerPageOptions = [5, 10, 20, 50]
 const initialFilters = { results_per_page: resultsPerPageOptions[0], min_stock: 1, order_by: "price_desc" }
 
 const Discover = () => {
-  const [resultsPerPage, setResultsPerPage] = useState(initialFilters.results_per_page)
   const [order, setOrder] = useState(initialFilters.order_by)
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [productsData, setProductsData] = useState({})
-  const {
-    total_products: totalProducts,
-    filters,
-    order_by: orderBy,
-    pages,
-    results: products,
-    histogram,
-  } = productsData
-  console.log({ totalProducts, filters, orderBy, pages, products, histogram })
+  const { total_products: totalProducts, filters, pages, results: products, histogram } = productsData
+
   const { t } = useTranslation("discover")
   const [fetchProducts] = useApi()
 
@@ -52,7 +44,7 @@ const Discover = () => {
       setIsLoading(false)
     }
     fetchData()
-  }, [fetchProducts, resultsPerPage, t])
+  }, [fetchProducts, t])
 
   const updateQuery = async (pageUrl, key, value) => {
     const regex = new RegExp(`${key}=[\\d\\w]+&?`, "g")
@@ -92,7 +84,6 @@ const Discover = () => {
 
   const handleResultsPerPageChange = (pageUrl, value) => {
     updateQuery(pageUrl, "results_per_page", value)
-    setResultsPerPage(value)
   }
 
   const handlePageChange = async (fullUrl) => {
@@ -162,8 +153,8 @@ const Discover = () => {
                   <div className="d-flex flex-column align-items-center">
                     <p className="m-0">
                       {t("page.current", {
-                        start: (pages.page - 1) * resultsPerPage + 1,
-                        end: Math.min(pages.page * resultsPerPage, totalProducts),
+                        start: (pages.page - 1) * pages.results_per_page + 1,
+                        end: Math.min(pages.page * pages.results_per_page, totalProducts),
                         total_products: totalProducts,
                         current: pages.page,
                         total: pages.total,
@@ -228,7 +219,7 @@ const Discover = () => {
           </div>
           <hr />
           <h4>{t("page.title")}</h4>
-          <DropdownButton title={t("page.results_per_page", { num: resultsPerPage })}>
+          <DropdownButton title={t("page.results_per_page", { num: pages?.results_per_page })}>
             {resultsPerPageOptions.map((r) => (
               <Dropdown.Item
                 as="button"

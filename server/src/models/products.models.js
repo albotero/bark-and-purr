@@ -63,6 +63,7 @@ const prepareHATEOAS = ({ totalProducts, products, histogram, filters, orderBy, 
     results,
     histogram,
     pages: {
+      results_per_page: resultsPerPage,
       page: currentPage,
       total: totalPages,
       this: thisPage,
@@ -87,10 +88,11 @@ export const findProducts = async ({
   min_price: minPrice,
   max_price: maxPrice,
   order_by: orderBy = "price_desc",
-  results_per_page: resultsPerPage = 10,
+  results_per_page: rpp = 10,
   page = 1,
 }) => {
   /* Pagination and Limits.... */
+  const resultsPerPage = Number(rpp)
   const offset = (page - 1) * resultsPerPage
   const filters = []
 
