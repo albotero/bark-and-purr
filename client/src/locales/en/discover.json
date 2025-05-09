@@ -19,5 +19,10 @@
     "current": "Products {{start}}-{{end}} of {{total_products}}. Page {{current}} of {{total}}",
     "results_per_page": "{{num}} results per page"
   },
-  "error_fetching": "Couldn't fetch the products list"
+  "error_fetching": "Couldn't fetch the products list",
+  "alert": {
+    "success": "Success!",
+    "ok": "Ok",
+    "filters_cleared": "All filters cleared"
+  }
 }

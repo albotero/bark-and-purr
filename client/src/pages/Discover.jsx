@@ -2,6 +2,7 @@ import "../styles/Discover.css"
 import { useEffect, useState } from "react"
 import { FaArrowRight } from "react-icons/fa6"
 import { FiFilter } from "react-icons/fi"
+import Swal from "sweetalert2"
 import Col from "react-bootstrap/esm/Col"
 import Container from "react-bootstrap/esm/Container"
 import Dropdown from "react-bootstrap/Dropdown"
@@ -18,10 +19,11 @@ import { useApi } from "../hooks/useApi"
 
 const orderOptions = ["price", "rating", "date"]
 const resultsPerPageOptions = [5, 10, 20, 50]
+const initialFilters = { results_per_page: resultsPerPageOptions[0], min_stock: 1, order_by: "price_desc" }
 
 const Discover = () => {
-  const [resultsPerPage, setResultsPerPage] = useState(resultsPerPageOptions[0])
-  const [order, setOrder] = useState("price_desc")
+  const [resultsPerPage, setResultsPerPage] = useState(initialFilters.results_per_page)
+  const [order, setOrder] = useState(initialFilters.order_by)
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [productsData, setProductsData] = useState({})
@@ -43,7 +45,7 @@ const Discover = () => {
       setIsLoading(true)
       const data = await fetchProducts({
         endpoint: "products",
-        query: { results_per_page: resultsPerPage, min_stock: 1 },
+        query: initialFilters,
         error: t("error_fetching"),
       })
       setProductsData(data)
@@ -100,8 +102,23 @@ const Discover = () => {
     setIsLoading(false)
   }
 
-  const handleClearFilters = () => {
-    alert("Filters cleared!")
+  const handleClearFilters = async () => {
+    setIsLoading(true)
+    const data = await fetchProducts({
+      endpoint: "products",
+      query: initialFilters,
+      error: t("error_fetching"),
+    })
+    setProductsData(data)
+    setOrder(initialFilters.order_by)
+    setIsLoading(false)
+
+    Swal.fire({
+      title: t("alert.success"),
+      text: t("alert.filters_cleared"),
+      icon: "success",
+      confirmButtonText: t("alert.ok"),
+    })
   }
 
   const handleOrderClick = (pageUrl, value) => {
@@ -196,7 +213,7 @@ const Discover = () => {
           </div>
           <hr />
           <h4>{t("order.title")}</h4>
-          <div className="w-100 d-flex justify-content-evenly">
+          <div className="w-100 d-flex flex-wrap gap-2 justify-content-center">
             {orderOptions.map((key) => (
               <OrderItem
                 key={`order_${key}`}

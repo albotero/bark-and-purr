@@ -58,16 +58,9 @@
   background-color: rgba(190, 189, 189, 0.3);
 }
 
-.order-item {
-  cursor: pointer;
-  margin: 0;
-}
-
 .order-icon {
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   margin: 0 0.05rem 0.1rem;
-  color: var(--bs-primary);
-  filter: contrast(2.75);
 }
 
 .search-bar {
