@@ -7,6 +7,9 @@ CREATE DATABASE bark_and_purr;
 
 \c bark_and_purr
 
+-- ADD SUPPORT TO ACCENT INSENSITIVE SEARCH
+CREATE EXTENSION unaccent;
+
 -- CREATE ENUMS
 
 CREATE TYPE cart_status AS ENUM ('active', 'canceled', 'payment_pending', 'payment_rejected', 'paid');

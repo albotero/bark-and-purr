@@ -98,7 +98,8 @@ export const findProducts = async ({
   }
 
   // Add requested filters
-  if (search) addFilter("search", "LOWER(title)", "SIMILAR TO", `'%(${search.replace(/\s/g, "|")})%'`)
+  if (search)
+    addFilter("search", "UNACCENT(LOWER(title))", "SIMILAR TO", `UNACCENT('%(${search.replace(/\s/g, "|")})%')`)
   if (minStock) addFilter("min_stock", "stock", ">=", minStock)
   if (minPrice) addFilter("min_price", "price", ">=", minPrice)
   if (maxPrice) addFilter("max_price", "price", "<=", maxPrice)
