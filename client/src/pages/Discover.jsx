@@ -102,6 +102,7 @@ const Discover = () => {
     })
     setProductsData(data)
     setOrder(initialFilters.order_by)
+    setSearchQuery("")
     setIsLoading(false)
 
     Swal.fire({
