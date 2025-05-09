@@ -75,6 +75,7 @@ const Discover = () => {
       error: t("error_fetching"),
     })
     setProductsData(data)
+    setOrder(data.order_by)
     setIsLoading(false)
   }
 
