@@ -25,8 +25,15 @@ const Discover = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [productsData, setProductsData] = useState({})
-  const { total_products: totalProducts, filters, order_by: orderBy, pages, results: products } = productsData
-  console.log({ totalProducts, filters, orderBy, pages, products })
+  const {
+    total_products: totalProducts,
+    filters,
+    order_by: orderBy,
+    pages,
+    results: products,
+    histogram,
+  } = productsData
+  console.log({ totalProducts, filters, orderBy, pages, products, histogram })
   const { t } = useTranslation("discover")
   const [fetchProducts] = useApi()
 
@@ -145,7 +152,12 @@ const Discover = () => {
             <EditIcon callback={handleClearFilters} type="clean" />
           </h4>
           <h6>{t("filter.price")}</h6>
-          <PriceSelector />
+          <PriceSelector
+            histogram={histogram}
+            url={pages?.this}
+            setIsLoading={setIsLoading}
+            setProductsData={setProductsData}
+          />
           <h6>{t("filter.stock")}</h6>
           <div className="d-flex gap-2 align-items-center">
             <span className="flex-shrink-0">{t("filter.stock_a")}</span>

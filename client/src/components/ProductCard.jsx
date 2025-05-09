@@ -29,7 +29,7 @@ export function ProductCard({ product, showAddToCart = true }) {
         </div>
         <div className="flex-grow-1">
           <h5>{title}</h5>
-          <small>Unitary Price: ${price}</small>
+          <small>Unitary Price: ${price.toLocaleString()}</small>
           <div className="mt-2 d-flex align-items-center gap-2">
             <ButtonGroup>
               <Button variant="secondary" onClick={() => decreaseQuantity(productId)}>
@@ -53,7 +53,7 @@ export function ProductCard({ product, showAddToCart = true }) {
           </div>
         </div>
         <div className="text-end">
-          <h6>Total: ${price * cartItem.quantity}</h6>
+          <h6>Total: ${(price * cartItem.quantity).toLocaleString()}</h6>
         </div>
       </Card.Body>
     </Card>
@@ -67,7 +67,7 @@ export function ProductCard({ product, showAddToCart = true }) {
       <Card.Body>
         <Card.Title>{title}</Card.Title>
         <div className="d-flex gap-3 w-100">
-          <Card.Text className="flex-grow-1 m-0">${price}</Card.Text>
+          <Card.Text className="flex-grow-1 m-0">${price.toLocaleString()}</Card.Text>
 
           {/* Solo renderizar el botón si showAddToCart es true */}
           {showAddToCart && (

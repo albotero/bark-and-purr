@@ -85,7 +85,8 @@
 .price-chart {
   width: 100%;
   aspect-ratio: 5 / 2;
-  margin-top: -0.9rem;
+  margin-top: -0.3rem;
+  padding: 0 0.5rem;
 }
 
 @media screen and (min-width: 768px) {

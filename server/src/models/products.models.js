@@ -19,7 +19,7 @@ export const findProduct = async ({ id }) => {
   return rows[0] || {}
 }
 
-const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerPage, page }) => {
+const prepareHATEOAS = ({ totalProducts, products, histogram, filters, orderBy, resultsPerPage, page }) => {
   const currentPage = Number(page)
   const totalPages = Math.ceil(totalProducts / resultsPerPage)
 
@@ -30,8 +30,8 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
   if (filters.minStock) queryFilters.push({ key: "min_stock", value: filters.minStock })
 
   const prepareProductsUrl = (p) => {
-    // Only send page links if are valid pages and different to current one
-    if (p < 1 || p > totalPages) return
+    // Only send page links if are valid pages
+    if (p < 1 || (p > totalPages && p !== currentPage)) return
     // Prepare GET link with params
     const params = [
       ...queryFilters.map(({ key, value }) => `${key}=${value}`),
@@ -60,6 +60,7 @@ const prepareHATEOAS = ({ totalProducts, products, filters, orderBy, resultsPerP
     order_by: orderBy,
     filters: queryFilters,
     results,
+    histogram,
     pages: {
       page: currentPage,
       total: totalPages,
@@ -91,22 +92,27 @@ export const findProducts = async ({
   /* Pagination and Limits.... */
   const offset = (page - 1) * resultsPerPage
   const filters = []
-  const values = []
-  const addFilter = (column, operator, value) => {
-    filters.push(`${column} ${operator} %s`)
-    values.push(value)
+
+  const addFilter = (key, column, operator, value) => {
+    filters.push({ key, value, query: format(`${column} ${operator} %s`, value) })
   }
 
   // Add requested filters
-  if (search) addFilter("LOWER(title)", "SIMILAR TO", `'%(${search.replace(/\s/g, "|")})%'`)
-  if (minStock) addFilter("stock", ">=", minStock)
-  if (minPrice) addFilter("price", ">=", minPrice)
-  if (maxPrice) addFilter("price", "<=", maxPrice)
+  if (search) addFilter("search", "LOWER(title)", "SIMILAR TO", `'%(${search.replace(/\s/g, "|")})%'`)
+  if (minStock) addFilter("min_stock", "stock", ">=", minStock)
+  if (minPrice) addFilter("min_price", "price", ">=", minPrice)
+  if (maxPrice) addFilter("max_price", "price", "<=", maxPrice)
+
+  const filtersTotal = filters.map(({ query }) => query).join(" AND ")
+  const filtersHistogram = filters
+    .filter(({ key }) => !key.includes("price"))
+    .map(({ query }) => query)
+    .join(" AND ")
 
   const countProducts = await executeQuery(
     "SELECT COUNT(id) FROM products" +
       // Add filter
-      (filters.length ? format(` WHERE ${filters.join(" AND ")}`, ...values) : "")
+      (filters.length ? ` WHERE ${filtersTotal}` : "")
   )
   const totalProducts = Number(countProducts[0]?.count || 0)
 
@@ -123,16 +129,61 @@ export const findProducts = async ({
         ) AS thumbnail
       FROM products` +
       // Add filter
-      (filters.length ? format(` WHERE ${filters.join(" AND ")}`, ...values) : "") +
+      (filters.length ? ` WHERE ${filtersTotal}` : "") +
       // Add order
       (orderBy ? format(` ORDER BY %s %s`, orderColumn, orderDirection.toUpperCase()) : "") +
       // Add pagination
       format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
   )
 
+  // Build histogram
+  const histogram = await executeQuery(`
+    WITH
+      stats AS (
+        SELECT 
+          CEIL(MAX(price) / 10) * 10 AS max_price,
+          CEIL(MAX(price) / 100) * 10 AS range_size
+        FROM products
+        ${filtersHistogram ? `WHERE ${filtersHistogram}` : ""}
+      ),
+      series AS (
+        SELECT GENERATE_SERIES(
+          0, 
+          (SELECT max_price::INT FROM stats), 
+          (SELECT range_size::INT FROM stats)
+        ) AS range_start
+      ),
+      ranges AS (
+        SELECT 
+          range_start, 
+          (range_start + (SELECT range_size FROM stats)) AS range_end 
+        FROM series
+        WHERE range_start < (SELECT max_price FROM stats)
+      ),
+      values AS (
+        SELECT
+          range_start AS from,
+          range_end AS to,
+          (SELECT COUNT(*)::INT
+            FROM products
+            WHERE
+              ${filtersHistogram ? `${filtersHistogram} AND` : ""}
+              price BETWEEN range_start AND range_end
+          )
+        FROM ranges
+      )
+    SELECT
+      MIN(price) AS min_price,
+      MAX(price) AS max_price,
+      (SELECT JSON_AGG(values.*) FROM values) AS values
+    FROM products
+      ${filtersHistogram ? `WHERE ${filtersHistogram}` : ""}
+    `)
+
   return prepareHATEOAS({
     totalProducts,
     products,
+    histogram: histogram[0],
     filters: { search, minPrice, maxPrice, minStock },
     orderBy,
     resultsPerPage,
