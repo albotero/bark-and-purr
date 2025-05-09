@@ -5,7 +5,7 @@
     "title": "Filtrar",
     "price": "Por precio",
     "stock": "Por unidades disponibles",
-    "stock_a": "Más de",
+    "stock_a": "Mínimo",
     "stock_b": "unidades"
   },
   "order": {

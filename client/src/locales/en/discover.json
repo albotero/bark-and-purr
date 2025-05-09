@@ -5,7 +5,7 @@
     "title": "Filter Results",
     "price": "By price",
     "stock": "By available stock",
-    "stock_a": "More than",
+    "stock_a": "At least",
     "stock_b": "units"
   },
   "order": {

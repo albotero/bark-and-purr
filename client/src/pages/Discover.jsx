@@ -43,7 +43,7 @@ const Discover = () => {
       setIsLoading(true)
       const data = await fetchProducts({
         endpoint: "products",
-        query: { results_per_page: resultsPerPage },
+        query: { results_per_page: resultsPerPage, min_stock: 1 },
         error: t("error_fetching"),
       })
       setProductsData(data)
@@ -52,7 +52,25 @@ const Discover = () => {
     fetchData()
   }, [fetchProducts, resultsPerPage, t])
 
-  const handleSearchQueryChange = ({ target: { value } }) => setSearchQuery(value)
+  const updateQuery = async (pageUrl, key, value) => {
+    const regex = new RegExp(`${key}=\\d+&?`, "g")
+    const uriValue = encodeURIComponent(value)
+    const fullUrl = pageUrl
+      // Remove previous filters
+      .replace(regex, "")
+      // Remove trailing &
+      .replace(/&$/, "")
+      // Append new filters
+      .concat(`&${key}=${uriValue}`)
+    setIsLoading(true)
+    const data = await fetchProducts({ fullUrl })
+    setProductsData(data)
+    setIsLoading(false)
+  }
+
+  const handleSearchQueryChange = ({ target: { value } }) => {
+    setSearchQuery(value)
+  }
 
   const handleSearch = async (e) => {
     e.preventDefault()
@@ -66,13 +84,13 @@ const Discover = () => {
     setIsLoading(false)
   }
 
-  const handleResultsPerPageChange = async (pageUrl, value) => {
-    const fullUrl = pageUrl.replace(`results_per_page=${resultsPerPage}`)
-    setIsLoading(true)
+  const handleStockFilterChange = (pageUrl, value) => {
+    updateQuery(pageUrl, "min_stock", value)
+  }
+
+  const handleResultsPerPageChange = (pageUrl, value) => {
+    updateQuery(pageUrl, "results_per_page", value)
     setResultsPerPage(value)
-    const data = await fetchProducts({ fullUrl })
-    setProductsData(data)
-    setIsLoading(false)
   }
 
   const handlePageChange = async (fullUrl) => {
@@ -161,7 +179,14 @@ const Discover = () => {
           <h6>{t("filter.stock")}</h6>
           <div className="d-flex gap-2 align-items-center">
             <span className="flex-shrink-0">{t("filter.stock_a")}</span>
-            <Form.Control type="number" min={0} size="sm" className="filter-input" />
+            <Form.Control
+              type="number"
+              min={1}
+              defaultValue={1}
+              size="sm"
+              className="filter-input"
+              onChange={({ target: { value } }) => handleStockFilterChange(pages?.this, value)}
+            />
             <span className="flex-shrink-0">{t("filter.stock_b")}</span>
           </div>
           <hr />
