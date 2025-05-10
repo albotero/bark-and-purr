@@ -1,5 +1,5 @@
 import execute from "./execute.js";
-import { updateAvatar } from "../models/user.models.js";
+import { updateAvatar } from "../models/user.model.js";
 import cloudinary from "../../config/cloudinary.js";
 import sharp from "sharp";
 import streamifier from "streamifier";
