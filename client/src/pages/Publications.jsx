@@ -3,13 +3,12 @@ import Container from "react-bootstrap/esm/Container"
 import Row from "react-bootstrap/esm/Row"
 import Col from "react-bootstrap/esm/Col"
 import Button from "react-bootstrap/Button"
+import Swal from "sweetalert2"
 import { ProductCard } from "../components/ProductCard"
 import { Link } from "react-router-dom"
 import { FaBoxOpen } from "react-icons/fa"
 import { useTranslation } from "react-i18next"
-import { FaFileCirclePlus } from "react-icons/fa6"
-import { FaTrash } from "react-icons/fa6"
-
+import { FaFileCirclePlus, FaTrash } from "react-icons/fa6"
 
 const Publications = () => {
   const { t } = useTranslation("publications");
@@ -19,15 +18,13 @@ const Publications = () => {
 
   useEffect(() => {
     const allProducts = JSON.parse(localStorage.getItem("products")) || [];
-
     const userProducts = allProducts.filter(
       (product) => product.ownerId === userId
     );
-
     setPublications(userProducts);
   }, []);
 
-    const removePublication = (id) => {
+  const removePublication = (id) => {
     const updatedPublications = publications.filter((item) => item.id !== id);
     setPublications(updatedPublications);
 
@@ -67,12 +64,25 @@ const Publications = () => {
                     variant="outline-danger"
                     size="sm"
                     className="position-absolute top-0 end-0 m-2"
-                    onClick={() => {
-                      const confirmDelete = window.confirm(
-                        "Are you sure you want to delete this publication?"
-                      );
-                      if (confirmDelete) {
+                    onClick={async () => {
+                      const result = await Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you want to delete this publication?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "Cancel",
+                      });
+
+                      if (result.isConfirmed) {
                         removePublication(product.id);
+                        Swal.fire(
+                          "Deleted!",
+                          "Your publication has been deleted.",
+                          "success"
+                        );
                       }
                     }}
                     title="Delete publication"

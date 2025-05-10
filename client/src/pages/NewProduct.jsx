@@ -1,13 +1,14 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import Container from "react-bootstrap/Container"
-import Row from "react-bootstrap/Row"
-import Col from "react-bootstrap/Col"
-import Button from "react-bootstrap/Button"
-import Card from "react-bootstrap/Card"
-import Form from "react-bootstrap/esm/Form"
-import { FiUploadCloud } from "react-icons/fi"
-import { Link } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/esm/Form";
+import Swal from "sweetalert2";
+import { FiUploadCloud } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 const NewProduct = () => {
   const navigate = useNavigate();
@@ -27,32 +28,51 @@ const NewProduct = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.price < 0 || formData.stock < 0) {
-      alert("Price and stock cannot be negative.");
+      await Swal.fire({
+        icon: "error",
+        title: "Invalid input",
+        text: "Price and stock cannot be negative.",
+      });
       return;
     }
 
-    const userId = 1; 
+    const confirmResult = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to publish this product?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, publish it!",
+      cancelButtonText: "Cancel",
+    });
 
+    if (!confirmResult.isConfirmed) return;
+
+    const userId = 1;
     const stored = JSON.parse(localStorage.getItem("products")) || [];
 
-    // Crear nuevo producto
     const newProduct = {
       ...formData,
       id: Date.now(),
       price: parseFloat(formData.price),
       stock: parseInt(formData.stock),
-      ownerId: userId, 
+      ownerId: userId,
       image: formData.image ? URL.createObjectURL(formData.image) : null,
     };
 
-    // Guardar en localStorage
     localStorage.setItem("products", JSON.stringify([...stored, newProduct]));
 
-    alert("Product successfully published");
+    await Swal.fire({
+      icon: "success",
+      title: "Published!",
+      text: "Product successfully published.",
+      confirmButtonText: "OK",
+    });
 
     navigate("/user/publications");
   };

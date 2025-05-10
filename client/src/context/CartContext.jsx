@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react"
+import Swal from "sweetalert2"
 
 export const CartContext = createContext();
 
@@ -59,11 +60,26 @@ export const CartProvider = ({ children }) => {
   const clearCart = () => setCart([]);
 
   // Simular compra
-  const buyCart = () => {
-    alert("Purchase completed successfully!");
+  const buyCart = async () => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "Do you want to complete the purchase?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, buy it!",
+    cancelButtonText: "Cancel",
+  });
+
+  if (result.isConfirmed) {
+    // Aquí podrías hacer una llamada al backend también
+    Swal.fire({
+      title: "Success!",
+      text: "Purchase completed successfully!",
+      icon: "success",
+    });
     clearCart();
-    // Aquí podrías enviar los datos al backend
-  };
+  }
+};
 
   // Calcular total
   const cartTotal = cart.reduce(
