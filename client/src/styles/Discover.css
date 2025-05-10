@@ -1,3 +1,13 @@
+.masonry-grid {
+  display: flex;
+  margin: 1.5rem 2rem 1rem;
+  width: auto;
+}
+
+.masonry-grid .card {
+  margin: 1.5rem 0.75rem;
+}
+
 .filter-results-container {
   position: relative;
   width: 16rem;

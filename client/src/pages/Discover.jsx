@@ -2,6 +2,7 @@ import "../styles/Discover.css"
 import { useEffect, useState } from "react"
 import { FaArrowRight } from "react-icons/fa6"
 import { FiFilter } from "react-icons/fi"
+import Masonry from "react-masonry-css"
 import Swal from "sweetalert2"
 import Col from "react-bootstrap/esm/Col"
 import Container from "react-bootstrap/esm/Container"
@@ -136,18 +137,17 @@ const Discover = () => {
           "Nothing here! :("
         ) : (
           <>
-            <Row className="mx-3 my-4">
+            <Masonry
+              breakpointCols={{ default: 4 /* xxl */, 1400: 3 /* lg */, 768: 2 /* md */, 576: 1 /* sm */ }}
+              className="masonry-grid"
+            >
               {/* Gallery of filtered Products */}
               {isLoading
                 ? "LOADING..."
                 : productsData.error
                 ? "ERROR FETCHING"
-                : products?.map((product) => (
-                    <Col key={product.id} xs={12} lg={6} xl={4} xxl={3} className="py-4 pt-lg-2 pb-lg-3">
-                      <ProductCard product={product} />
-                    </Col>
-                  ))}
-            </Row>
+                : products?.map((product) => <ProductCard key={product.id} product={product} />)}
+            </Masonry>
 
             {pages && (
               <Row>
