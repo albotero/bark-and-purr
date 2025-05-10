@@ -46,6 +46,12 @@ export const loginUser = async ({ email, password }) => {
     throw error
   }
 
+  if (typeof password !== "string") {
+    const error = new Error("Password must be a string");
+    error.status = 400;
+    throw error;
+  }
+
   const isMatch = await bcrypt.compare(password, user.password_hash)
   if (!isMatch) {
     const error = new Error("Invalid password")
