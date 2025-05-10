@@ -37,7 +37,7 @@ export const useApi = () => {
     async ({ method = "GET", fullUrl, endpoint, query, body, token, error = "Error Fetching" }) => {
       for (let retry = 0; retry <= fetchRetries; retry++) {
         const data = await fetchApi({ method, fullUrl, endpoint, query, body, token })
-        return data
+        if (data) return data
       }
       // Max retries attempts reached
       return { error }
