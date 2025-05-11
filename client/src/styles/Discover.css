@@ -78,12 +78,18 @@
   width: 70%;
 }
 
-.search-button {
+.search-controls {
   position: absolute;
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--bs-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.search-button {
   cursor: pointer;
 }
 
@@ -92,6 +98,11 @@
   aspect-ratio: 5 / 2;
   margin-top: -0.3rem;
   padding: 0 0.5rem;
+}
+
+.message-img {
+  margin: 5rem 0 2rem;
+  width: 15rem;
 }
 
 @media screen and (min-width: 768px) {

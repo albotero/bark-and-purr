@@ -14,10 +14,8 @@ const app = express()
 
 app.use(
   cors({
-    origin: (origin, callback) =>
-      !origin || whiteList.includes(origin)
-        ? callback(null, true)
-        : callback(new Error(`CORS Error: ${origin}`), false),
+    origin: whiteList, // Allowed origins
+    methods: "GET,POST,PUT,DELETE", // Allowed methods
   })
 )
 app.use(express.json())
@@ -26,9 +24,5 @@ app.use("/api", productRoutes)
 app.use("/favorites", favoritesRoutes)
 app.use("/users", usersRoutes)
 app.use("/api/cart", cartRoutes)
-
-// app.get("/", (req, res) => {
-//   res.send("Servidor funcionando 🚀");
-// });
 
 app.listen(port, () => console.log(`Listening on Port ${port}`))

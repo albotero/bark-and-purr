@@ -11,6 +11,7 @@ import enHome from "../locales/en/home.json"
 import enDiscover from "../locales/en/discover.json"
 import enCart from "../locales/en/cart.json"
 import enRoutes from "../locales/en/routes.json"
+import enErrors from "../locales/en/errors.json"
 
 import esAuth from "../locales/es/auth.json"
 import esProfile from "../locales/es/profile.json"
@@ -20,6 +21,7 @@ import esHome from "../locales/es/home.json"
 import esDiscover from "../locales/es/discover.json"
 import esCart from "../locales/es/cart.json"
 import esRoutes from "../locales/es/routes.json"
+import esErrors from "../locales/es/errors.json"
 
 i18n
   .use(LanguageDetector)
@@ -39,6 +41,7 @@ i18n
         discover: enDiscover,
         cart: enCart,
         routes: enRoutes,
+        errors: enErrors,
       },
       es: {
         auth: esAuth,
@@ -49,6 +52,7 @@ i18n
         discover: esDiscover,
         cart: esCart,
         routes: esRoutes,
+        errors: esErrors,
       },
     },
   })

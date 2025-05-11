@@ -4,23 +4,6 @@ import axios from "axios"
 const fetchRetries = 5
 const baseUrl = "http://localhost:3000"
 
-const fetchApi = async ({ method, fullUrl, endpoint, query, body, token }) => {
-  try {
-    const headers = token && { Authorization: `Bearer ${token}` }
-    const queryStr =
-      query &&
-      Object.keys(query)
-        .map((key) => `${key}=${query[key]}`)
-        .join("&")
-    const url = fullUrl ? `${baseUrl}${fullUrl}` : `${baseUrl}/api/${endpoint}` + (queryStr ? `?${queryStr}` : "")
-
-    const { data } = await axios({ method, url, headers, body })
-    return data
-  } catch (error) {
-    console.error("Error fetching data:", error.message)
-  }
-}
-
 export const useApi = () => {
   /**
    *
@@ -30,19 +13,34 @@ export const useApi = () => {
    * @param query Query parameters object
    * @param body Optional
    * @param token Optional
-   * @param error Optional, message to return if failed to fetch
    * @returns fetchedData
    */
-  const consumeApi = useCallback(
-    async ({ method = "GET", fullUrl, endpoint, query, body, token, error = "Error Fetching" }) => {
-      for (let retry = 0; retry <= fetchRetries; retry++) {
-        const data = await fetchApi({ method, fullUrl, endpoint, query, body, token })
-        if (data) return data
+  const consumeApi = useCallback(async ({ method = "GET", fullUrl, endpoint, query, body, token }) => {
+    let data, error
+
+    // Try n times before sending an error
+    for (let n = 0; n <= fetchRetries && !data; n++) {
+      try {
+        const headers = token && { Authorization: `Bearer ${token}` }
+        const queryStr =
+          query &&
+          Object.keys(query)
+            .map((key) => `${key}=${query[key]}`)
+            .join("&")
+        const url = fullUrl ? `${baseUrl}${fullUrl}` : `${baseUrl}/api/${endpoint}` + (queryStr ? `?${queryStr}` : "")
+
+        const res = await axios({ method, url, headers, body })
+        data = res.data
+      } catch ({ request, response }) {
+        error =
+          (response && `fetch.${response.status}`) || // Server answered with error code
+          (request && "fetch.no_response") || // Couldn't reach server
+          "fetch.no_request" // Couldn't set up the request
       }
-      // Max retries attempts reached
-      return { error }
-    },
-    []
-  )
+    }
+
+    return { ...data, error }
+  }, [])
+
   return [consumeApi]
 }

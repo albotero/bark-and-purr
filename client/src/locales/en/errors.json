@@ -1,0 +1,12 @@
+{
+  "title": "Oh, oh!",
+  "fetch": {
+    "no_request": "Couldn't set up the request",
+    "no_response": "Couldn't connect to server",
+    "400": "Something happened with your request",
+    "401": "You have no permission to be here",
+    "404": "This page was not found",
+    "500": "Got an error from server"
+  },
+  "nothing_here": "Nothing here!"
+}
