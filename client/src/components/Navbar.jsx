@@ -1,5 +1,5 @@
 import "../styles/Navbar.css"
-import { NavLink, Link } from "react-router-dom"
+import { NavLink, Link, useNavigate } from "react-router-dom"
 import Container from "react-bootstrap/esm/Container"
 import Nav from "react-bootstrap/esm/Nav"
 import BsNavbar from "react-bootstrap/esm/Navbar"
@@ -8,12 +8,17 @@ import { CartCounter } from "../components/CartCounter"
 import { useTranslation } from "react-i18next"
 import ThemeToggle from "./ThemeToggle"
 
+
+
 const Navbar = () => {
   const { token, logout } = useUser()
   const { t } = useTranslation("navbar")
 
+  const navigate = useNavigate()
+
   const handleLogout = () => {
     logout()
+    navigate("/")
   }
 
   const linkClassName = ({ isActive }) => "nav-link" + (isActive ? " active" : "")
@@ -50,21 +55,21 @@ const Navbar = () => {
               // Si hay token, se muestra Profile y Logout
               <>
                 {/* Cart Counter always visible when logged in */}
-                <Nav.Item className="nav-link me-3">
+                <NavLink
+                  to="/cart"
+                  className={({ isActive }) =>
+                    `${linkClassName({ isActive })} d-flex align-items-center gap-2`
+                  }
+                >
                   <CartCounter />
-                </Nav.Item>
+                  {t("cart")}
+                </NavLink>
                 <NavLink to="/user" className={linkClassName}>
                   {t("profile")}
-                </NavLink>
-                <NavLink to="/cart" className={linkClassName}>
-                  {t("cart")}
                 </NavLink>
                 <button onClick={handleLogout} className="btn btn-link nav-link" style={{ padding: 0 }}>
                   {t("logout")}
                 </button>
-                {/* <NavLink to="/logout" className="nav-link">
-                  Logout
-                </NavLink> */}
               </>
             )}
             <ThemeToggle />
