@@ -198,7 +198,7 @@ const Discover = () => {
 
           {
             /* Only hide filter if no products found just for search, not for filtering */
-            (filters.length === 1 && filters[0].key === "search") || (
+            (totalProducts === 0 && filters?.length === 1 && filters[0].key === "search") || (
               <>
                 <aside className="filter-results-container order-2">
                   {/* Filter => Desktop view */}
