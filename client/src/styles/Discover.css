@@ -1,81 +1,20 @@
 .masonry-grid {
   display: flex;
-  margin: 1.5rem 2rem 1rem;
+  margin: 0 2rem 1rem;
   width: auto;
 }
 
 .masonry-grid .card {
   margin: 1.5rem 0.75rem;
 }
-
-.filter-results-container {
-  position: relative;
-  width: 16rem;
-  flex-shrink: 0;
-}
-
-.filter-results {
-  background-color: var(--bs-warning);
-  position: sticky;
-  top: 1rem;
-  margin-top: 1rem;
-  width: 100%;
-}
-
-.filter-results.mobile {
-  position: unset;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0 1rem;
-}
-
-.filter-results h4 {
-  margin: 1rem;
-}
-
-.filter-results h6 {
-  margin: 1.8rem 0 0.5rem;
-}
-
-.filter-results hr {
-  width: 70%;
-  margin: auto;
-}
-
-.hide-filter {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-}
-
-.filter-indicator {
-  width: 1.1rem;
-  height: 1.1rem;
-  font-size: 0.65rem;
-  font-weight: 500;
-  text-align: center;
-  line-height: 1.1rem;
-  color: var(--bs-light);
-  background-color: var(--bs-primary);
-  border-radius: 50%;
-}
-
-.filter-input {
-  width: 4rem;
-  background-color: rgba(190, 189, 189, 0.3);
-}
-
-.order-icon {
-  font-size: 0.85rem;
-  margin: 0 0.05rem 0.1rem;
+.masonry-grid .card:first-child {
+  margin-top: 0;
 }
 
 .search-bar {
   position: relative;
   width: 70%;
+  margin: 0.75rem auto;
 }
 
 .search-controls {
@@ -93,24 +32,17 @@
   cursor: pointer;
 }
 
-.price-chart {
-  width: 100%;
-  aspect-ratio: 5 / 2;
-  margin-top: -0.3rem;
-  padding: 0 0.5rem;
-}
-
 .message-img {
   margin: 5rem 0 2rem;
   width: 15rem;
 }
 
 @media screen and (min-width: 768px) {
-  .filter-results {
-    padding: 1rem 1.4rem;
+  .masonry-grid {
+    margin-top: 1.5rem;
   }
 
-  .filter-results hr {
-    margin: 2rem auto;
+  .search-bar {
+    margin: 1.4rem auto 0.5rem;
   }
 }
