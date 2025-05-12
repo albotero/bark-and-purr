@@ -14,7 +14,7 @@ import Favorites from "./pages/Favorites"
 import NewProduct from "./pages/NewProduct"
 import Publications from "./pages/Publications"
 import ProtectedRoute from "./components/ProtectedRoute"
-
+import ErrorMsg from "./components/ErrorMsg"
 
 function App() {
   const { token } = useUser()
@@ -31,19 +31,47 @@ function App() {
           <Route path="product/:productId" element={<Product />} />
           <Route path="cart" element={<Cart />} />
           <Route path="user">
-            <Route index     element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>}  />
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="favorites"
+              element={
+                <ProtectedRoute>
+                  <Favorites />
+                </ProtectedRoute>
+              }
+            />
             <Route path="notifications" element={<></>} />
             <Route path="purchases" element={<></>} />
-            <Route path="publications" element={<ProtectedRoute><Publications /></ProtectedRoute>} />
-            <Route path="new-product" element={<ProtectedRoute><NewProduct /></ProtectedRoute>} />
+            <Route
+              path="publications"
+              element={
+                <ProtectedRoute>
+                  <Publications />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="new-product"
+              element={
+                <ProtectedRoute>
+                  <NewProduct />
+                </ProtectedRoute>
+              }
+            />
           </Route>
-          <Route path="*" element={<div>Page not found!</div>} />
+          <Route path="*" element={<ErrorMsg error="fetch.404" />} />
         </Routes>
       </Container>
       <Footer />
     </>
-  );
+  )
 }
 
 export default App

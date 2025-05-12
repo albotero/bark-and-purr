@@ -15,7 +15,7 @@ import EditIcon from "../components/EditIcon"
 import OrderItem from "../components/OrderItem"
 import PriceSelector from "../components/PriceSelector"
 import Loading from "../components/Loading"
-import NoProducts from "../components/NoProducts"
+import ErrorMsg from "../components/ErrorMsg"
 import { ProductCard } from "../components/ProductCard"
 import { useTranslation } from "react-i18next"
 import { useApi } from "../hooks/useApi"
@@ -133,7 +133,7 @@ const Discover = () => {
   return (
     <div className="d-flex flex-column flex-lg-row">
       {productsData.error ? (
-        <NoProducts error={productsData.error} />
+        <ErrorMsg error={productsData.error} />
       ) : (
         <>
           <Container className="order-2 order-lg-1">
@@ -153,7 +153,7 @@ const Discover = () => {
               )}
             </Form>
             {totalProducts == 0 ? (
-              <NoProducts />
+              <ErrorMsg />
             ) : isLoading ? (
               <Loading />
             ) : (
@@ -196,38 +196,71 @@ const Discover = () => {
             )}
           </Container>
 
-          {totalProducts > 0 && (
-            <>
-              <aside className="filter-results-container order-2">
-                {/* Filter => Desktop view */}
-                <div className="filter-results d-none d-lg-block rounded">
-                  <h4 className="d-flex">
-                    {t("filter.title")}
-                    <EditIcon callback={handleClearFilters} type="clean" />
-                  </h4>
-                  <h6>{t("filter.price")}</h6>
-                  <PriceSelector
-                    histogram={histogram}
-                    url={pages?.this}
-                    setIsLoading={setIsLoading}
-                    setProductsData={setProductsData}
-                  />
-                  <h6>{t("filter.stock")}</h6>
-                  <div className="d-flex gap-2 align-items-center">
-                    <span className="flex-shrink-0">{t("filter.stock_a")}</span>
-                    <Form.Control
-                      type="number"
-                      min={1}
-                      defaultValue={1}
-                      size="sm"
-                      className="filter-input"
-                      onChange={({ target: { value } }) => handleStockFilterChange(pages?.this, value)}
+          {
+            /* Only hide filter if no products found just for search, not for filtering */
+            (filters.length === 1 && filters[0].key === "search") || (
+              <>
+                <aside className="filter-results-container order-2">
+                  {/* Filter => Desktop view */}
+                  <div className="filter-results d-none d-lg-block rounded">
+                    <h4 className="d-flex">
+                      {t("filter.title")}
+                      <EditIcon callback={handleClearFilters} type="clean" />
+                    </h4>
+                    <h6>{t("filter.price")}</h6>
+                    <PriceSelector
+                      histogram={histogram}
+                      url={pages?.this}
+                      setIsLoading={setIsLoading}
+                      setProductsData={setProductsData}
                     />
-                    <span className="flex-shrink-0">{t("filter.stock_b")}</span>
+                    <h6>{t("filter.stock")}</h6>
+                    <div className="d-flex gap-2 align-items-center">
+                      <span className="flex-shrink-0">{t("filter.stock_a")}</span>
+                      <Form.Control
+                        type="number"
+                        min={1}
+                        defaultValue={1}
+                        size="sm"
+                        className="filter-input"
+                        onChange={({ target: { value } }) => handleStockFilterChange(pages?.this, value)}
+                      />
+                      <span className="flex-shrink-0">{t("filter.stock_b")}</span>
+                    </div>
+                    <hr />
+                    <h4>{t("order.title")}</h4>
+                    <div className="w-100 d-flex flex-wrap gap-2 justify-content-center">
+                      {orderOptions.map((key) => (
+                        <OrderItem
+                          key={`order_${key}`}
+                          data={{
+                            key,
+                            text: t(`order.${key}`),
+                            order,
+                            setOrder: (val) => handleOrderClick(pages?.this, val),
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <hr />
+                    <h4>{t("page.title")}</h4>
+                    <DropdownButton title={t("page.results_per_page", { num: pages?.results_per_page })}>
+                      {resultsPerPageOptions.map((r) => (
+                        <Dropdown.Item
+                          as="button"
+                          key={`results-${r}`}
+                          onClick={() => handleResultsPerPageChange(pages?.this, r)}
+                        >
+                          {t("page.results_per_page", { num: r })}
+                        </Dropdown.Item>
+                      ))}
+                    </DropdownButton>
                   </div>
-                  <hr />
-                  <h4>{t("order.title")}</h4>
-                  <div className="w-100 d-flex flex-wrap gap-2 justify-content-center">
+                </aside>
+
+                <aside className="filter-results mobile d-lg-none order-1">
+                  {/* Filter => Mobile view */}
+                  <div className="d-flex gap-3">
                     {orderOptions.map((key) => (
                       <OrderItem
                         key={`order_${key}`}
@@ -240,45 +273,15 @@ const Discover = () => {
                       />
                     ))}
                   </div>
-                  <hr />
-                  <h4>{t("page.title")}</h4>
-                  <DropdownButton title={t("page.results_per_page", { num: pages?.results_per_page })}>
-                    {resultsPerPageOptions.map((r) => (
-                      <Dropdown.Item
-                        as="button"
-                        key={`results-${r}`}
-                        onClick={() => handleResultsPerPageChange(pages?.this, r)}
-                      >
-                        {t("page.results_per_page", { num: r })}
-                      </Dropdown.Item>
-                    ))}
-                  </DropdownButton>
-                </div>
-              </aside>
-
-              <aside className="filter-results mobile d-lg-none order-1">
-                {/* Filter => Mobile view */}
-                <div className="d-flex gap-3">
-                  {orderOptions.map((key) => (
-                    <OrderItem
-                      key={`order_${key}`}
-                      data={{
-                        key,
-                        text: t(`order.${key}`),
-                        order,
-                        setOrder: (val) => handleOrderClick(pages?.this, val),
-                      }}
-                    />
-                  ))}
-                </div>
-                <div className="border-start border-secondary m-2">&nbsp;</div>
-                <div className="d-flex gap-1">
-                  <FiFilter />
-                  <div className="filter-indicator">{filters?.length}</div>
-                </div>
-              </aside>
-            </>
-          )}
+                  <div className="border-start border-secondary m-2">&nbsp;</div>
+                  <div className="d-flex gap-1">
+                    <FiFilter />
+                    <div className="filter-indicator">{filters?.length}</div>
+                  </div>
+                </aside>
+              </>
+            )
+          }
         </>
       )}
     </div>
