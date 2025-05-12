@@ -1,7 +1,7 @@
 # 🧠 Proyecto Final
 
 Proyecto en desarrollo como parte del curso de desarrollo web.  
-Actualmente hemos completado el **Hito 2**, donde trabajamos en el desarrollo del FrontEnd.
+Actualmente hemos completado el **Hito 3**, donde trabajamos en el desarrollo del Backend.
 
 ---
 
@@ -20,4 +20,8 @@ Actualmente hemos completado el **Hito 2**, donde trabajamos en el desarrollo de
 
 ✅ Hito 2 completado => [Commit 22a2ee4](https://github.com/albotero/bark-and-purr/commit/22a2ee4080373fbb7c25d44a6872a4a50add80c5)
 
-🔜 Próximo: desarrollo del Hito 3
+✅ Hito 3 completado => [Commit 32996ea](https://github.com/albotero/bark-and-purr/commit/32996ea354080c4b94e066a09a3d9305a5a0685e)
+
+🔜 Próximo: desarrollo del Hito 4
+
+
