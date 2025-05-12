@@ -73,7 +73,7 @@ const Discover = () => {
     setIsLoading(true)
     const data = await fetchProducts({
       endpoint: "products",
-      query: { search: encodeURIComponent(searchQuery.toLowerCase()) },
+      query: { search: encodeURIComponent(searchQuery) },
     })
     setProductsData(data)
     setOrder(data.order_by)
