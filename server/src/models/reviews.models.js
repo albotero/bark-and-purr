@@ -29,12 +29,9 @@ const prepareHATEOAS = ({ productId, totalReviews, reviews, filters, orderBy, re
     // Build URL
     return `/api/products/${productId}/reviews?${params.join("&")}`
   }
-  const results = reviews.map(({ user_id: user, rating, created_at: date, body }) => ({
-    user,
-    date,
-    rating,
-    body,
-  }))
+  const results = reviews.map(({ id, surname: user, rating, created_at: date, body }) => {
+    return { id, user, date, rating, body }
+  })
   const firstPage = prepareReviewsUrl(1)
   const lastPage = prepareReviewsUrl(totalPages)
   const prevPage = prepareReviewsUrl(currentPage - 1)
@@ -88,18 +85,20 @@ export const findReviews = async ({
   if (minDate) addFilter("created_at", ">=", minDate)
   if (maxDate) addFilter("created_at", "<=", maxDate)
 
-  const countRevews = await executeQuery(
+  const countReviews = await executeQuery(
     "SELECT COUNT(id) FROM reviews" +
       // Add filter
       format(` WHERE ${filters.join(" AND ")}`, ...values)
   )
-  const totalReviews = Number(countRevews[0]?.count || 0)
+  const totalReviews = Number(countReviews[0]?.count || 0)
 
   // Build query
   const [orderColumn, orderDirection] = orderBy.split("_").map((el) => el.replace("date", "created_at"))
 
   const reviews = await executeQuery(
-    "SELECT * FROM reviews" +
+    `SELECT r.*, u.surname
+      FROM reviews r
+      JOIN users u ON r.user_id = u.id` +
       // Add filter
       format(` WHERE ${filters.join(" AND ")}`, ...values) +
       // Add order
