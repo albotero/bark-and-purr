@@ -8,7 +8,7 @@ import {
   addProductImage,
 } from "../models/publication.models.js";
 
-// Get all posts from the authenticated user
+// Get all publications by the authenticated user
 export const getPublications = async (req, res) => {
   await execute({
     res,
@@ -20,7 +20,7 @@ export const getPublications = async (req, res) => {
   });
 };
 
-// Get a post by ID
+// Get a publication by ID
 export const getPublicationByIdController = async (req, res) => {
   await execute({
     res,
@@ -46,7 +46,7 @@ export const getPublicationByIdController = async (req, res) => {
   });
 };
 
-// Create new post
+// Create a new publication
 export const createPublicationController = async (req, res) => {
   await execute({
     res,
@@ -64,7 +64,11 @@ export const createPublicationController = async (req, res) => {
           image_url,
           image_key
         );
-        createdProduct.images = [image];
+
+        // El modelo no devuelve las imágenes, por lo que las agregamos aquí como array simple
+        createdProduct.images = [image.url];
+      } else {
+        createdProduct.images = [];
       }
 
       return createdProduct;
@@ -72,7 +76,7 @@ export const createPublicationController = async (req, res) => {
   });
 };
 
-//  Update existing post
+// Update a publication
 export const updatePublicationController = async (req, res) => {
   await execute({
     res,
@@ -82,15 +86,13 @@ export const updatePublicationController = async (req, res) => {
       const existing = await getPublicationById(id);
 
       if (!existing) {
-        const error = new Error("Publication not found");
-        error.status = 404;
-        throw error;
+        throw Object.assign(new Error("Publication not found"), {
+          status: 404,
+        });
       }
 
       if (existing.vendor_id !== req.user.id) {
-        const error = new Error("Unauthorized access");
-        error.status = 403;
-        throw error;
+        throw Object.assign(new Error("Unauthorized access"), { status: 403 });
       }
 
       return await updatePublication(id, fields);
@@ -98,7 +100,7 @@ export const updatePublicationController = async (req, res) => {
   });
 };
 
-//  Delete post
+// Delete a publication
 export const deletePublication = async (req, res) => {
   await execute({
     res,
@@ -125,4 +127,3 @@ export const deletePublication = async (req, res) => {
     },
   });
 };
-  
