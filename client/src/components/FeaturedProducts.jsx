@@ -23,7 +23,7 @@ const FeaturedProducts = () => {
         endpoint: "products",
         query: {
           results_per_page: 7,
-          order_by: "price_desc",
+          order_by: "random",
         },
       });
 
