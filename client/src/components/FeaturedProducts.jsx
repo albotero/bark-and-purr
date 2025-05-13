@@ -41,7 +41,7 @@ const FeaturedProducts = () => {
 
   return (
     <section className="featured-products my-5">
-      <h2 className="text-center mb-4">{t("featured.title")}</h2>
+      <h2 className="text-center mb-4 text-body">{t("featured.title")}</h2>
 
       {isLoading ? (
         <Loading />

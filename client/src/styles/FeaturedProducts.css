@@ -28,3 +28,18 @@
     transform: translateY(0);
   }
 }
+
+.featured-products h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.5px;
+  margin-bottom: 1.5rem;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  text-transform: capitalize;
+  transition: color 0.3s ease;
+}
+
+
+
+
