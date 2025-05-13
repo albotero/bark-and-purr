@@ -5,7 +5,8 @@
   },
   "featured": {
     "title": "Productos Destacados",
-    "no_products": "Aún no hay productos"
+    "no_products": "Aún no hay productos",
+    "view_all": "Ver todos"
   },
   "rights_reserved": "Todos los derechos reservados"
 }
