@@ -22,12 +22,14 @@ export const registerUser = async ({ surname, last_name, email, password, birthd
   }  
 
   const passwordHash = await bcrypt.hash(password, 10)
+  const avatar_url = `https://avatar.iran.liara.run/username?username=${surname + "+" + last_name}&background=f4d9b2&color=FF9800`
+
 
   const result = await executeQuery({
     text: `INSERT INTO users (surname, last_name, email, password_hash, birthday, avatar_url, avatar_key)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)
-           RETURNING id, surname, last_name, email`,
-    values: [surname, last_name, email, passwordHash, birthday, "https://placehold.co/100x100", "placeholder-key"]
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING id, surname, last_name, email`,
+    values: [surname, last_name, email, passwordHash, birthday, avatar_url, "placeholder-key"]
   })
 
   return result[0]

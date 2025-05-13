@@ -12,6 +12,7 @@ import EditIcon from "../components/EditIcon"
 import ProfileInfoItem from "../components/ProfileInfoItem"
 import Swal from "sweetalert2"
 
+const displayOrDash = (value) => value?.toString().trim() || "-"
 
 
 const languages = [
@@ -341,18 +342,19 @@ t
                 </Form>
               ) : (
                 <>
-                  <Row>
-                    <Col xs={12}>{`${t("address.address")}: ${address.line1} ${address.line2}`}</Col>
-                  </Row>
-                  <hr className="my-2" />
-                  <Row>
-                    <Col xs={12} md={6}>{`${t("address.city")}: ${address.city}`}</Col>
-                    <Col xs={12} md={6}>{`${t("address.state")}: ${address.state}`}</Col>
-                  </Row>
-                  <Row>
-                    <Col xs={12} md={6}>{`${t("address.zip")}: ${address.zip}`}</Col>
-                    <Col xs={12} md={6}>{`${t("address.country")}: ${address.country}`}</Col>
-                  </Row>
+                <Row>
+                  <Col xs={12}>
+                    {`${t("address.address")}: ${displayOrDash(address.line1)} ${displayOrDash(address.line2)}`}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12} md={6}>{`${t("address.city")}: ${displayOrDash(address.city)}`}</Col>
+                  <Col xs={12} md={6}>{`${t("address.state")}: ${displayOrDash(address.state)}`}</Col>
+                </Row>
+                <Row>
+                  <Col xs={12} md={6}>{`${t("address.zip")}: ${displayOrDash(address.zip)}`}</Col>
+                  <Col xs={12} md={6}>{`${t("address.country")}: ${displayOrDash(address.country)}`}</Col>
+                </Row>
                 </>
               )}
             </Col>
