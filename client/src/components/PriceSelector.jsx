@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import "react-range-slider-input/dist/style.css"
 import RangeSlider from "react-range-slider-input"
 import { Chart as ChartJS, BarElement, Tooltip, CategoryScale, LinearScale } from "chart.js"
@@ -10,8 +10,7 @@ import { useApi } from "../hooks/useApi"
 const totalSteps = 10
 ChartJS.register(BarElement, Tooltip, CategoryScale, LinearScale)
 
-const PriceSelector = ({ histogram, url, setIsLoading, setProductsData }) => {
-  const [selPrice, setSelPrice] = useState([])
+const PriceSelector = ({ histogram, url, setIsLoading, setProductsData, selPrice, setSelPrice }) => {
   const { t } = useTranslation("discover")
   const { theme } = useTheme()
   const [fetchProducts] = useApi()
@@ -21,7 +20,7 @@ const PriceSelector = ({ histogram, url, setIsLoading, setProductsData }) => {
 
   useEffect(() => {
     if (maxPrice) setSelPrice([1, maxPrice + step])
-  }, [maxPrice, step])
+  }, [maxPrice, step, setSelPrice])
 
   const options = {
     responsive: true,

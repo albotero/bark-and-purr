@@ -5,7 +5,7 @@ import Row from "react-bootstrap/esm/Row"
 import sadDog from "../assets/sad-dog.svg"
 import backCat from "../assets/back-cat.svg"
 
-const NoProducts = ({ error }) => {
+const ErrorMsg = ({ error }) => {
   const { t } = useTranslation("errors")
   const errorNumber = error?.match(/fetch\.(\d+)/) || []
 
@@ -38,4 +38,4 @@ const NoProducts = ({ error }) => {
   )
 }
 
-export default NoProducts
+export default ErrorMsg

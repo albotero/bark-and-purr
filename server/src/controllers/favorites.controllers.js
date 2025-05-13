@@ -31,7 +31,7 @@ export const getFavoritesByUser = async (req, res) => {
 export const deleteFavorite = async (req, res) => {
   const { id } = req.params
   try {
-    await db.query('DELETE FROM favorites WHERE id = $1', [id])
+    await connectionDb.query('DELETE FROM favorites WHERE id = $1', [id])
     res.json({ message: 'Favorito eliminado' })
   } catch (err) {
     res.status(500).json({ error: err.message })
