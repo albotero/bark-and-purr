@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react"
-import Container from "react-bootstrap/esm/Container"
-import Row from "react-bootstrap/esm/Row"
-import Col from "react-bootstrap/esm/Col"
-import Button from "react-bootstrap/Button"
-import { ProductCard } from "../components/ProductCard"
-import { Link } from "react-router-dom"
-import { FaBoxOpen } from "react-icons/fa"
-import { useTranslation } from "react-i18next"
-import { FaFileCirclePlus } from "react-icons/fa6"
-import { FaTrash } from "react-icons/fa6"
-
+import React, { useEffect, useState } from "react";
+import Container from "react-bootstrap/esm/Container";
+import Row from "react-bootstrap/esm/Row";
+import Col from "react-bootstrap/esm/Col";
+import Button from "react-bootstrap/Button";
+import { ProductCard } from "../components/ProductCard";
+import { Link } from "react-router-dom";
+import { FaBoxOpen } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { FaFileCirclePlus } from "react-icons/fa6";
+import { FaTrash } from "react-icons/fa6";
 
 const Publications = () => {
   const { t } = useTranslation("publications");
@@ -27,7 +26,7 @@ const Publications = () => {
     setPublications(userProducts);
   }, []);
 
-    const removePublication = (id) => {
+  const removePublication = (id) => {
     const updatedPublications = publications.filter((item) => item.id !== id);
     setPublications(updatedPublications);
 

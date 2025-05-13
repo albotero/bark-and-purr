@@ -1,27 +1,28 @@
-import { useState } from "react"
-import { useCart } from "../context/CartContext"
-import Button from "react-bootstrap/Button"
-import Card from "react-bootstrap/Card"
-import Container from "react-bootstrap/Container"
-import Form from "react-bootstrap/Form"
-import Row from "react-bootstrap/Row"
-import Col from "react-bootstrap/Col"
-import ListGroup from "react-bootstrap/ListGroup"
-import Tree from "../components/Tree"
-import { useTranslation } from "react-i18next"
+import { useState } from "react";
+import { useCart } from "../context/CartContext";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import ListGroup from "react-bootstrap/ListGroup";
+import Tree from "../components/Tree";
+import { useTranslation } from "react-i18next";
 
 const Cart = () => {
-  const { cart, removeFromCart, buyCart, cartTotal, increaseQty, decreaseQty } = useCart()
-  const { t } = useTranslation("cart")
+  const { cart, removeFromCart, buyCart, cartTotal, increaseQty, decreaseQty } =
+    useCart();
+  const { t } = useTranslation("cart");
 
   const treeItems = [
     { key: "home", href: "/" },
     { key: "cart", isActive: true },
-  ]
+  ];
 
-  const [shippingMethod, setShippingMethod] = useState("pickup")
-  const shippingCost = shippingMethod === "delivery" ? 3 : 0
-  const totalWithShipping = cartTotal + shippingCost
+  const [shippingMethod, setShippingMethod] = useState("pickup");
+  const shippingCost = shippingMethod === "delivery" ? 3 : 0;
+  const totalWithShipping = cartTotal + shippingCost;
 
   return (
     <Container className="section-padding">
@@ -48,7 +49,15 @@ const Cart = () => {
                         className="bg-light border rounded d-flex justify-content-center align-items-center"
                         style={{ height: "80px" }}
                       >
-                        Product Img
+                        {/* Carga de imagen optimizada */}
+                        <img
+                          src={item.thumbnailLowRes || "/placeholder.png"} // imagen de baja resolución
+                          data-src={item.thumbnail || "/placeholder.png"} // ruta de la imagen principal
+                          alt={item.title}
+                          className="img-fluid rounded"
+                          style={{ maxHeight: "80px", objectFit: "cover" }}
+                          loading="lazy" // Lazy loading
+                        />
                       </div>
                     </Col>
 
@@ -59,11 +68,19 @@ const Cart = () => {
                       </p>
 
                       <div className="d-flex align-items-center gap-2">
-                        <Button variant="secondary" size="sm" onClick={() => decreaseQty(item.id)}>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => decreaseQty(item.id)}
+                        >
                           -
                         </Button>
                         <span className="fw-bold">{item.quantity}</span>
-                        <Button variant="secondary" size="sm" onClick={() => increaseQty(item.id)}>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => increaseQty(item.id)}
+                        >
                           +
                         </Button>
                       </div>
@@ -73,7 +90,11 @@ const Cart = () => {
                       <p className="fw-semibold mb-0">
                         {t("total")}: ${(item.price * item.quantity).toFixed(2)}
                       </p>
-                      <Button variant="outline-danger" size="sm" onClick={() => removeFromCart(item.id)}>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => removeFromCart(item.id)}
+                      >
                         {t("remove")}
                       </Button>
                     </Col>
@@ -92,9 +113,13 @@ const Cart = () => {
                 </Card.Title>
 
                 <ListGroup className="mb-3">
-                  <ListGroup.Item>Subtotal: ${cartTotal.toFixed(2)}</ListGroup.Item>
                   <ListGroup.Item>
-                    <Card.Subtitle className="mb-2 fw-bold">shipping</Card.Subtitle>
+                    Subtotal: ${cartTotal.toFixed(2)}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Card.Subtitle className="mb-2 fw-bold">
+                      shipping
+                    </Card.Subtitle>
                     <Form.Check
                       type="radio"
                       name="shipping"
@@ -116,7 +141,11 @@ const Cart = () => {
                   </ListGroup.Item>
                 </ListGroup>
 
-                <Button variant="primary" className="w-100 rounded-pill" onClick={buyCart}>
+                <Button
+                  variant="primary"
+                  className="w-100 rounded-pill"
+                  onClick={buyCart}
+                >
                   {t("pay")}
                 </Button>
               </Card.Body>
@@ -125,7 +154,7 @@ const Cart = () => {
         </Row>
       )}
     </Container>
-  )
-}
+  );
+};
 
-export default Cart
+export default Cart;
