@@ -143,7 +143,13 @@ export const findProducts = async ({
       // Add filter
       (filters.length ? ` WHERE ${filtersTotal}` : "") +
       // Add order
-      (orderBy ? format(` ORDER BY %s %s`, orderColumn, orderDirection.toUpperCase()) : "") +
+      (orderBy
+        ? format(
+            ` ORDER BY %s %s`,
+            orderColumn === "random" ? "RANDOM ()" : orderColumn,
+            orderDirection?.toUpperCase() || ""
+          )
+        : "") +
       // Add pagination
       format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
   )
