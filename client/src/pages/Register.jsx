@@ -16,7 +16,7 @@ const RegisterForm = () => {
   })
 
   const { t } = useTranslation("auth")
-  const { register, setToken } = useUser()
+  const { register } = useUser()
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData({
@@ -37,56 +37,62 @@ const RegisterForm = () => {
       formData.confirmPass.trim() === ""
     ) {
       Swal.fire({
-        title: t("alert.error"),
-        text: t("alert.complete_fields"),
         icon: "error",
-        confirmButtonText: t("alert.ok"),
+        title: "Missing information",
+        text: "Please fill in all the required fields before continuing.",
+        confirmButtonText: "Got it"
       })
       return
     }
 
     if (formData.pass !== formData.confirmPass) {
       Swal.fire({
-        title: t("alert.error"),
-        text: t("alert.passwords_dont_match"),
         icon: "error",
-        confirmButtonText: t("alert.ok"),
+        title: "Passwords do not match",
+        text: "Make sure both password fields match exactly.",
+        confirmButtonText: "Try again"
       })
+
       return
     }
 
     if (!formData.acceptTerms) {
       Swal.fire({
-        title: t("alert.error"),
-        text: t("alert.accept_terms_privacy"),
         icon: "error",
-        confirmButtonText: t("alert.ok"),
+        title: "Terms not accepted",
+        text: "You must accept the Terms and Privacy Policy to continue.",
+        confirmButtonText: "Understood"
       })
       return
     }
 
-    try {
-      await register(formData.name, formData.lastName, formData.email, formData.birthday, formData.pass)
-      Swal.fire({
-        title: t("alert.success"),
-        text: t("alert.register_completed"),
-        icon: "success",
-        confirmButtonText: t("alert.ok"),
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setToken(true)
-          navigate("/")
-        }
-      })
-    } catch {
-      setToken(false)
-      Swal.fire({
-        title: t("alert.error"),
-        text: t("alert.register_error"),
-        icon: "error",
-        confirmButtonText: t("alert.ok"),
-      })
+  const result = await register(
+    formData.name,
+    formData.lastName,
+    formData.email,
+    formData.birthday,
+    formData.pass
+  )
+
+  if (result.success) {
+    Swal.fire({
+      icon: "success",
+      title: "Registration complete",
+      text: "Welcome! Your account has been created successfully.",
+      confirmButtonText: "Go to profile"
+    }).then(() => {   
+      navigate("/user")
     }
+    )
+  } else {
+    Swal.fire({
+      icon: "error",
+      title: "Registration failed",
+      text: result.message || "Something went wrong. Please try again later.",
+      confirmButtonText: "Close"
+    })
+  }
+
   }
 
   return (

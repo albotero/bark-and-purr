@@ -63,7 +63,16 @@ const register = async (name, lastName, email, birthday, password) => {
       if (!res.ok) {
         throw new Error(data.message || "Registration failed")
         }
-    // opcional: retornar el token si decides autenticar al usuario inmediatamente
+      
+      localStorage.setItem("token", data.token)
+      setToken(true)
+      Swal.fire({
+        icon: "success",
+        title: "Registration successful",
+        text: "You have been registered successfully.",
+        timer: 2000,
+        showConfirmButton: true,
+      })
       return { success: true, user: data }
     } catch (err) {
       console.error("Registration error:", err)
