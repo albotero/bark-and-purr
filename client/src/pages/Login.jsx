@@ -49,12 +49,17 @@ const Login = () => {
         navigate("/")
       })
     } else {
-      Swal.fire({
-        title: t("alert.error"),
-        text: result.message || t("alert.wrong_credentials"),
-        icon: "error",
-        confirmButtonText: t("alert.ok"),
-      })
+        Swal.fire({
+          title: t("alert.error"),
+          text:
+            result.message === "Invalid password"
+              ? t("invalid_password")
+              : result.message === "User not found"
+              ? t("user_not_found")
+              : t("alert.wrong_credentials"),
+          icon: "error",
+          confirmButtonText: t("alert.ok"),
+        })
     }
   }
 

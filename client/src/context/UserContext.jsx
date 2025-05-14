@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react"
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next"
 
 const UserContext = createContext()
 
@@ -39,8 +40,6 @@ const login = async (email, pass) => {
     return { success: false, message: err.message };
   }
 };
-
-
 
 const register = async (name, lastName, email, birthday, password) => {
       try {
@@ -82,6 +81,7 @@ const register = async (name, lastName, email, birthday, password) => {
 
 }; 
   
+const { t } = useTranslation("auth")
 
 const logout = () => {
   localStorage.removeItem("token")
@@ -89,10 +89,11 @@ const logout = () => {
 
   Swal.fire({
     icon: "success",
-    title: "Logged out",
-    text: "You have been logged out successfully.",
+    title: t("logout.title"),
+    text: t("logout.text"),
+    confirmButtonText: t("logout.button"),
     timer: 2000,
-    showConfirmButton: true,
+    showConfirmButton: true
   })
 }
 

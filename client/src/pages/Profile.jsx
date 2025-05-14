@@ -7,6 +7,7 @@ import Col from "react-bootstrap/esm/Col"
 import Container from "react-bootstrap/esm/Container"
 import FloatingLabel from "react-bootstrap/esm/FloatingLabel"
 import Form from "react-bootstrap/esm/Form"
+import Spinner from "react-bootstrap/esm/Spinner"
 import Row from "react-bootstrap/esm/Row"
 import EditIcon from "../components/EditIcon"
 import ProfileInfoItem from "../components/ProfileInfoItem"
@@ -14,6 +15,14 @@ import Swal from "sweetalert2"
 
 const displayOrDash = (value) => value?.toString().trim() || "-"
 
+const formatDate = (dateString) => {
+  if (!dateString) return "-"
+  const date = new Date(dateString)
+  const day = String(date.getDate()).padStart(2, "0")
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const year = date.getFullYear()
+  return `${day}/${month}/${year}`
+}
 
 const languages = [
   { id: "en", label: "🇺🇸 English" },
@@ -29,7 +38,8 @@ const Profile = () => {
   const [isEditingAddress, setIsEditingAddress] = useState(false)
   const [isEditingPreferences, setIsEditingPreferences] = useState(false)
   const [isEditingAvatar, setIsEditingAvatar] = useState(false)
-  const [inputAvatar, setInputAvatar] = useState("")
+  const [inputAvatar, setInputAvatar] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
   const { i18n, t } = useTranslation("profile")
 
   const addressItems = [
@@ -101,34 +111,39 @@ useEffect(() => {
 const languageLabel = (id) => languages.find((el) => el.id == id)?.label
 
 const handleSaveAvatar = async () => {
-  if (!inputAvatar || inputAvatar === userInfo.avatar) {
+  if (!inputAvatar) {
     Swal.fire({
       icon: "info",
-      title: "No changes detected",
-      text: "You haven't changed the avatar URL.",
+      title: t("alerts.no_changes"),
+      text: t("alerts.no_avatar_change"),
     })
     return
   }
 
+  setIsUploading(true)
+
+  const formData = new FormData()
+  formData.append("avatar", inputAvatar)
+
   try {
-    const res = await fetch("http://localhost:3000/api/auth/profile", {
+    const res = await fetch("http://localhost:3000/api/auth/profile/avatar", {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
-      body: JSON.stringify({ avatar_url: inputAvatar }),
+      body: formData,
     })
 
     const data = await res.json()
     if (!res.ok) throw new Error(data.message)
 
-    setUserInfo((prev) => ({ ...prev, avatar: inputAvatar }))
+    setUserInfo((prev) => ({ ...prev, avatar: data.avatar_url }))
     setIsEditingAvatar(false)
+
     Swal.fire({
       icon: "success",
-      title: "Avatar updated!",
-      text: "Your avatar has been updated successfully.",
+      title: t("alerts.avatar_updated"),
+      text: t("alerts.avatar_success"),
       timer: 2000,
       showConfirmButton: true,
     })
@@ -137,11 +152,12 @@ const handleSaveAvatar = async () => {
     Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "Failed to update your avatar. Please try again.",
+      text: t("alerts.avatar_error"),
     })
+  } finally {
+    setIsUploading(false)
   }
 }
-
 
 const handleInputAddressChange = ({ target }) => {
     const { value, dataset } = target
@@ -165,9 +181,11 @@ const handleSaveAddress = async () => {
   if (isUnchanged) {
     Swal.fire({
       icon: "info",
-      title: "No changes detected",
-      text: "You haven't made any changes to your address.",
-    });
+      title: t("alerts.no_changes"),
+      text: t("alerts.no_address_change"),
+      timer: 2000,
+      showConfirmButton: true
+    })
     return;
   }
   try {
@@ -186,11 +204,10 @@ const handleSaveAddress = async () => {
 
     setAddress(inputAddress)
     setIsEditingAddress(false)
-
     Swal.fire({
       icon: "success",
-      title: "Changes saved!",
-      text: "Your address has been updated successfully.",
+      title: t("alerts.address_updated"),
+      text: t("alerts.address_success"),
       timer: 2000,
       showConfirmButton: true,
     })
@@ -199,9 +216,10 @@ const handleSaveAddress = async () => {
     Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "Failed to update your address. Please try again.",
+      text: t("alerts.address_error"),
       showConfirmButton: true,
     })
+
   }
 }
 
@@ -222,11 +240,11 @@ const handleSavePreferences = async () => {
     i18n.changeLanguage(inputPreferences.language)
     setPreferences(inputPreferences)
     setIsEditingPreferences(false)
-    
+
     Swal.fire({
       icon: "success",
-      title: "Changes saved!",
-      text: "Your preferences have been updated successfully.",
+      title: t("alerts.prefs_updated"),
+      text: t("alerts.prefs_success"),
       timer: 2000,
       showConfirmButton: true,
     })
@@ -235,10 +253,10 @@ const handleSavePreferences = async () => {
     Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "Failed to update your preferences. Please try again.",
+      text: t("alerts.prefs_error"),
       showConfirmButton: true,
-    })
-  }
+      })
+    }
   }
 
 const preferencesToPayload = (prefs) => {
@@ -278,29 +296,59 @@ t
             <img className="avatar-img" src={userInfo.avatar} alt="Avatar" />
             <EditIcon className="avatar-icon" type="edit" callback={() => {
               setIsEditingAvatar(true)
-              setInputAvatar(userInfo.avatar)
+              setInputAvatar(null)
             }} />
           </div>
           
           {isEditingAvatar && (
-            <Form className="d-flex flex-column gap-2 pt-3">
-              <FloatingLabel controlId="avatar-url" label="Avatar URL">
+            <Form className="pt-3">
+              <Form.Group className="mb-4">
+                <Form.Label>{t("form.select_avatar")}</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter avatar image URL"
-                  value={inputAvatar}
-                  onChange={(e) => setInputAvatar(e.target.value)}
+                  type="file"
+                  accept="image/*"
+                  id="hidden-avatar-input"
+                  style={{ display: "none" }}
+                  onChange={(e) => setInputAvatar(e.target.files[0])}
                 />
-              </FloatingLabel>
-              <div className="my-3 mx-auto">
-                <Button onClick={handleSaveAvatar}>Save Avatar</Button>
-              </div>
+
+                <div className="d-flex flex-column flex-md-row gap-2 w-100">
+                  <div className="d-grid w-100">
+                    <Button
+                      variant="outline-secondary"
+                      onClick={() => document.getElementById("hidden-avatar-input").click()}
+                    >
+                      {t("form.choose_file")}
+                    </Button>
+                  </div>
+
+                  <div className="d-grid w-100">
+                  <Button
+                    onClick={handleSaveAvatar}
+                    disabled={!inputAvatar || isUploading}
+                    variant="primary"
+                    className="d-flex align-items-center justify-content-center"
+                  >
+                    {isUploading ? (
+                      <Spinner animation="border" size="sm" role="status" className="me-2" />
+                    ) : null}
+                    {t("form.save_avatar")}
+                  </Button>
+                  </div>
+                </div>
+
+                {inputAvatar && (
+                  <div className="text-muted mt-2" style={{ fontSize: "0.9em" }}>
+                    {t("form.selected_file")}: <strong>{inputAvatar.name}</strong>
+                  </div>
+                )}
+              </Form.Group>
             </Form>
           )}
           <div className="personal-info">
             <h3 className="user-name">{userInfo.name}</h3>
             <ProfileInfoItem icon="mail" iconColor="secondary" text={userInfo.email} />
-            <ProfileInfoItem icon="bday" iconColor="secondary" text={userInfo.birthday} />
+            <ProfileInfoItem icon="bday" iconColor="secondary" text={formatDate(userInfo.birthday)} />
             <ProfileInfoItem icon="favs" iconColor="danger" text={t("user_info.favorites")} href={userInfo.favorites} />
             <ProfileInfoItem
               icon="purchases"
