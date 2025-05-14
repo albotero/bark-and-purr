@@ -1,116 +1,92 @@
 import pool from "../../config/db/connection.db.js";
-import execute from "../controllers/execute.js";
+
+export const getOrCreateCart = async (userId) => {
+  const existing = await pool.query(
+    `SELECT * FROM carts WHERE user_id = $1 AND status = 'active'`,
+    [userId]
+  );
+  if (existing.rows.length > 0) return existing.rows[0];
+
+  const created = await pool.query(
+    `INSERT INTO carts (user_id) VALUES ($1) RETURNING *`,
+    [userId]
+  );
+  return created.rows[0];
+};
 
 export const findCartItemsByUser = async (userId) => {
-  return await execute({
-    success: 200,
-    callback: async () => {
-      const result = await pool.query(
-        `
-        SELECT ci.id, ci.quantity, p.name, p.price
-        FROM cart_items ci
-        JOIN products p ON ci.product_id = p.id
-        WHERE ci.user_id = $1
-      `,
-        [userId]
-      );
-      return result.rows;
-    },
-    args: userId,
-  });
+  const cart = await getOrCreateCart(userId);
+  const result = await pool.query(
+    `
+    SELECT
+      pbc.id,
+      pbc.quantity,
+      p.title,
+      p.price,
+      p.price * pbc.quantity AS total
+    FROM products_by_cart pbc
+    JOIN products p ON p.id = pbc.product_id
+    WHERE pbc.cart_id = $1
+    `,
+    [cart.id]
+  );
+  return result.rows;
 };
 
 export const findCartItem = async (userId, productId) => {
-  return await execute({
-    success: 200,
-    callback: async () => {
-      const result = await pool.query(
-        `
-        SELECT * FROM cart_items
-        WHERE user_id = $1 AND product_id = $2
-      `,
-        [userId, productId]
-      );
-      return result.rows[0]; // Solo se devuelve el primer elemento
-    },
-    args: [userId, productId],
-  });
+  const cart = await getOrCreateCart(userId);
+  const result = await pool.query(
+    `SELECT * FROM products_by_cart WHERE cart_id = $1 AND product_id = $2`,
+    [cart.id, productId]
+  );
+  return result.rows[0];
 };
 
 export const insertCartItem = async (userId, productId, quantity) => {
-  return await execute({
-    success: 201,
-    callback: async () => {
-      await pool.query(
-        `
-        INSERT INTO cart_items (user_id, product_id, quantity)
-        VALUES ($1, $2, $3)
-      `,
-        [userId, productId, quantity]
-      );
-      return { message: "Producto agregado al carrito" };
-    },
-    args: [userId, productId, quantity],
-  });
+  const cart = await getOrCreateCart(userId);
+  await pool.query(
+    `INSERT INTO products_by_cart (cart_id, product_id, quantity) VALUES ($1, $2, $3)`,
+    [cart.id, productId, quantity]
+  );
 };
 
 export const updateCartItemQuantity = async (quantity, itemId) => {
-  return await execute({
-    success: 200,
-    callback: async () => {
-      const result = await pool.query(
-        `
-        UPDATE cart_items SET quantity = quantity + $1
-        WHERE id = $2
-      `,
-        [quantity, itemId]
-      );
-      return result.rowCount === 0
-        ? { error: "No se encontró el artículo para actualizar" }
-        : { message: "Cantidad actualizada" };
-    },
-    args: [quantity, itemId],
-  });
+  const result = await pool.query(
+    `UPDATE products_by_cart SET quantity = quantity + $1 WHERE id = $2`,
+    [quantity, itemId]
+  );
+  return result;
 };
 
 export const updateCartItem = async (quantity, itemId, userId) => {
-  return await execute({
-    success: 200,
-    callback: async () => {
-      const result = await pool.query(
-        `
-        UPDATE cart_items SET quantity = $1
-        WHERE id = $2 AND user_id = $3
-        RETURNING id
-      `,
-        [quantity, itemId, userId]
-      );
-      if (result.rowCount === 0) {
-        throw new Error("Artículo no encontrado o no autorizado");
-      }
-      return { message: "Cantidad actualizada" };
-    },
-    args: [quantity, itemId, userId],
-  });
+  const cart = await getOrCreateCart(userId);
+  const result = await pool.query(
+    `UPDATE products_by_cart SET quantity = $1 WHERE id = $2 AND cart_id = $3 RETURNING id`,
+    [quantity, itemId, cart.id]
+  );
+  return result;
 };
 
 export const deleteCartItem = async (itemId, userId) => {
-  return await execute({
-    success: 200,
-    callback: async () => {
-      const result = await pool.query(
-        `
-        DELETE FROM cart_items
-        WHERE id = $1 AND user_id = $2
-        RETURNING id
-      `,
-        [itemId, userId]
-      );
-      if (result.rowCount === 0) {
-        throw new Error("Artículo no encontrado o no autorizado");
-      }
-      return { message: "Producto eliminado del carrito" };
-    },
-    args: [itemId, userId],
-  });
+  const cart = await getOrCreateCart(userId);
+  const result = await pool.query(
+    `DELETE FROM products_by_cart WHERE id = $1 AND cart_id = $2 RETURNING id`,
+    [itemId, cart.id]
+  );
+  return result;
+};
+
+export const getActiveCart = async (userId) => {
+  const result = await pool.query(
+    `SELECT * FROM carts WHERE user_id = $1 AND status = 'active'`,
+    [userId]
+  );
+  return result.rows[0];
+};
+
+export const updateCartStatus = async (cartId, status) => {
+  return await pool.query(`UPDATE carts SET status = $1 WHERE id = $2`, [
+    status,
+    cartId,
+  ]);
 };
