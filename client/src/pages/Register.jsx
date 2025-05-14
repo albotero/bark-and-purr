@@ -16,7 +16,9 @@ const RegisterForm = () => {
   })
 
   const { t } = useTranslation("auth")
-  const { register, setToken } = useUser()
+  const { register } = useUser()
+  const navigate = useNavigate()
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData({
@@ -24,7 +26,7 @@ const RegisterForm = () => {
       [name]: type === "checkbox" ? checked : value,
     })
   }
-  const navigate = useNavigate()
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -37,9 +39,9 @@ const RegisterForm = () => {
       formData.confirmPass.trim() === ""
     ) {
       Swal.fire({
-        title: t("alert.error"),
-        text: t("alert.complete_fields"),
         icon: "error",
+        title: t("alert.missing_info_title"),
+        text: t("alert.missing_info_text"),
         confirmButtonText: t("alert.ok"),
       })
       return
@@ -47,44 +49,54 @@ const RegisterForm = () => {
 
     if (formData.pass !== formData.confirmPass) {
       Swal.fire({
-        title: t("alert.error"),
-        text: t("alert.passwords_dont_match"),
         icon: "error",
-        confirmButtonText: t("alert.ok"),
+        title: t("alert.passwords_dont_match_title"),
+        text: t("alert.passwords_dont_match_text"),
+        confirmButtonText: t("alert.try_again"),
       })
       return
     }
 
     if (!formData.acceptTerms) {
       Swal.fire({
-        title: t("alert.error"),
-        text: t("alert.accept_terms_privacy"),
         icon: "error",
+        title: t("alert.terms_title"),
+        text: t("alert.terms_text"),
         confirmButtonText: t("alert.ok"),
       })
       return
     }
 
-    try {
-      await register(formData.name, formData.lastName, formData.email, formData.birthday, formData.pass)
+    const result = await register(
+      formData.name,
+      formData.lastName,
+      formData.email,
+      formData.birthday,
+      formData.pass
+    )
+
+    if (result.success) {
       Swal.fire({
-        title: t("alert.success"),
-        text: t("alert.register_completed"),
         icon: "success",
-        confirmButtonText: t("alert.ok"),
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setToken(true)
-          navigate("/")
-        }
+        title: t("alert.register_success_title"),
+        text: t("alert.register_success_text"),
+        confirmButtonText: t("alert.go_to_profile"),
+      }).then(() => {
+        navigate("/user")
       })
-    } catch {
-      setToken(false)
+    } else if (result.status === 409) {
       Swal.fire({
-        title: t("alert.error"),
-        text: t("alert.register_error"),
         icon: "error",
-        confirmButtonText: t("alert.ok"),
+        title: t("alert.email_exists_title"),
+        text: t("alert.email_exists_text"),
+        confirmButtonText: t("alert.try_again"),
+      })
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: t("alert.register_fail_title"),
+        text: result.message || t("alert.register_fail_text"),
+        confirmButtonText: t("alert.close"),
       })
     }
   }
@@ -96,9 +108,7 @@ const RegisterForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="row mb-3">
             <div className="col">
-              <label htmlFor="name" className="form-label">
-                {t("form.name")}
-              </label>
+              <label htmlFor="name" className="form-label">{t("form.name")}</label>
               <input
                 type="text"
                 name="name"
@@ -109,9 +119,7 @@ const RegisterForm = () => {
               />
             </div>
             <div className="col">
-              <label htmlFor="lastName" className="form-label">
-                {t("form.lastname")}
-              </label>
+              <label htmlFor="lastName" className="form-label">{t("form.lastname")}</label>
               <input
                 type="text"
                 name="lastName"
@@ -125,9 +133,7 @@ const RegisterForm = () => {
 
           <div className="row mb-3">
             <div className="col">
-              <label htmlFor="email" className="form-label">
-                {t("form.email")}
-              </label>
+              <label htmlFor="email" className="form-label">{t("form.email")}</label>
               <input
                 type="email"
                 name="email"
@@ -138,9 +144,7 @@ const RegisterForm = () => {
               />
             </div>
             <div className="col">
-              <label htmlFor="birthday" className="form-label">
-                {t("form.birthday")}
-              </label>
+              <label htmlFor="birthday" className="form-label">{t("form.birthday")}</label>
               <input
                 type="date"
                 name="birthday"
@@ -154,9 +158,7 @@ const RegisterForm = () => {
 
           <div className="row mb-3">
             <div className="col">
-              <label htmlFor="pass" className="form-label">
-                {t("form.password")}
-              </label>
+              <label htmlFor="pass" className="form-label">{t("form.password")}</label>
               <input
                 type="password"
                 name="pass"
@@ -167,9 +169,7 @@ const RegisterForm = () => {
               />
             </div>
             <div className="col">
-              <label htmlFor="confirmPass" className="form-label">
-                {t("form.repeat_password")}
-              </label>
+              <label htmlFor="confirmPass" className="form-label">{t("form.repeat_password")}</label>
               <input
                 type="password"
                 name="confirmPass"

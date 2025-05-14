@@ -14,23 +14,36 @@ export const registerUser = async ({ surname, last_name, email, password, birthd
     text: "SELECT * FROM users WHERE email = $1",
     values: [email]
   })
-  
+
   if (existing.length > 0) {
     const error = new Error("Email already exists")
     error.status = 400
     throw error
-  }  
+  }
 
   const passwordHash = await bcrypt.hash(password, 10)
+  const avatar_url = `https://avatar.iran.liara.run/username?username=${surname + "+" + last_name}&background=f4d9b2&color=FF9800`
 
   const result = await executeQuery({
     text: `INSERT INTO users (surname, last_name, email, password_hash, birthday, avatar_url, avatar_key)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)
-           RETURNING id, surname, last_name, email`,
-    values: [surname, last_name, email, passwordHash, birthday, "https://placehold.co/100x100", "placeholder-key"]
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING id, surname, last_name, email`,
+    values: [surname, last_name, email, passwordHash, birthday, avatar_url, "placeholder-key"]
   })
 
-  return result[0]
+  const user = result[0]
+
+  // Generar token JWT
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" })
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      name: `${user.surname} ${user.last_name}`,
+      email: user.email,
+    }
+  }
 }
 
 export const loginUser = async ({ email, password }) => {

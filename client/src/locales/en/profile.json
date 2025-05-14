@@ -25,5 +25,26 @@
       "review": "Send me a notification when a product I published gets a review",
       "password": "Send me a notification when my password is changed"
     }
+  },
+  "alerts": {
+    "no_changes": "No changes detected",
+    "no_avatar_change": "You haven't changed the avatar URL.",
+    "no_address_change": "You haven't made any changes to your address.",
+    "avatar_updated": "Avatar updated!",
+    "avatar_success": "Your avatar has been updated successfully.",
+    "avatar_error": "Failed to update your avatar. Please try again.",
+    "address_updated": "Changes saved!",
+    "address_success": "Your address has been updated successfully.",
+    "address_error": "Failed to update your address. Please try again.",
+    "prefs_updated": "Changes saved!",
+    "prefs_success": "Your preferences have been updated successfully.",
+    "prefs_error": "Failed to update your preferences. Please try again."
+  },
+  "form": {
+    "select_avatar": "Select a new avatar image",
+    "selected_file": "Selected file",
+    "save_avatar": "Save Avatar",
+    "choose_file": "Choose file",
+    "upload": "Upload"
   }
 }

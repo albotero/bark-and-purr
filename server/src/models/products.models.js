@@ -4,19 +4,21 @@ import executeQuery from "./executeQuery.js"
 export const findProduct = async ({ id }) => {
   const query = format(
     `SELECT
-        *,
+        p.*,
+        CONCAT(u.surname, ' ', u.last_name) AS vendor,
         ARRAY (
           SELECT imgs.url
           FROM product_images imgs
-          WHERE imgs.product_id = products.id
+          WHERE imgs.product_id = p.id
           ORDER BY imgs.id
         ) AS images
-      FROM products
-      WHERE id = %s`,
+      FROM products p
+      JOIN users u ON p.vendor_id = u.id
+      WHERE p.id = %s`,
     id
   )
   const rows = await executeQuery(query)
-  return rows[0] || {}
+  return !rows || rows.length === 0 ? { message: "not_found" } : rows[0]
 }
 
 const prepareHATEOAS = ({ totalProducts, products, histogram, filters, orderBy, resultsPerPage, page }) => {
