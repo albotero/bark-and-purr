@@ -14,3 +14,35 @@
 .product-rating .star {
   margin: -0.15rem -0.15rem 0.1rem;
 }
+
+/* Botón del corazón de favoritos */
+.favorite-heart-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 24px;
+  color: gray;
+  transition: color 0.3s ease;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Color rojo cuando está marcado como favorito */
+.favorite-heart-btn.favorited,
+.favorite-heart-btn:hover {
+  color: red;
+  filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+}
+
+/* Enfocado (para accesibilidad con teclado) */
+.favorite-heart-btn:focus {
+  outline: 2px solid red;
+  outline-offset: 2px;
+}
