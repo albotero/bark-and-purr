@@ -11,7 +11,7 @@ const Loading = () => {
     <Container>
       <Row>
         <Col className="d-flex justify-content-center">
-          <img src={angryCat} className="message-img" />
+          <img src={angryCat} style={{ margin: "5rem 0 2rem", width: "15rem" }} />
         </Col>
       </Row>
 

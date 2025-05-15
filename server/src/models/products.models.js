@@ -116,11 +116,11 @@ export const findProducts = async ({
     .join(" AND ")
 
   const countProducts = await executeQuery(
-    "SELECT COUNT(id) FROM products" +
+    "SELECT COUNT(id)::INT FROM products" +
       // Add filter
       (filters.length ? ` WHERE ${filtersTotal}` : "")
   )
-  const totalProducts = Number(countProducts[0]?.count || 0)
+  const totalProducts = countProducts[0]?.count
 
   // Build query
   const [orderColumn, orderDirection] = orderBy.split("_")

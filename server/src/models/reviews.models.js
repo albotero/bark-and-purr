@@ -7,69 +7,12 @@ export const findRating = async ({ productId }) => {
   return rows[0]
 }
 
-const prepareHATEOAS = ({ productId, totalReviews, reviews, filters, orderBy, resultsPerPage, page }) => {
-  const currentPage = Number(page)
-  const totalPages = Math.ceil(totalReviews / resultsPerPage)
-
-  const queryFilters = []
-  if (filters.rating) queryFilters.push({ key: "rating", value: filters.rating })
-  if (filters.minDate) queryFilters.push({ key: "min_date", value: filters.minDate })
-  if (filters.maxDate) queryFilters.push({ key: "max_date", value: filters.maxDate })
-
-  const prepareReviewsUrl = (r) => {
-    // Only send page links if are valid pages and different to current one
-    if (r < 1 || r > totalPages || r == currentPage) return
-    // Prepare GET link with params
-    const params = [
-      ...queryFilters.map(({ key, value }) => `${key}=${value}`),
-      `order_by=${orderBy}`,
-      `results_per_page=${resultsPerPage}`,
-      `page=${r}`,
-    ]
-    // Build URL
-    return `/api/products/${productId}/reviews?${params.join("&")}`
-  }
-  const results = reviews.map(({ id, surname: user, rating, created_at: date, body }) => {
-    return { id, user, date, rating, body }
-  })
-  const firstPage = prepareReviewsUrl(1)
-  const lastPage = prepareReviewsUrl(totalPages)
-  const prevPage = prepareReviewsUrl(currentPage - 1)
-  const nextPage = prepareReviewsUrl(currentPage + 1)
-
-  return {
-    total_reviews: totalReviews,
-    order_by: orderBy,
-    filters: queryFilters,
-    results,
-    product: `/api/products/${productId}`,
-    pages: {
-      page: currentPage,
-      total: totalPages,
-      first: firstPage,
-      prev: prevPage,
-      next: nextPage,
-      last: lastPage,
-    },
-  }
-}
-
 /**
  *
- * @param {productId, rating, min_date, max_date, order_by, page, results_per_page}
- * @returns A list of the reviews of a specific product that match the filters, with order and pagination
- *
- * order_by: ${column}_${asc|desc}
+ * @param {productId, rating, results_per_page}
+ * @returns A list of the reviews of a specific product that match the filters
  */
-export const findReviews = async ({
-  productId,
-  rating,
-  min_date: minDate,
-  max_date: maxDate,
-  order_by: orderBy = "date_desc",
-  results_per_page: resultsPerPage = 10,
-  page = 1,
-}) => {
+export const findReviews = async ({ productId, rating, results_per_page: resultsPerPage = 20, page = 1 }) => {
   /* Pagination and Limits.... */
   const offset = (page - 1) * resultsPerPage
   const filters = []
@@ -79,21 +22,21 @@ export const findReviews = async ({
     values.push(value)
   }
 
-  // Add requested filters
+  // Add product filter
   addFilter("product_id", "=", productId)
-  if (rating) addFilter("rating", "=", rating)
-  if (minDate) addFilter("created_at", ">=", minDate)
-  if (maxDate) addFilter("created_at", "<=", maxDate)
 
   const countReviews = await executeQuery(
-    "SELECT COUNT(id) FROM reviews" +
+    "SELECT rating, COUNT(id)::INT FROM reviews" +
       // Add filter
-      format(` WHERE ${filters.join(" AND ")}`, ...values)
+      format(` WHERE ${filters.join(" AND ")}`, ...values) +
+      // Count by ratings
+      " GROUP BY rating"
   )
-  const totalReviews = Number(countReviews[0]?.count || 0)
 
-  // Build query
-  const [orderColumn, orderDirection] = orderBy.split("_").map((el) => el.replace("date", "created_at"))
+  // Add requested filters
+  if (rating) addFilter("rating", "=", rating)
+
+  const totalReviews = countReviews.reduce((acc, { count }) => acc + count, 0)
 
   const reviews = await executeQuery(
     `SELECT r.*, u.surname
@@ -102,18 +45,23 @@ export const findReviews = async ({
       // Add filter
       format(` WHERE ${filters.join(" AND ")}`, ...values) +
       // Add order
-      (orderBy ? format(` ORDER BY %s %s`, orderColumn, orderDirection.toUpperCase()) : "") +
+      " ORDER BY created_at DESC" +
       // Add pagination
       format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
   )
 
-  return prepareHATEOAS({
-    productId,
-    totalReviews,
-    reviews,
-    filters: { rating, minDate, maxDate },
-    orderBy,
-    resultsPerPage,
-    page,
+  const results = reviews.map(({ id, surname: user, rating, created_at: date, body }) => {
+    return { id, user, date, rating, body }
   })
+
+  const queryFilters = []
+  if (filters.rating) queryFilters.push({ key: "rating", value: filters.rating })
+
+  return {
+    total_reviews: totalReviews,
+    filters: queryFilters,
+    results,
+    ratings: countReviews,
+    product: `/api/product/${productId}`,
+  }
 }

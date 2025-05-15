@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { addFavorite, getFavoritesByUser, deleteFavorite } from "../controllers/favorites.controllers.js";
+import { postFavorite, getFavorites, removeFavorite } from "../controllers/favorites.controllers.js";
 import { validateFavorite } from "../middlewares/validateFavorite.js";
 import { authenticate } from "../middlewares/auth.js";
 
-const router = Router()
+const router = Router();
 
-router.post('/', authenticate, validateFavorite, addFavorite);
-router.get('/user/:user_id', authenticate, getFavoritesByUser);
-router.delete('/:id', authenticate, deleteFavorite);
+router.post("/", authenticate, validateFavorite, postFavorite);
+router.get("/user", authenticate, getFavorites);
+router.delete("/:id", authenticate, removeFavorite);
 
-export default router
+export default router;
