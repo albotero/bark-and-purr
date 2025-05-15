@@ -1,20 +1,20 @@
-import Container from "react-bootstrap/Container"
-import Row from "react-bootstrap/Row"
-import Col from "react-bootstrap/Col"
-import Button from "react-bootstrap/Button"
-import { FaHeartBroken } from "react-icons/fa"
-import { useTranslation } from "react-i18next"
-import { ProductCard } from "../components/ProductCard"
-import Loading from "../components/Loading"
-import ErrorMsg from "../components/ErrorMsg"
-import { useFavorites } from "../context/FavoritesContext"
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import { FaHeartBroken } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { ProductCard } from "../components/ProductCard";
+import Loading from "../components/Loading";
+import ErrorMsg from "../components/ErrorMsg";
+import { useFavorites } from "../context/FavoritesContext";
 
 const Favorites = () => {
-  const { t } = useTranslation("favorites")
-  const { favorites, isLoading, error, removeFromFavorites } = useFavorites()
+  const { t } = useTranslation("favorites");
+  const { favorites, isLoading, error, removeFromFavorites } = useFavorites();
 
-  if (isLoading) return <Loading />
-  if (error) return <ErrorMsg error={error} />
+  if (isLoading) return <Loading />;
+  if (error) return <ErrorMsg error={error} />;
 
   return (
     <Container className="section-padding">
@@ -36,7 +36,9 @@ const Favorites = () => {
                   variant="outline-danger"
                   size="sm"
                   className="position-absolute top-0 start-0 m-2"
-                  onClick={() => removeFromFavorites(product.id)}
+                  onClick={() =>
+                    removeFromFavorites(product.favorite_id || product.id)
+                  }
                   title={t("favorites.remove")}
                 >
                   <FaHeartBroken />
@@ -47,7 +49,7 @@ const Favorites = () => {
         </Row>
       )}
     </Container>
-  )
-}
+  );
+};
 
-export default Favorites
+export default Favorites;

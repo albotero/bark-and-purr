@@ -236,47 +236,48 @@ export function ProductCard({ product, showAddToCart = true }) {
     const fav = favorites.find(
       (favItem) => favItem.id === productId || favItem.product_id === productId
     );
+
     setIsFavorite(!!fav);
   }, [favorites, productId]);
 
   // Maneja click en el corazón de favoritos
   const handleFavoriteClick = async (e) => {
-  e.stopPropagation();
+    e.stopPropagation();
 
-  const token = localStorage.getItem("token");
-  const isAuthenticated = !!token;
+    const token = localStorage.getItem("token");
+    const isAuthenticated = !!token;
 
-  if (!isAuthenticated) {
-    Swal.fire({
-      icon: "warning",
-      title: "Debe iniciar sesión",
-      text: "Para agregar productos a favoritos, inicia sesión primero.",
-    });
-    return;
-  }
+    if (!isAuthenticated) {
+      Swal.fire({
+        icon: "warning",
+        title: "Debe iniciar sesión",
+        text: "Para agregar productos a favoritos, inicia sesión primero.",
+      });
+      return;
+    }
 
-  const result = await toggleFavorite(product);
+    const result = await toggleFavorite(product);
 
-  if (result === "added") {
-    Swal.fire({
-      icon: "success",
-      title: "Producto agregado a favoritos",
-      showConfirmButton: true,
-      confirmButtonText: "Ver favoritos",
-    }).then((res) => {
-      if (res.isConfirmed) {
-        navigate("/favorites");
-      }
-    });
-  } else if (result === "removed") {
-    Swal.fire({
-      icon: "info",
-      title: "Producto eliminado de favoritos",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-  }
-};
+    if (result === "added") {
+      Swal.fire({
+        icon: "success",
+        title: "Producto agregado a favoritos",
+        showConfirmButton: true,
+        confirmButtonText: "Ver favoritos",
+      }).then((res) => {
+        if (res.isConfirmed) {
+          navigate("/favorites");
+        }
+      });
+    } else if (result === "removed") {
+      Swal.fire({
+        icon: "info",
+        title: "Producto eliminado de favoritos",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    }
+  };
 
   return isProductInCart ? (
     <Card className="mb-3 shadow-sm position-relative">

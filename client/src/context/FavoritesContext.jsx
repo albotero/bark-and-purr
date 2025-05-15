@@ -28,8 +28,8 @@ export function FavoritesProvider({ children }) {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (response?.error) {
-      setError(response.error);
+    if (!response || response.error) {
+      setError(response?.error || "Error desconocido al obtener favoritos");
       setFavorites([]);
     } else {
       setFavorites(response || []);
