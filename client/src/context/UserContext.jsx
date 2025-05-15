@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react"
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next"
 
 const UserContext = createContext()
 
@@ -40,8 +41,6 @@ const login = async (email, pass) => {
   }
 };
 
-
-
 const register = async (name, lastName, email, birthday, password) => {
       try {
         const res = await fetch("http://localhost:3000/api/auth/register", {
@@ -63,7 +62,16 @@ const register = async (name, lastName, email, birthday, password) => {
       if (!res.ok) {
         throw new Error(data.message || "Registration failed")
         }
-    // opcional: retornar el token si decides autenticar al usuario inmediatamente
+      
+      localStorage.setItem("token", data.token)
+      setToken(true)
+      Swal.fire({
+        icon: "success",
+        title: "Registration successful",
+        text: "You have been registered successfully.",
+        timer: 2000,
+        showConfirmButton: true,
+      })
       return { success: true, user: data }
     } catch (err) {
       console.error("Registration error:", err)
@@ -73,6 +81,7 @@ const register = async (name, lastName, email, birthday, password) => {
 
 }; 
   
+const { t } = useTranslation("auth")
 
 const logout = () => {
   localStorage.removeItem("token")
@@ -80,10 +89,11 @@ const logout = () => {
 
   Swal.fire({
     icon: "success",
-    title: "Logged out",
-    text: "You have been logged out successfully.",
+    title: t("logout.title"),
+    text: t("logout.text"),
+    confirmButtonText: t("logout.button"),
     timer: 2000,
-    showConfirmButton: true,
+    showConfirmButton: true
   })
 }
 

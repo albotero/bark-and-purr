@@ -9,11 +9,16 @@ import Col from "react-bootstrap/Col";
 import ListGroup from "react-bootstrap/ListGroup";
 import Tree from "../components/Tree";
 import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
 
 const Cart = () => {
-  const { cart, removeFromCart, buyCart, cartTotal, increaseQty, decreaseQty } =
-    useCart();
+  const { cart, removeFromCart, buyCart, increaseQty, decreaseQty } = useCart();
   const { t } = useTranslation("cart");
+
+  const cartTotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   const treeItems = [
     { key: "home", href: "/" },
@@ -21,8 +26,27 @@ const Cart = () => {
   ];
 
   const [shippingMethod, setShippingMethod] = useState("pickup");
-  const shippingCost = shippingMethod === "delivery" ? 3 : 0;
+  const shippingCost = shippingMethod === "delivery" ? 3000 : 0;
   const totalWithShipping = cartTotal + shippingCost;
+
+  const handleBuy = async () => {
+    try {
+      await buyCart();
+
+      Swal.fire({
+        icon: "success",
+        title: t("success_title", "Purchase completed!"),
+        text: t("success_message", "Thank you for your purchase."),
+        confirmButtonColor: "#3085d6",
+      });
+    } catch {
+      Swal.fire({
+        icon: "error",
+        title: t("error_title", "Oops..."),
+        text: t("error_message", "Something went wrong."),
+      });
+    }
+  };
 
   return (
     <Container className="section-padding">
@@ -49,14 +73,13 @@ const Cart = () => {
                         className="bg-light border rounded d-flex justify-content-center align-items-center"
                         style={{ height: "80px" }}
                       >
-                        {/* Carga de imagen optimizada */}
                         <img
-                          src={item.thumbnailLowRes || "/placeholder.png"} // imagen de baja resolución
-                          data-src={item.thumbnail || "/placeholder.png"} // ruta de la imagen principal
+                          src={item.thumbnailLowRes || "/placeholder.png"}
+                          data-src={item.thumbnail || "/placeholder.png"}
                           alt={item.title}
                           className="img-fluid rounded"
                           style={{ maxHeight: "80px", objectFit: "cover" }}
-                          loading="lazy" // Lazy loading
+                          loading="lazy"
                         />
                       </div>
                     </Col>
@@ -144,7 +167,7 @@ const Cart = () => {
                 <Button
                   variant="primary"
                   className="w-100 rounded-pill"
-                  onClick={buyCart}
+                  onClick={handleBuy}
                 >
                   {t("pay")}
                 </Button>

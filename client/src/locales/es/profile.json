@@ -25,5 +25,26 @@
       "review": "Notifícame cuando un producto que publiqué reciba una reseña",
       "password": "Notifícame cuando cambie mi contraseña"
     }
+  },    
+  "alerts": {
+      "no_changes": "Sin cambios detectados",
+      "no_avatar_change": "No has cambiado la URL del avatar.",
+      "no_address_change": "No has realizado cambios en tu dirección.",
+      "avatar_updated": "¡Avatar actualizado!",
+      "avatar_success": "Tu avatar se actualizó correctamente.",
+      "avatar_error": "No se pudo actualizar el avatar. Inténtalo de nuevo.",
+      "address_updated": "¡Cambios guardados!",
+      "address_success": "Tu dirección se actualizó correctamente.",
+      "address_error": "No se pudo actualizar la dirección. Inténtalo de nuevo.",
+      "prefs_updated": "¡Cambios guardados!",
+      "prefs_success": "Tus preferencias se actualizaron correctamente.",
+      "prefs_error": "No se pudieron actualizar las preferencias. Inténtalo de nuevo."
+  },
+  "form": {
+    "select_avatar": "Selecciona un nuevo avatar",
+    "selected_file": "Archivo seleccionado",
+    "save_avatar": "Guardar Avatar",
+    "choose_file": "Elegir archivo",
+    "upload": "Subir"
   }
 }
