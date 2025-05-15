@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
 import ErrorMsg from "../components/ErrorMsg"
 import Loading from "../components/Loading"
+import Reviews from "../components/Reviews"
 import { useCart } from "../context/CartContext"
 import { useUser } from "../context/UserContext"
 import { useApi } from "../hooks/useApi"
@@ -19,8 +20,9 @@ const Product = () => {
   const { token } = useUser()
   const [fetchData] = useApi()
   const navigate = useNavigate()
+
   const { message, id, name, images, discount, price, stock, brand, description, vendor } = product
-  const { total_reviews: totalReviews, results: reviewsData } = reviews
+  const { total_reviews: totalReviews } = reviews
   const discounted = discount > 0
   const finalPrice = price * (1 - (discount || 0))
 
@@ -184,18 +186,7 @@ const Product = () => {
 
         <div className="tab-content border p-3">
           {activeTab === "desc" && <p>{description}</p>}
-
-          {activeTab === "reviews" && (
-            <div>
-              {reviewsData.map(({ id: reviewId, user, date, rating: reviewRating, body }) => (
-                <div key={`review_${reviewId}`} className="mb-3 border-bottom pb-2">
-                  <strong>{user}</strong> <span className="text-warning">{"★".repeat(reviewRating)}</span>
-                  <div className="text-muted small">{new Date(date).toLocaleString()}</div>
-                  <p className="mb-1">{body}</p>
-                </div>
-              ))}
-            </div>
-          )}
+          {activeTab === "reviews" && <Reviews reviews={reviews} setReviews={setReviews} />}
         </div>
       </div>
     </div>

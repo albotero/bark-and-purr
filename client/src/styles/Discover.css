@@ -32,11 +32,6 @@
   cursor: pointer;
 }
 
-.message-img {
-  margin: 5rem 0 2rem;
-  width: 15rem;
-}
-
 @media screen and (min-width: 768px) {
   .masonry-grid {
     margin-top: 1.5rem;
