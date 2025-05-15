@@ -17,9 +17,9 @@ app.use(
   cors({
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true)
-      if (whiteList.includes(origin)) callback(null, true)
-      else callback(new Error("Not allowed by CORS"))
+      if (!origin) return callback(null, true);
+      if (whiteList.includes(origin)) callback(null, true);
+      else callback(new Error("Not allowed by CORS"));
     },
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -27,8 +27,10 @@ app.use(
     preflightContinue: false,
     optionsSuccessStatus: 204,
   })
-)
+);
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes)
 app.use("/api", productRoutes)
 app.use("/favorites", favoritesRoutes)

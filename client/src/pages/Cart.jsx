@@ -15,10 +15,7 @@ const Cart = () => {
   const { cart, removeFromCart, buyCart, increaseQty, decreaseQty } = useCart();
   const { t } = useTranslation("cart");
 
-  const cartTotal = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const treeItems = [
     { key: "home", href: "/" },
@@ -27,7 +24,7 @@ const Cart = () => {
 
   const [shippingMethod, setShippingMethod] = useState("pickup");
   const shippingCost = shippingMethod === "delivery" ? 3000 : 0;
-  const totalWithShipping = cartTotal + shippingCost;
+  const totalWithShipping = totalItems + shippingCost;
 
   const handleBuy = async () => {
     try {
@@ -52,7 +49,12 @@ const Cart = () => {
     <Container className="section-padding">
       <Tree items={treeItems} />
 
-      <h5 className="mb-4">{t("title", { count: cart.length })}:</h5>
+      <h5 className="mb-4">
+        {t("title", {
+          count: cart.reduce((acc, item) => acc + item.quantity, 0),
+        })}
+        :
+      </h5>
 
       {cart.length === 0 ? (
         <Row>
@@ -74,8 +76,7 @@ const Cart = () => {
                         style={{ height: "80px" }}
                       >
                         <img
-                          src={item.thumbnailLowRes || "/placeholder.png"}
-                          data-src={item.thumbnail || "/placeholder.png"}
+                          src={item.thumbnail || "/placeholder.png"}
                           alt={item.title}
                           className="img-fluid rounded"
                           style={{ maxHeight: "80px", objectFit: "cover" }}
@@ -137,7 +138,7 @@ const Cart = () => {
 
                 <ListGroup className="mb-3">
                   <ListGroup.Item>
-                    Subtotal: ${cartTotal.toFixed(2)}
+                    Subtotal: ${totalItems.toFixed(2)}
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Card.Subtitle className="mb-2 fw-bold">

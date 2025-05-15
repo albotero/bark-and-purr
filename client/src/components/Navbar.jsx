@@ -38,6 +38,11 @@ const Navbar = () => {
             <NavLink to="/discover" className={linkClassName}>
               {t("discover")}
             </NavLink>
+            {token && (
+              <NavLink to="/user/publications" className={linkClassName}>
+                {t("Products")}
+              </NavLink>
+            )}
           </Nav>
           {/* Links at the right */}
           <Nav>
