@@ -1,105 +1,222 @@
 import React, { useEffect, useState } from "react";
-import Container from "react-bootstrap/esm/Container";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/esm/Col";
-import Button from "react-bootstrap/Button";
-import { ProductCard } from "../components/ProductCard";
+import { Container, Button, Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { FaBoxOpen } from "react-icons/fa";
+import { FaEdit, FaTrash, FaStar } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { FaFileCirclePlus } from "react-icons/fa6";
-import { FaTrash } from "react-icons/fa6";
+import Swal from "sweetalert2";
 
 const Publications = () => {
   const { t } = useTranslation("publications");
   const [publications, setPublications] = useState([]);
 
-  const userId = 1;
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const allProducts = JSON.parse(localStorage.getItem("products")) || [];
+    const fetchPublications = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/publications", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    const userProducts = allProducts.filter(
-      (product) => product.ownerId === userId
-    );
+        if (!response.ok) throw new Error("Failed to fetch publications");
 
-    setPublications(userProducts);
-  }, []);
+        const data = await response.json();
+        setPublications(data);
+      } catch (error) {
+        console.error("Error fetching publications:", error);
+      }
+    };
 
-  const removePublication = (id) => {
-    const updatedPublications = publications.filter((item) => item.id !== id);
-    setPublications(updatedPublications);
+    fetchPublications();
+  }, [token]);
 
-    const allProducts = JSON.parse(localStorage.getItem("products")) || [];
-    const updatedProducts = allProducts.filter((item) => item.id !== id);
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
+  const removePublication = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/publications/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to delete publication");
+
+      setPublications((prev) => prev.filter((item) => item.id !== id));
+
+      Swal.fire("Deleted!", "Your publication has been removed.", "success");
+    } catch (error) {
+      console.error("Error deleting publication:", error);
+      Swal.fire("Error", "Failed to delete publication", "error");
+    }
   };
 
+  const toggleStatus = async (id, currentStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:3000/api/publications/${id}/status`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ is_active: !currentStatus }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to toggle publication");
+
+      const updated = await response.json();
+
+      setPublications((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, ...updated } 
+            : item
+        )
+      );
+
+    } catch (error) {
+      console.error("Error toggling publication:", error);
+    }
+  };
+  
+  
+
   return (
-    <>
-      <Container className="py-5">
-        <h6 className="text-muted mb-3">
-          <Link to="/user" className="text-decoration-none">
-            Profile
-          </Link>{" "}
-          &gt; <strong>My publications</strong>
-        </h6>
+    <Container className="py-5">
+      <h6 className="text-muted mb-3">
+        <Link to="/user" className="text-decoration-none">
+          Profile
+        </Link>{" "}
+        &gt; <strong>My Products</strong>
+      </h6>
 
-        <h2 className="mb-4">
-          {t("title", "Publications")} ({publications.length})
-        </h2>
-
-        {publications.length === 0 ? (
-          <div className="text-center">
-            <FaBoxOpen size={48} className="text-secondary mb-2" />
-            <p>
-              {t("emptyMessage", "You haven't published any products yet.")}
-            </p>
-          </div>
-        ) : (
-          <Row className="g-4">
-            {publications.map((product) => (
-              <Col key={product.id} sm={12} md={6} lg={4}>
-                <div className="position-relative">
-                  <ProductCard product={product} showAddToCart={false} />
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    className="position-absolute top-0 end-0 m-2"
-                    onClick={() => {
-                      const confirmDelete = window.confirm(
-                        "Are you sure you want to delete this publication?"
-                      );
-                      if (confirmDelete) {
-                        removePublication(product.id);
-                      }
-                    }}
-                    title="Delete publication"
-                  >
-                    <FaTrash />
-                  </Button>
-                </div>
-              </Col>
-            ))}
+      <Card className="border-0 rounded-4 p-4 shadow-sm bg-light-subtle">
+        <Card.Body>
+          <Row className="align-items-center mb-4">
+            <Col>
+              <h3 className="mb-0">{t("title", "Publications")}</h3>
+            </Col>
+            <Col className="text-end">
+              <Link to="/user/new-product">
+                <Button variant="primary">New product</Button>
+              </Link>
+            </Col>
           </Row>
-        )}
-      </Container>
 
-      {/* Botón flotante siempre visible */}
-      <Link
-        to="/user/new-product"
-        className="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center shadow"
-        style={{
-          width: "60px",
-          height: "60px",
-          fontSize: "24px",
-          zIndex: 1050,
-        }}
-        title="Add new product"
-      >
-        <FaFileCirclePlus />
-      </Link>
-    </>
+          {publications.length === 0 ? (
+            <Row className="text-center text-muted py-5">
+              <p className="fs-5">You haven't published any products yet.</p>
+            </Row>
+          ) : (
+            <Row className="g-4">
+              {publications.map((product) => (
+                <Col key={product.id} xs={12} sm={6} md={4} lg={3}>
+                  <Card className="h-100 border rounded-4 p-3 shadow-sm bg-white">
+                    <Card.Body>
+                      <Row className="justify-content-between align-items-start mb-2">
+                        <Col>
+                          <Card.Title as="h5" className="mb-0">
+                            {product.title}
+                          </Card.Title>
+                        </Col>
+                        <Col xs="auto">
+                          <Link
+                            to={`/user/edit-product/${product.id}`}
+                            title="Edit publication"
+                            className="text-decoration-none text-dark"
+                          >
+                            <FaEdit role="button" size={24} />
+                          </Link>
+                        </Col>
+                      </Row>
+
+                      <div
+                        className="bg-light d-flex align-items-center justify-content-center mb-2 overflow-hidden rounded"
+                        style={{ height: "120px" }}
+                      >
+                        {product.images?.length > 0 ? (
+                          <Card.Img
+                            variant="top"
+                            src={product.images[0].url}
+                            alt={product.title}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          <span className="text-muted">No image</span>
+                        )}
+                      </div>
+
+                      <div className="mb-2">
+                        <strong>Price:</strong> ${product.price}
+                      </div>
+                      <Link
+                        to={`/product/${product.id}`}
+                        className="text-decoration-none text-primary me-5"
+                      >
+                        <FaStar className="me-1" />
+                        {(product.review_count ?? 0) === 1
+                          ? "Review"
+                          : "Reviews"}{" "}
+                        ({product.review_count ?? 0})
+                      </Link>
+
+                      <Button
+                        onClick={() =>
+                          toggleStatus(product.id, product.is_active_product)
+                        }
+                        className={`btn ${
+                          product.is_active_product
+                            ? "btn-success"
+                            : "btn-danger"
+                        } position-absolute start-0 bottom-0 m-4`}
+                      >
+                        {product.is_active_product ? "Activa" : "Desactivada"}
+                      </Button>
+                    </Card.Body>
+
+                    <Card.Footer className="bg-transparent border-0 text-end">
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => removePublication(product.id)}
+                        title="Delete publication"
+                      >
+                        <FaTrash />
+                      </Button>
+                    </Card.Footer>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

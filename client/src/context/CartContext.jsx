@@ -15,14 +15,15 @@ export const CartProvider = ({ children }) => {
         },
       });
 
-      if (!res.ok) throw new Error("Could not get cart");
-
       const data = await res.json();
-      setCart(data.cart); 
+      if (!res.ok) throw new Error(data.message || "Error fetching cart");
+
+      setCart(data.cart); // ← importante
     } catch (err) {
-      console.error("Error getting cart:", err);
+      console.error("Error fetching cart:", err);
     }
   };
+  
   
   const addToCart = async (product, quantity = 1) => {
     try {
@@ -33,7 +34,7 @@ export const CartProvider = ({ children }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ product_id, quantity }), 
+        body: JSON.stringify({ product_id, quantity }),
       });
 
       if (!res.ok) {
@@ -41,15 +42,13 @@ export const CartProvider = ({ children }) => {
         throw new Error(`Error adding to cart: ${errorText}`);
       }
 
-      const data = await res.json(); 
-      setCart(data.cart); 
+      await fetchCart();
     } catch (err) {
       console.error("Error adding product to cart:", err);
     }
   };
   
-
-  const updateItemQuantity = async (itemId, quantity) => {
+  const updateItemQuantity = async (itemId, newQuantity) => {
     try {
       const res = await fetch(`http://localhost:3000/api/cart/${itemId}`, {
         method: "PUT",
@@ -57,18 +56,18 @@ export const CartProvider = ({ children }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ quantity }),
+        body: JSON.stringify({ quantity: newQuantity }),
       });
 
       const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.message || "Error updating quantity");
+      if (!res.ok) throw new Error(data.message || "Error updating quantity");
 
-      fetchCart();
+      await fetchCart();
     } catch (err) {
       console.error("Error updating quantity:", err);
     }
   };
+  
 
   const removeFromCart = async (itemId) => {
     try {
@@ -88,18 +87,23 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const increaseQty = (itemId) => {
-    const item = cart.find((i) => i.id === itemId);
-    if (item) updateItemQuantity(itemId, item.quantity + 1);
-  };
-
-  const decreaseQty = (itemId) => {
+  const increaseQty = async (itemId) => {
     const item = cart.find((i) => i.id === itemId);
     if (item) {
-      if (item.quantity <= 1) removeFromCart(itemId);
-      else updateItemQuantity(itemId, item.quantity - 1);
+      await updateItemQuantity(itemId, item.quantity + 1);
     }
   };
+
+  const decreaseQty = async (itemId) => {
+    const item = cart.find((i) => i.id === itemId);
+    if (item) {
+      if (item.quantity <= 1) {
+        await removeFromCart(itemId);
+      } else {
+        await updateItemQuantity(itemId, item.quantity - 1);
+      }
+    }
+  };  
 
   const clearCart = async () => {
     const deletions = cart.map((item) => removeFromCart(item.id));

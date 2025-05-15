@@ -1,5 +1,4 @@
 import {
-  getOrCreateCart,
   findCartItemsByUser,
   findCartItem,
   insertCartItem,
@@ -38,7 +37,7 @@ export const addToCart = async (req, res) => {
   const existing = await findCartItem(userId, product_id);
 
   if (existing) {
-    await updateCartItemQuantity(quantity, existing.id);
+    await updateCartItemQuantity(existing.quantity + quantity, existing.id);
   } else {
     await insertCartItem(userId, product_id, quantity);
   }

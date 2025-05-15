@@ -13,6 +13,7 @@ import { useUser } from "./context/UserContext"
 import Favorites from "./pages/Favorites"
 import NewProduct from "./pages/NewProduct"
 import Publications from "./pages/Publications"
+import EditProduct from "./pages/EditProduct";
 import ProtectedRoute from "./components/ProtectedRoute"
 import ErrorMsg from "./components/ErrorMsg"
 
@@ -31,7 +32,7 @@ function App() {
           <Route path="product/:productId" element={<Product />} />
           <Route path="cart" element={<Cart />} />
           <Route path="user">
-            <Route 
+            <Route
               index
               element={
                 <ProtectedRoute>
@@ -65,13 +66,21 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="edit-product/:id"
+              element={
+                <ProtectedRoute>
+                  <EditProduct />
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="*" element={<ErrorMsg error="fetch.404" />} />
         </Routes>
       </Container>
       <Footer />
     </>
-  )
+  );
 }
 
 export default App

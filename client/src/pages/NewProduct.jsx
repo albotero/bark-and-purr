@@ -1,13 +1,13 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import Container from "react-bootstrap/Container"
-import Row from "react-bootstrap/Row"
-import Col from "react-bootstrap/Col"
-import Button from "react-bootstrap/Button"
-import Card from "react-bootstrap/Card"
-import Form from "react-bootstrap/esm/Form"
-import { FiUploadCloud } from "react-icons/fi"
-import { Link } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Container from "react-bootstrap/Container";
+import { FiUploadCloud } from "react-icons/fi";
+import Swal from "sweetalert2";
 
 const NewProduct = () => {
   const navigate = useNavigate();
@@ -16,45 +16,89 @@ const NewProduct = () => {
     description: "",
     price: "",
     stock: "",
-    image: "",
+    images: [],
   });
+
+  const [previewUrls, setPreviewUrls] = useState([]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
+
+    if (name === "images") {
+      const filesArray = files ? Array.from(files) : [];
+      setFormData((prev) => ({
+        ...prev,
+        images: filesArray,
+      }));
+
+      const previews = filesArray.map((file) => URL.createObjectURL(file));
+      setPreviewUrls(previews);
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.price < 0 || formData.stock < 0) {
-      alert("Price and stock cannot be negative.");
-      return;
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to publish this product?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#6f42c1",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, publish it!",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    const { title, description, price, stock, images } = formData;
+    const formDataToSend = new FormData();
+    formDataToSend.append("title", title);
+    formDataToSend.append("description", description);
+    formDataToSend.append("price", price);
+    formDataToSend.append("stock", stock);
+
+    if (images && images.length > 0) {
+      images.forEach((image) => formDataToSend.append("images", image));
     }
 
-    const userId = 1; 
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:3000/api/publications/create",
+        {
+          method: "POST",
+          body: formDataToSend,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    const stored = JSON.parse(localStorage.getItem("products")) || [];
-
-    // Crear nuevo producto
-    const newProduct = {
-      ...formData,
-      id: Date.now(),
-      price: parseFloat(formData.price),
-      stock: parseInt(formData.stock),
-      ownerId: userId, 
-      image: formData.image ? URL.createObjectURL(formData.image) : null,
-    };
-
-    // Guardar en localStorage
-    localStorage.setItem("products", JSON.stringify([...stored, newProduct]));
-
-    alert("Product successfully published");
-
-    navigate("/user/publications");
+      if (response.ok) {
+        await Swal.fire({
+          icon: "success",
+          title: "Published!",
+          text: "Your product has been published.",
+          confirmButtonColor: "#6f42c1",
+        });
+        navigate("/user/publications");
+      } else {
+        throw new Error("Server error");
+      }
+    } catch (error) {
+      console.error("Error creating publication:", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+    }
   };
 
   return (
@@ -74,7 +118,7 @@ const NewProduct = () => {
         <Form onSubmit={handleSubmit}>
           <Row className="mb-3">
             <Col md={6}>
-              <span className="h5 d-block mb-3 fw-bold">Basic Information</span>
+              <h5 className="fw-bold mb-3">Basic information</h5>
               <Form.Group className="mb-3">
                 <Form.Label>Product Title</Form.Label>
                 <Form.Control
@@ -99,7 +143,7 @@ const NewProduct = () => {
             </Col>
 
             <Col md={6}>
-              <span className="h5 d-block mb-3 fw-bold">Price and Stock</span>
+              <h5 className="fw-bold mb-3">Price and Stock</h5>
               <Form.Group className="mb-3">
                 <Form.Label>Price</Form.Label>
                 <Form.Control
@@ -126,21 +170,45 @@ const NewProduct = () => {
             </Col>
           </Row>
 
-          <span className="h5 d-block mt-4 fw-bold">Images</span>
+          <h5 className="fw-bold mt-4">Images</h5>
           <Form.Group
-            className="mb-4 border border-2 p-4 text-center bg-light"
-            style={{ borderStyle: "dashed" }}
+            className="mb-4 border border-2 p-5 text-center bg-light"
+            style={{
+              borderStyle: "dashed",
+              cursor: "pointer",
+            }}
           >
             <Form.Label htmlFor="image-upload" className="d-block">
-              <FiUploadCloud size={48} className="text-secondary mb-2" />
-              <span className="d-block">Upload Images</span>
+              {previewUrls.length === 0 ? (
+                <>
+                  <FiUploadCloud size={48} className="text-secondary mb-2" />
+                  <span className="d-block text-secondary">Upload Images</span>
+                </>
+              ) : (
+                <div className="d-flex flex-wrap justify-content-center gap-3">
+                  {previewUrls.map((url, index) => (
+                    <img
+                      key={index}
+                      src={url}
+                      alt={`preview-${index}`}
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </Form.Label>
             <Form.Control
               type="file"
-              name="image"
+              name="images"
               id="image-upload"
               onChange={handleChange}
               accept="image/*"
+              multiple
               className="d-none"
             />
           </Form.Group>
@@ -149,13 +217,19 @@ const NewProduct = () => {
             <Col xs="auto">
               <Button
                 variant="outline-secondary"
-                onClick={() => navigate("/profile")}
+                onClick={() => navigate("/user/publications")}
               >
                 Cancel
               </Button>
             </Col>
             <Col xs="auto">
-              <Button variant="primary" type="submit">
+              <Button
+                type="submit"
+                style={{
+                  backgroundColor: "#6f42c1",
+                  borderColor: "#6f42c1",
+                }}
+              >
                 Publish
               </Button>
             </Col>

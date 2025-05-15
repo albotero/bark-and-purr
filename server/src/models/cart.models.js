@@ -14,6 +14,7 @@ export const getOrCreateCart = async (userId) => {
   return created.rows[0];
 };
 
+
 export const findCartItemsByUser = async (userId) => {
   const cart = await getOrCreateCart(userId);
   const result = await pool.query(
@@ -23,6 +24,13 @@ export const findCartItemsByUser = async (userId) => {
       pbc.quantity,
       p.title,
       p.price,
+      (
+        SELECT url
+        FROM product_images
+        WHERE product_id = p.id
+        ORDER BY id ASC
+        LIMIT 1
+      ) AS thumbnail,
       p.price * pbc.quantity AS total
     FROM products_by_cart pbc
     JOIN products p ON p.id = pbc.product_id
@@ -32,6 +40,7 @@ export const findCartItemsByUser = async (userId) => {
   );
   return result.rows;
 };
+
 
 export const findCartItem = async (userId, productId) => {
   const cart = await getOrCreateCart(userId);
@@ -50,12 +59,11 @@ export const insertCartItem = async (userId, productId, quantity) => {
   );
 };
 
-export const updateCartItemQuantity = async (quantity, itemId) => {
-  const result = await pool.query(
-    `UPDATE products_by_cart SET quantity = quantity + $1 WHERE id = $2`,
-    [quantity, itemId]
-  );
-  return result;
+export const updateCartItemQuantity = async (newQuantity, cartItemId) => {
+  await db.query(`UPDATE cart_items SET quantity = $1 WHERE id = $2`, [
+    newQuantity,
+    cartItemId,
+  ]);
 };
 
 export const updateCartItem = async (quantity, itemId, userId) => {
