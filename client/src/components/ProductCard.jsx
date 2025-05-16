@@ -4,12 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { BsCart4, BsTrash } from "react-icons/bs";
 import { IoArrowRedo } from "react-icons/io5";
 import { TiStarFullOutline } from "react-icons/ti";
-import { FaHeart, FaRegHeart } from "react-icons/fa"; 
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Card from "react-bootstrap/Card";
 import { useCart } from "../context/CartContext";
-import { useFavorites } from "../context/FavoritesContext"; 
+import { useFavorites } from "../context/FavoritesContext";
 import Swal from "sweetalert2";
 
 export function ProductCard({ product, showAddToCart = true }) {
@@ -21,8 +21,16 @@ export function ProductCard({ product, showAddToCart = true }) {
   const cartItem = cart.find((item) => item.id === productId);
   const isProductInCart = !!cartItem;
 
-  // Estado local para manejar si está en favoritos
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // Nuevo estado para saber si el usuario está logueado
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Al montar el componente, verificamos si hay token
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
 
   // Actualizar estado si el producto está en favoritos
   useEffect(() => {
@@ -38,19 +46,6 @@ export function ProductCard({ product, showAddToCart = true }) {
 
   const handleFavoriteClick = async (e) => {
     e.stopPropagation();
-
-    const token = localStorage.getItem("token");
-    const isAuthenticated = !!token;
-
-    if (!isAuthenticated) {
-      Swal.fire({
-        icon: "warning",
-        title: "Debe iniciar sesión",
-        text: "Para agregar productos a favoritos, inicia sesión primero.",
-      });
-      return;
-    }
-
     const result = await toggleFavorite(product);
 
     if (result === "added") {
@@ -76,24 +71,27 @@ export function ProductCard({ product, showAddToCart = true }) {
 
   return isProductInCart ? (
     <Card className="mb-3 shadow-sm position-relative">
-      <button
-        aria-label="Agregar a favoritos"
-        onClick={handleFavoriteClick}
-        className="favorite-heart-btn"
-        style={{
-          position: "absolute",
-          top: "8px",
-          left: "8px",
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
-          zIndex: 10,
-          fontSize: "24px",
-          color: isFavorite ? "red" : "gray",
-        }}
-      >
-        {isFavorite ? <FaHeart /> : <FaRegHeart />}
-      </button>
+      {/* Mostrar el corazón solo si el usuario está autenticado */}
+      {isAuthenticated && (
+        <button
+          aria-label="Agregar a favoritos"
+          onClick={handleFavoriteClick}
+          className="favorite-heart-btn"
+          style={{
+            position: "absolute",
+            top: "8px",
+            left: "8px",
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            zIndex: 10,
+            fontSize: "24px",
+            color: isFavorite ? "red" : "gray",
+          }}
+        >
+          {isFavorite ? <FaHeart /> : <FaRegHeart />}
+        </button>
+      )}
 
       <Card.Body className="d-flex align-items-center">
         <div
@@ -144,15 +142,17 @@ export function ProductCard({ product, showAddToCart = true }) {
     </Card>
   ) : (
     <Card className="position-relative">
-      {/* CORAZÓN FAVORITOS*/}
-      <button
-        aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
-        title={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"} 
-        onClick={handleFavoriteClick}
-        className={`favorite-heart-btn ${isFavorite ? "favorited" : ""}`}
-      >
-        {isFavorite ? <FaHeart /> : <FaRegHeart />}
-      </button>
+      {/* Mostrar el corazón solo si el usuario está autenticado */}
+      {isAuthenticated && (
+        <button
+          aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+          title={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+          onClick={handleFavoriteClick}
+          className={`favorite-heart-btn ${isFavorite ? "favorited" : ""}`}
+        >
+          {isFavorite ? <FaHeart /> : <FaRegHeart />}
+        </button>
+      )}
 
       <div className="position-relative">
         <Card.Img
