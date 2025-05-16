@@ -3,9 +3,9 @@ import { createFavorite, getFavoritesByUser, deleteFavorite } from "../models/fa
 
 // POST /favorites
 export const postFavorite = (req, res) => {
-  console.log("📥 POST /favorites");
-  console.log("👉 req.user:", req.user);
-  console.log("👉 req.body:", req.body);
+  console.log(" POST /favorites");
+  console.log(" req.user:", req.user);
+  console.log(" req.body:", req.body);
   const { product_id } = req.body;
   if (!product_id) {
     return res.status(400).json({ error: "product_id is required" });

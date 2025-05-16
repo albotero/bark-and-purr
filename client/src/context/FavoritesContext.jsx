@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-} from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { useApi } from "../hooks/useApi";
 import Swal from "sweetalert2";
 
@@ -62,7 +55,6 @@ export function FavoritesProvider({ children }) {
 
   const toggleFavorite = useCallback(
     async (product, e) => {
-      // Si se pasa evento, evitar propagación y recargas no deseadas
       if (e) {
         e.stopPropagation();
         e.preventDefault();

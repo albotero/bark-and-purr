@@ -35,14 +35,7 @@ export const useApi = () => {
             ? `${baseUrl}${fullUrl}`
             : `${baseUrl}/api/${endpoint}` + (queryStr ? `?${queryStr}` : "");
 
-          const config = {
-            method,
-            url,
-            headers,
-            ...(body && { data: body }), // ✅ Solo se incluye si hay body
-          };
-
-          const res = await axios(config);
+          const res = await axios({ method, url, headers, data: body });
           data = res.data;
         } catch ({ request, response }) {
           error =

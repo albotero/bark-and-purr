@@ -3,15 +3,15 @@ import connectionDb from "../../config/db/connection.db.js";
 // Crear un favorito
 export const createFavorite = async ({ userId, productId }) => {
   try {
-    console.log("🛠️ Creando favorito con:", { userId, productId });
+    console.log(" Creando favorito con:", { userId, productId });
     const result = await connectionDb.query(
       "INSERT INTO favorites (user_id, product_id) VALUES ($1, $2) RETURNING *",
       [userId, productId]
     );
-    console.log("✅ Favorito creado:", result.rows[0]);
+    console.log("Favorito creado:", result.rows[0]);
     return result.rows[0];
   } catch (error) {
-    console.error("❌ Error en createFavorite:", error.message);
+    console.error(" Error en createFavorite:", error.message);
     throw new Error("Error creating favorite: " + error.message);
   }
 };
