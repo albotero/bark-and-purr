@@ -1,3 +1,4 @@
+import React from "react"
 import { useTranslation } from "react-i18next"
 import Button from "react-bootstrap/esm/Button"
 import Col from "react-bootstrap/esm/Col"
@@ -8,13 +9,14 @@ import ErrorMsg from "./ErrorMsg"
 
 const Reviews = ({ reviews, setReviews }) => {
   const { total_reviews: totalReviews, results: reviewsData, ratings, filters, product } = reviews
-  const { t } = useTranslation()
+  const { t } = useTranslation("product")
   const [fetchData] = useApi()
   const filteredStars = filters.find(({ key }) => key === "rating")?.value
 
   const handleChangeFilter = async (stars) => {
     if (stars > 0) {
-      const fetchedReviews = await fetchData({ fullUrl: product + `/reviews?rating=${stars}` })
+      const fullUrl = product + `/reviews?rating=${stars}`
+      const fetchedReviews = await fetchData({ fullUrl })
       setReviews(fetchedReviews)
     }
   }
@@ -22,7 +24,7 @@ const Reviews = ({ reviews, setReviews }) => {
   return (
     <Row className="gap-3">
       <Col md={4}>
-        <h4>Filter</h4>
+        <h4>{t("reviews.filter")}</h4>
         <div
           className="d-grid align-items-center"
           style={{ gridTemplateColumns: "max-content 1fr max-content", gap: ".25rem .4rem" }}
@@ -35,25 +37,25 @@ const Reviews = ({ reviews, setReviews }) => {
               const now = Math.round((countByStar / totalReviews) * 1000) / 10
               const isSelected = stars == filteredStars
               return (
-                <>
+                <React.Fragment key={`star_${stars}`}>
                   <Button
                     variant="link"
                     className="text-start p-0"
                     disabled={isSelected}
                     onClick={() => handleChangeFilter(stars)}
                   >
-                    {`${stars} ${t(stars == 1 ? "star" : "stars")}`}
+                    {`${stars} ${t(stars == 1 ? t("reviews.star") : t("reviews.stars"))}`}
                   </Button>
                   <ProgressBar now={now} variant={isSelected ? "warning" : "primary"} />
                   <p className={"m-0 text-" + (isSelected ? "warning" : "primary")}> {`${now}%`}</p>
-                </>
+                </React.Fragment>
               )
             })}
         </div>
       </Col>
 
       <Col>
-        <h4>Reviews</h4>
+        <h4>{t("reviews.reviews")}</h4>
         {reviewsData.map(({ id: reviewId, user, date, rating: reviewRating, body }) => (
           <div key={`review_${reviewId}`} className="mb-3 border-bottom pb-2">
             <strong>{user}</strong> <span className="text-warning">{"★".repeat(reviewRating)}</span>

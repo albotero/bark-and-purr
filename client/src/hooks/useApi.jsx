@@ -21,7 +21,10 @@ export const useApi = () => {
     // Try n times before sending an error
     for (let n = 0; n <= fetchRetries && !data; n++) {
       try {
-        const headers = token && { Authorization: `Bearer ${token}` }
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : undefined,
+        }
         const queryStr =
           query &&
           Object.keys(query)
@@ -29,7 +32,7 @@ export const useApi = () => {
             .join("&")
         const url = fullUrl ? `${baseUrl}${fullUrl}` : `${baseUrl}/api/${endpoint}` + (queryStr ? `?${queryStr}` : "")
 
-        const res = await axios({ method, url, headers, body })
+        const res = await axios({ method, url, headers, data: body })
         data = res.data
       } catch ({ request, response }) {
         error =

@@ -22,6 +22,8 @@ import esDiscover from "../locales/es/discover.json"
 import esCart from "../locales/es/cart.json"
 import esRoutes from "../locales/es/routes.json"
 import esErrors from "../locales/es/errors.json"
+import enProduct from "../locales/en/product.json"
+import esProduct from "../locales/es/product.json"
 
 i18n
   .use(LanguageDetector)
@@ -42,6 +44,7 @@ i18n
         cart: enCart,
         routes: enRoutes,
         errors: enErrors,
+        product: enProduct,
       },
       es: {
         auth: esAuth,
@@ -53,6 +56,7 @@ i18n
         cart: esCart,
         routes: esRoutes,
         errors: esErrors,
+        product: esProduct,
       },
     },
   })

@@ -1,0 +1,18 @@
+{
+  "go_back": "Go back",
+  "total_reviews": "{{totalReviews}} reviews",
+  "in_stock": "In stock ({{stock}} available)",
+  "out_of_stock": "Out of stock",
+  "add_to_cart": "Add to cart",
+  "brand": "Brand",
+  "seller": "Seller",
+  "free_shipping": "Free shipping on orders over ${{price}}",
+  "description": "Description",
+  "reviews": {
+    "title": "Reviews ({{totalReviews}})",
+    "filter": "Filter",
+    "star": "star",
+    "stars": "stars",
+    "reviews": "Reviews"
+  }
+}

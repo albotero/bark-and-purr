@@ -4,12 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { BsCart4, BsTrash } from "react-icons/bs";
 import { IoArrowRedo } from "react-icons/io5";
 import { TiStarFullOutline } from "react-icons/ti";
-import { FaHeart, FaRegHeart } from "react-icons/fa"; // Corazones para favoritos
+import { FaHeart, FaRegHeart } from "react-icons/fa"; 
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Card from "react-bootstrap/Card";
 import { useCart } from "../context/CartContext";
-import { useFavorites } from "../context/FavoritesContext"; // Contexto de favoritos
+import { useFavorites } from "../context/FavoritesContext"; 
 import Swal from "sweetalert2";
 
 export function ProductCard({ product, showAddToCart = true }) {
@@ -26,10 +26,14 @@ export function ProductCard({ product, showAddToCart = true }) {
 
   // Actualizar estado si el producto está en favoritos
   useEffect(() => {
-    const fav = favorites.find(
-      (favItem) => favItem.id === productId || favItem.product_id === productId
-    );
-    setIsFavorite(!!fav);
+    if (Array.isArray(favorites)) {
+      const fav = favorites.find(
+        (favItem) => favItem.id === productId || favItem.product_id === productId
+      );
+      setIsFavorite(!!fav);
+    } else {
+      setIsFavorite(false);
+    }
   }, [favorites, productId]);
 
   const handleFavoriteClick = async (e) => {
@@ -57,7 +61,7 @@ export function ProductCard({ product, showAddToCart = true }) {
         confirmButtonText: "Ver favoritos",
       }).then((res) => {
         if (res.isConfirmed) {
-          navigate("/favorites");
+          navigate("/user/favorites");
         }
       });
     } else if (result === "removed") {
