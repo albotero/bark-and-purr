@@ -65,7 +65,6 @@ export const loginUser = async ({ email, password }) => {
     error.status = 401
     throw error
   }
-  console.log("JWT_SECRET:", process.env.JWT_SECRET)
   const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" })
 
   return {
