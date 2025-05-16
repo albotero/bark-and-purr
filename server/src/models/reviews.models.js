@@ -1,5 +1,6 @@
 import format from "pg-format"
 import executeQuery from "./executeQuery.js"
+import { doTranslation } from "../common/translate.js"
 
 export const findRating = async ({ productId }) => {
   const query = format("SELECT AVG(rating) AS rating FROM reviews WHERE product_id=%s", productId)
@@ -12,7 +13,7 @@ export const findRating = async ({ productId }) => {
  * @param {productId, rating, results_per_page}
  * @returns A list of the reviews of a specific product that match the filters
  */
-export const findReviews = async ({ productId, rating, results_per_page: resultsPerPage = 20, page = 1 }) => {
+export const findReviews = async ({ productId, lang, rating, results_per_page: resultsPerPage = 20, page = 1 }) => {
   /* Pagination and Limits.... */
   const offset = (page - 1) * resultsPerPage
   const filters = []
@@ -50,9 +51,12 @@ export const findReviews = async ({ productId, rating, results_per_page: results
       format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
   )
 
-  const results = reviews.map(({ id, surname: user, rating, created_at: date, body }) => {
-    return { id, user, date, rating, body }
-  })
+  const results = await Promise.all(
+    reviews.map(async ({ id, surname: user, rating, created_at: date, body }) => {
+      const { translated, translation, sourceLang, targetLang } = await doTranslation("auto", lang, body)
+      return { id, user, date, rating, body: translation, translated, sourceLang, targetLang }
+    })
+  )
 
   const queryFilters = []
   if (rating) queryFilters.push({ key: "rating", value: rating })
@@ -62,6 +66,6 @@ export const findReviews = async ({ productId, rating, results_per_page: results
     filters: queryFilters,
     results,
     ratings: countReviews,
-    product: `/api/product/${productId}`,
+    product: `/api/product/${lang}/${productId}`,
   }
 }
