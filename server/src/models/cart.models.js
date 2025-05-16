@@ -1,6 +1,6 @@
 import pool from "../../config/db/connection.db.js";
 
-// Obtener o crear carrito activo
+
 export const getOrCreateCart = async (userId) => {
   const existing = await pool.query(
     `SELECT * FROM carts WHERE user_id = $1 AND status = 'active'`,
@@ -15,7 +15,6 @@ export const getOrCreateCart = async (userId) => {
   return created.rows[0];
 };
 
-// Obtener ítems del carrito de un usuario
 export const findCartItemsByUser = async (userId) => {
   const cart = await getOrCreateCart(userId);
   const result = await pool.query(
@@ -42,7 +41,7 @@ export const findCartItemsByUser = async (userId) => {
   return result.rows;
 };
 
-// Ver si ya hay un ítem de producto en el carrito
+
 export const findCartItem = async (userId, productId) => {
   const cart = await getOrCreateCart(userId);
   const result = await pool.query(
@@ -52,7 +51,7 @@ export const findCartItem = async (userId, productId) => {
   return result.rows[0];
 };
 
-// Obtener el precio del producto desde la tabla products
+
 const getProductPrice = async (productId) => {
   const res = await pool.query("SELECT price FROM products WHERE id = $1", [
     productId,
@@ -60,7 +59,6 @@ const getProductPrice = async (productId) => {
   return res.rows[0]?.price;
 };
 
-// Insertar ítem en el carrito
 export const insertCartItem = async (userId, productId, quantity) => {
   const cart = await getOrCreateCart(userId);
   const unitPrice = await getProductPrice(productId);
@@ -74,7 +72,6 @@ export const insertCartItem = async (userId, productId, quantity) => {
   );
 };
 
-// Actualizar cantidad de un ítem existente
 export const updateCartItemQuantity = async (newQuantity, cartItemId) => {
   return await pool.query(
     `UPDATE products_by_cart SET quantity = $1 WHERE id = $2`,
@@ -82,7 +79,7 @@ export const updateCartItemQuantity = async (newQuantity, cartItemId) => {
   );
 };
 
-// Actualizar cantidad asegurando que sea del usuario
+
 export const updateCartItem = async (quantity, itemId, userId) => {
   const cart = await getOrCreateCart(userId);
   return await pool.query(
@@ -91,7 +88,7 @@ export const updateCartItem = async (quantity, itemId, userId) => {
   );
 };
 
-// Eliminar un ítem del carrito
+
 export const deleteCartItem = async (itemId, userId) => {
   const cart = await getOrCreateCart(userId);
   return await pool.query(
@@ -100,7 +97,6 @@ export const deleteCartItem = async (itemId, userId) => {
   );
 };
 
-// Obtener carrito activo
 export const getActiveCart = async (userId) => {
   const result = await pool.query(
     `SELECT * FROM carts WHERE user_id = $1 AND status = 'active'`,
@@ -109,7 +105,7 @@ export const getActiveCart = async (userId) => {
   return result.rows[0];
 };
 
-// Actualizar el estado del carrito
+
 export const updateCartStatus = async (cartId, status) => {
   return await pool.query(`UPDATE carts SET status = $1 WHERE id = $2`, [
     status,

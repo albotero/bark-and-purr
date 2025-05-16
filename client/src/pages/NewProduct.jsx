@@ -127,17 +127,20 @@ const NewProduct = () => {
                   value={formData.title}
                   onChange={handleChange}
                   required
+                  className="form-control-lg w-100"
                 />
               </Form.Group>
 
               <Form.Group>
                 <Form.Label>Description</Form.Label>
                 <Form.Control
-                  type="text"
+                  as="textarea"
+                  rows={5}
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   required
+                  className="form-control-lg w-100"
                 />
               </Form.Group>
             </Col>
@@ -153,6 +156,7 @@ const NewProduct = () => {
                   onChange={handleChange}
                   required
                   min={0}
+                  className="form-control-lg w-100"
                 />
               </Form.Group>
 
@@ -165,6 +169,7 @@ const NewProduct = () => {
                   onChange={handleChange}
                   required
                   min={0}
+                  className="form-control-lg w-100"
                 />
               </Form.Group>
             </Col>

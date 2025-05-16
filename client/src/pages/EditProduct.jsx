@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 const EditProduct = () => {
   const { id: productId } = useParams();
   const navigate = useNavigate();
-  const fileInputRef = useRef(null); // Referencia para el input de archivo
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -84,9 +84,7 @@ const EditProduct = () => {
       cancelButtonText: "Cancel",
     });
 
-    if (!result.isConfirmed) {
-      return;
-    }
+    if (!result.isConfirmed) return;
 
     const formDataToSend = new FormData();
     formDataToSend.append("title", formData.title);
@@ -119,8 +117,6 @@ const EditProduct = () => {
         );
       }
 
-      const updatedData = await response.json();
-      console.log("Updated publication:", updatedData);
       Swal.fire("Success!", "The post has been updated.", "success");
       navigate("/user/publications");
     } catch (error) {
@@ -186,7 +182,6 @@ const EditProduct = () => {
           </Row>
 
           <Row className="mb-4">
-            {/* Existing Images */}
             <Col md={6}>
               <h5 className="text-primary mb-3">Existing Images</h5>
               <Row>
@@ -195,8 +190,12 @@ const EditProduct = () => {
                     <img
                       src={img.url}
                       alt="Product"
-                      className="img-fluid rounded-3 shadow-sm"
-                      style={{ maxHeight: "150px", objectFit: "cover" }}
+                      className="img-thumbnail rounded"
+                      style={{
+                        height: "150px",
+                        objectFit: "cover",
+                        width: "100%",
+                      }}
                     />
                     <div className="mt-2">
                       <Button
@@ -213,40 +212,28 @@ const EditProduct = () => {
               </Row>
             </Col>
 
-            {/* Upload New Images */}
             <Col md={6}>
               <Form.Group>
-                <Form.Label className="fs-5 fw-semibold me-3">
+                <Form.Label className="fs-5 fw-semibold">
                   Upload New Images
                 </Form.Label>
-                <div
-                  className="form-control"
-                  style={{
-                    padding: "0.5rem 1rem",
-                    border: "1px solid #ced4da",
-                    borderRadius: "0.5rem",
-                    backgroundColor: "#795548",
-                    color: "#fff",
-                    fontWeight: "500",
-                    cursor: "pointer",
-                    width: "fit-content",
-                    display: "inline-block",
-                  }}
-                  onClick={() =>
-                    document.getElementById("customFileInput").click()
-                  }
-                >
-                  Elegir archivos
+                <div className="mb-2">
+                  <label
+                    htmlFor="customFileInput"
+                    className="btn btn-secondary"
+                  >
+                    Elegir archivos
+                  </label>
+                  <Form.Control
+                    ref={fileInputRef}
+                    type="file"
+                    id="customFileInput"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => setNewImages(Array.from(e.target.files))}
+                    className="d-none"
+                  />
                 </div>
-                <Form.Control
-                  ref={fileInputRef}
-                  type="file"
-                  id="customFileInput"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => setNewImages(Array.from(e.target.files))}
-                  style={{ display: "none" }}
-                />
               </Form.Group>
 
               {newImages.length > 0 && (
@@ -259,34 +246,25 @@ const EditProduct = () => {
                         xs={6}
                         className="mb-3 text-center position-relative"
                       >
-                        <div style={{ position: "relative" }}>
+                        <div className="position-relative">
                           <img
                             src={URL.createObjectURL(file)}
                             alt="Preview"
-                            className="img-fluid rounded-3 shadow-sm"
+                            className="img-thumbnail rounded"
                             style={{
-                              width: "100%",
                               height: "150px",
                               objectFit: "cover",
+                              width: "100%",
                             }}
                           />
                           <Button
                             variant="danger"
                             size="sm"
-                            style={{
-                              position: "absolute",
-                              top: "5px",
-                              right: "5px",
-                              borderRadius: "50%",
-                              padding: "0.25rem 0.5rem",
-                              lineHeight: "1",
-                            }}
+                            className="position-absolute top-0 end-0 m-1 rounded-circle"
                             onClick={() => {
                               const updatedImages = [...newImages];
                               updatedImages.splice(index, 1);
                               setNewImages(updatedImages);
-
-                              // Resetear el input para permitir volver a subir la misma imagen
                               if (fileInputRef.current) {
                                 fileInputRef.current.value = null;
                               }

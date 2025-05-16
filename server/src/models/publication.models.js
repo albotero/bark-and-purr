@@ -119,18 +119,18 @@ export const updatePublication = async (id, fields) => {
 };
 
 export const deletePublicationById = async (id) => {
-  // Borrar relaciones con carritos
+  // Delete relationships with carts
   await connectionDb.query(
     "DELETE FROM products_by_cart WHERE product_id = $1",
     [id]
   );
 
-  // Borrar imágenes del producto
+  // Delete product images
   await connectionDb.query("DELETE FROM product_images WHERE product_id = $1", [
     id,
   ]);
 
-  // Borrar la publicación
+  // Delete the post
   const result = await connectionDb.query(
     "DELETE FROM products WHERE id = $1 RETURNING *",
     [id]

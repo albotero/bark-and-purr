@@ -1,13 +1,5 @@
-import {
-  findCartItemsByUser,
-  findCartItem,
-  insertCartItem,
-  updateCartItemQuantity,
-  updateCartItem as updateCartItemModel,
-  deleteCartItem as deleteCartItemModel,
-  getActiveCart,
-  updateCartStatus,
-} from "../models/cart.models.js";
+import { findCartItemsByUser, findCartItem, insertCartItem, updateCartItemQuantity, updateCartItem as updateCartItemModel,
+  deleteCartItem as deleteCartItemModel, getActiveCart, updateCartStatus } from "../models/cart.models.js";
 import execute from "../controllers/execute.js";
 
 export const getCart = async (req, res) => {
@@ -39,7 +31,6 @@ export const addToCart = async (req, res) => {
   if (existing) {
     await updateCartItemQuantity(existing.quantity + quantity, existing.id);
   } else {
-    // ✅ El modelo ya se encarga de obtener el precio
     await insertCartItem(userId, product_id, quantity);
   }
 
