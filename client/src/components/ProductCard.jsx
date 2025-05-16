@@ -44,7 +44,7 @@ export function ProductCard({ product, showAddToCart = true }) {
       Swal.fire({
         icon: "success",
         title: "Producto agregado a favoritos",
-        showConfirmButton: true,
+        showCloseButton: true,
         confirmButtonText: "Ver favoritos",
       }).then((res) => {
         if (res.isConfirmed) {
