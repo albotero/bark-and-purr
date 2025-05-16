@@ -13,7 +13,6 @@ import { useFavorites } from "../context/FavoritesContext"; // Contexto de favor
 import Swal from "sweetalert2";
 
 export function ProductCard({ product, showAddToCart = true }) {
-  console.log(product);
   const { id: productId, title, price, thumbnail, rating } = product;
   const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart();
   const { favorites, toggleFavorite } = useFavorites();
