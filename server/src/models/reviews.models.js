@@ -55,7 +55,7 @@ export const findReviews = async ({ productId, rating, results_per_page: results
   })
 
   const queryFilters = []
-  if (filters.rating) queryFilters.push({ key: "rating", value: filters.rating })
+  if (rating) queryFilters.push({ key: "rating", value: rating })
 
   return {
     total_reviews: totalReviews,

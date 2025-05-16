@@ -1,3 +1,4 @@
+import React from "react"
 import { useTranslation } from "react-i18next"
 import Button from "react-bootstrap/esm/Button"
 import Col from "react-bootstrap/esm/Col"
@@ -35,7 +36,7 @@ const Reviews = ({ reviews, setReviews }) => {
               const now = Math.round((countByStar / totalReviews) * 1000) / 10
               const isSelected = stars == filteredStars
               return (
-                <>
+                <React.Fragment key={`star_${stars}`}>
                   <Button
                     variant="link"
                     className="text-start p-0"
@@ -46,7 +47,7 @@ const Reviews = ({ reviews, setReviews }) => {
                   </Button>
                   <ProgressBar now={now} variant={isSelected ? "warning" : "primary"} />
                   <p className={"m-0 text-" + (isSelected ? "warning" : "primary")}> {`${now}%`}</p>
-                </>
+                </React.Fragment>
               )
             })}
         </div>
