@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
-import { Container, Button, Row, Col, Card } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { FaEdit, FaTrash, FaStar } from "react-icons/fa";
-import { useTranslation } from "react-i18next";
-import Swal from "sweetalert2";
+import { useEffect, useState } from "react"
+import { Container, Button, Row, Col, Card } from "react-bootstrap"
+import { Link } from "react-router-dom"
+import { FaEdit, FaTrash, FaStar } from "react-icons/fa"
+import { useTranslation } from "react-i18next"
+import Swal from "sweetalert2"
 
 const Publications = () => {
-  const { t } = useTranslation("publications");
-  const [publications, setPublications] = useState([]);
-  const [loadingStatusId, setLoadingStatusId] = useState(null);
+  const { t } = useTranslation("publications")
+  const [publications, setPublications] = useState([])
+  const [loadingStatusId, setLoadingStatusId] = useState(null)
 
-
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token")
 
   useEffect(() => {
     const fetchPublications = async () => {
@@ -21,19 +20,19 @@ const Publications = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        })
 
-        if (!response.ok) throw new Error("Failed to fetch publications");
+        if (!response.ok) throw new Error("Failed to fetch publications")
 
-        const data = await response.json();
-        setPublications(data);
+        const data = await response.json()
+        setPublications(data)
       } catch (error) {
-        console.error("Error fetching publications:", error);
+        console.error("Error fetching publications:", error)
       }
-    };
+    }
 
-    fetchPublications();
-  }, [token]);
+    fetchPublications()
+  }, [token])
 
   const removePublication = async (id) => {
     const result = await Swal.fire({
@@ -44,61 +43,52 @@ const Publications = () => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#6c757d",
       confirmButtonText: "Yes, delete it!",
-    });
+    })
 
-    if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/publications/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:3000/api/publications/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
-      if (!response.ok) throw new Error("Failed to delete publication");
+      if (!response.ok) throw new Error("Failed to delete publication")
 
-      setPublications((prev) => prev.filter((item) => item.id !== id));
+      setPublications((prev) => prev.filter((item) => item.id !== id))
 
-      Swal.fire("Deleted!", "Your publication has been removed.", "success");
+      Swal.fire("Deleted!", "Your publication has been removed.", "success")
     } catch (error) {
-      console.error("Error deleting publication:", error);
-      Swal.fire("Error", "Failed to delete publication", "error");
+      console.error("Error deleting publication:", error)
+      Swal.fire("Error", "Failed to delete publication", "error")
     }
-  };
+  }
 
   const toggleStatus = async (id, currentStatus) => {
     try {
-      setLoadingStatusId(id); // ← Bloquea solo ese botón
-      const response = await fetch(
-        `http://localhost:3000/api/publications/${id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ is_active: !currentStatus }),
-        }
-      );
+      setLoadingStatusId(id) // ← Bloquea solo ese botón
+      const response = await fetch(`http://localhost:3000/api/publications/${id}/status`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ is_active: !currentStatus }),
+      })
 
-      if (!response.ok) throw new Error("Failed to toggle publication");
+      if (!response.ok) throw new Error("Failed to toggle publication")
 
-      const updated = await response.json();
+      const updated = await response.json()
 
-      setPublications((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, ...updated } : item))
-      );
+      setPublications((prev) => prev.map((item) => (item.id === id ? { ...item, ...updated } : item)))
     } catch (error) {
-      console.error("Error toggling publication:", error);
+      console.error("Error toggling publication:", error)
     } finally {
-      setLoadingStatusId(null); 
+      setLoadingStatusId(null)
     }
-  };
-  
+  }
 
   return (
     <Container className="py-5">
@@ -132,9 +122,7 @@ const Publications = () => {
                 <Col key={product.id} xs={12} sm={6} md={4} lg={3}>
                   <Card
                     className={`h-100 border rounded-4 p-3 shadow-sm ${
-                      product.is_active_product
-                        ? "bg-white"
-                        : "bg-secondary-subtle"
+                      product.is_active_product ? "bg-white" : "bg-secondary-subtle"
                     }`}
                   >
                     <Card.Body>
@@ -155,10 +143,7 @@ const Publications = () => {
                             </Link>
                           ) : (
                             <span className="text-muted" title="Desactivada">
-                              <FaEdit
-                                size={24}
-                                style={{ opacity: 0.4, pointerEvents: "none" }}
-                              />
+                              <FaEdit size={24} style={{ opacity: 0.4, pointerEvents: "none" }} />
                             </span>
                           )}
                         </Col>
@@ -189,40 +174,29 @@ const Publications = () => {
                       </div>
 
                       {product.is_active_product ? (
-                        <Link
-                          to={`/product/${product.id}`}
-                          className="text-decoration-none text-primary me-5"
-                        >
+                        <Link to={`/product/${product.id}`} className="text-decoration-none text-primary me-5">
                           <FaStar className="me-1" />
-                          {(product.review_count ?? 0) === 1
-                            ? "Review"
-                            : "Reviews"}{" "}
-                          ({product.review_count ?? 0})
+                          {(product.review_count ?? 0) === 1 ? "Review" : "Reviews"} ({product.review_count ?? 0})
                         </Link>
                       ) : (
                         <span className="text-muted me-5" title="Desactivada">
                           <FaStar className="me-1" />
-                          {(product.review_count ?? 0) === 1
-                            ? "Review"
-                            : "Reviews"}{" "}
-                          ({product.review_count ?? 0})
+                          {(product.review_count ?? 0) === 1 ? "Review" : "Reviews"} ({product.review_count ?? 0})
                         </span>
                       )}
 
                       <Button
-                        onClick={() =>
-                          toggleStatus(product.id, product.is_active_product)
-                        }
+                        onClick={() => toggleStatus(product.id, product.is_active_product)}
                         disabled={loadingStatusId === product.id}
                         className={`position-absolute start-0 bottom-0 m-4 text-white fw-semibold ${
-                          product.is_active_product ? "bg-success" : "bg-danger"
+                          product.is_active_product ? "bg-danger" : "bg-success"
                         }`}
                       >
                         {loadingStatusId === product.id
                           ? "Cambiando..."
                           : product.is_active_product
-                          ? "Activar"
-                          : "Desactivar"}
+                          ? "Desactivar"
+                          : "Activar"}
                       </Button>
                     </Card.Body>
 
@@ -255,7 +229,7 @@ const Publications = () => {
         </Card.Body>
       </Card>
     </Container>
-  );
-};
+  )
+}
 
-export default Publications;
+export default Publications
