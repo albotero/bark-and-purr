@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 
 const FavoritesContext = createContext();
 
-const getFavoriteId = (item) => item.favorite_id || item.id;
+const getFavoriteId = (item) => item.favorite_id; 
 
 export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
@@ -15,7 +15,6 @@ export function FavoritesProvider({ children }) {
   const [fetchData] = useApi();
 
   const getToken = () => localStorage.getItem("token");
-
   const isAuthenticated = !!getToken();
 
   const fetchFavorites = useCallback(async () => {
@@ -34,6 +33,7 @@ export function FavoritesProvider({ children }) {
         method: "GET",
         token: getToken(),
       });
+
       if (response.error) {
         setError(response.error || "Error desconocido al obtener favoritos");
         setFavorites([]);
@@ -67,35 +67,37 @@ export function FavoritesProvider({ children }) {
       }
 
       const currentToken = getToken();
-      if (!currentToken) {
-        Swal.fire({
-          icon: "warning",
-          title: "Debes iniciar sesión",
-          text: "Para agregar productos a favoritos, primero inicia sesión.",
-        });
-        return null;
-      }
 
       setIsDeleting(true);
 
       try {
+        // Buscar favorito existente por product_id para evitar duplicados
         const existingFavorite = favorites.find(
           (fav) => fav.product_id === product.id
         );
 
         if (existingFavorite) {
+          // Eliminar favorito usando favorite_id
+          const favoriteId = getFavoriteId(existingFavorite);
+          if (!favoriteId) {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "No se encontró el ID del favorito para eliminar.",
+            });
+            setIsDeleting(false);
+            return null;
+          }
+
           const response = await fetchData({
-            endpoint: `favorites/${getFavoriteId(existingFavorite)}`,
+            endpoint: `favorites/${favoriteId}`, 
             method: "DELETE",
             token: currentToken,
           });
 
           if (!response.error) {
             setFavorites((prev) =>
-              prev.filter(
-                (item) =>
-                  getFavoriteId(item) !== getFavoriteId(existingFavorite)
-              )
+              prev.filter((item) => getFavoriteId(item) !== favoriteId)
             );
             return "removed";
           } else {
@@ -107,6 +109,7 @@ export function FavoritesProvider({ children }) {
             return null;
           }
         } else {
+          // Agregar favorito (POST)
           const response = await fetchData({
             endpoint: "favorites",
             method: "POST",
@@ -115,7 +118,8 @@ export function FavoritesProvider({ children }) {
           });
 
           if (!response.error) {
-            const favoriteId = response.id || response.favorite_id;
+            // Obtener favorite_id del backend 
+            const favoriteId = response.favorite_id || response.id;
             if (!favoriteId) {
               Swal.fire({
                 icon: "error",
@@ -164,6 +168,18 @@ export function FavoritesProvider({ children }) {
         e.preventDefault();
       }
 
+      const idNum = Number(favoriteId);
+      if (isNaN(idNum)) {
+        Swal.fire({
+          icon: "error",
+          title: "ID inválido",
+          text: "El ID del favorito no es válido",
+        });
+        return;
+      }
+
+      console.log("removeFromFavorites llamado con favoriteId:", favoriteId);
+
       if (isDeleting) {
         console.log(
           "Ya hay una eliminación en curso, ignorando llamada repetida."
@@ -175,16 +191,19 @@ export function FavoritesProvider({ children }) {
 
       try {
         const token = getToken();
+        console.log("Token para eliminar favorito:", token);
 
         const response = await fetchData({
-          endpoint: `favorites/${favoriteId}`,
+          endpoint: `favorites/${idNum}`,
           method: "DELETE",
           token,
         });
 
+        console.log("Respuesta del DELETE:", response);
+
         if (!response.error) {
           setFavorites((prev) =>
-            prev.filter((item) => getFavoriteId(item) !== favoriteId)
+            prev.filter((item) => getFavoriteId(item) !== idNum)
           );
 
           Swal.fire({

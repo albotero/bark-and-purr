@@ -30,12 +30,12 @@ export const getFavorites = (req, res) =>
 // DELETE /favorites/:id
 export const removeFavorite = (req, res) => {
   const { id } = req.params;
-  console.log("DELETE favorite with id:", id);
+    console.log("DELETE favorite with id:", id);
 
   if (!id) {
     return res.status(400).json({ error: "Favorite ID is required" });
   }
-
+  console.log("ID to delete:", id);
   return execute({
     res,
     success: 204,
