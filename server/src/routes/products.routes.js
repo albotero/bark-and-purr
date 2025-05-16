@@ -4,8 +4,8 @@ import { getProduct, getProducts, getRating, getReviews } from "../controllers/p
 const router = express.Router()
 
 router.get("/product/:id/rating", getRating)
-router.get("/product/:id/reviews", getReviews)
-router.get("/product/:id", getProduct)
-router.get("/products", getProducts)
+router.get("/product/:lang/:id/reviews", getReviews)
+router.get("/product/:lang/:id", getProduct)
+router.get("/products/:lang", getProducts)
 
 export default router

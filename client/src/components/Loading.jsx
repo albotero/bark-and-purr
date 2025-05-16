@@ -4,14 +4,20 @@ import Container from "react-bootstrap/esm/Container"
 import Col from "react-bootstrap/esm/Col"
 import Row from "react-bootstrap/esm/Row"
 
-const Loading = () => {
+const Loading = ({ margin, width }) => {
   const { t } = useTranslation("discover")
 
   return (
     <Container>
       <Row>
         <Col className="d-flex justify-content-center">
-          <img src={angryCat} style={{ margin: "5rem 0 2rem", width: "15rem" }} />
+          <img
+            src={angryCat}
+            style={{
+              margin: margin || "5rem 0 2rem",
+              width: width || "15rem",
+            }}
+          />
         </Col>
       </Row>
 

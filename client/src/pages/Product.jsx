@@ -2,12 +2,14 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
 import { useTranslation } from "react-i18next"
+import { HiTranslate } from "react-icons/hi"
 import ErrorMsg from "../components/ErrorMsg"
 import Loading from "../components/Loading"
 import Reviews from "../components/Reviews"
 import { useCart } from "../context/CartContext"
 import { useUser } from "../context/UserContext"
 import { useApi } from "../hooks/useApi"
+import getLangName from "../utils/langName"
 
 const Product = () => {
   const { productId } = useParams()
@@ -21,9 +23,9 @@ const Product = () => {
   const { token } = useUser()
   const [fetchData] = useApi()
   const navigate = useNavigate()
-  const { t } = useTranslation("product")
+  const { t, i18n } = useTranslation("product")
 
-  const { message, id, name, images, discount, price, stock, brand, description, vendor } = product
+  const { message, id, title, images, discount, price, stock, brand, description, vendor } = product
   const { total_reviews: totalReviews } = reviews
   const discounted = discount > 0
   const finalPrice = price * (1 - (discount || 0))
@@ -32,8 +34,8 @@ const Product = () => {
     if (!productId) return
     const fetchProductData = async () => {
       const [productData, reviewsData, ratingData] = await Promise.all([
-        fetchData({ endpoint: `product/${productId}` }),
-        fetchData({ endpoint: `product/${productId}/reviews` }),
+        fetchData({ endpoint: `product/${i18n.language}/${productId}` }),
+        fetchData({ endpoint: `product/${i18n.language}/${productId}/reviews` }),
         fetchData({ endpoint: `product/${productId}/rating` }),
       ])
       setProduct(productData)
@@ -41,7 +43,7 @@ const Product = () => {
       setRating(Number(ratingData.rating))
     }
     fetchProductData()
-  }, [productId, fetchData])
+  }, [productId, fetchData, i18n.language])
 
   const handleGoBack = () => {
     navigate(-1)
@@ -67,7 +69,7 @@ const Product = () => {
           {images && (
             <>
               <div className="position-relative mb-3">
-                <img src={images[activeImage]} alt={name} className="img-fluid rounded" />
+                <img src={images[activeImage]} alt={title.content} className="img-fluid rounded" />
                 {discounted && (
                   <span className="badge bg-danger position-absolute top-0 start-0 m-2">-{discount * 100}%</span>
                 )}
@@ -96,7 +98,18 @@ const Product = () => {
         </div>
 
         <div className="col-md-6">
-          <h2>{name}</h2>
+          <div className="mb-3">
+            <h2 className="m-0">{title.content}</h2>
+            {title.translated && (
+              <div className="text-muted small fst-italic d-flex gap-1 align-items-center">
+                <HiTranslate />
+                {t("automatically_translated", {
+                  sourceLang: getLangName(title.sourceLang, title.targetLang),
+                })}
+              </div>
+            )}
+          </div>
+
           <div className="mb-2">
             <span className="text-warning">★</span> {rating} ({t("total_reviews", { totalReviews })})
           </div>
@@ -128,11 +141,11 @@ const Product = () => {
               if (!token) {
                 Swal.fire({
                   icon: "warning",
-                  title: "You're not logged in",
-                  text: "Please log in or register to add items to your cart.",
+                  title: t("alert.title"),
+                  text: t("alert.content"),
                   showCancelButton: true,
-                  confirmButtonText: "Go to Login",
-                  cancelButtonText: "Cancel",
+                  confirmButtonText: t("alert.ok"),
+                  cancelButtonText: t("alert.cancel"),
                 }).then((result) => {
                   if (result.isConfirmed) {
                     navigate("/login")
@@ -143,7 +156,7 @@ const Product = () => {
 
               addToCart({
                 id: productId,
-                title: name,
+                title: title.content,
                 price: parseFloat(finalPrice),
                 img: images?.[0],
                 quantity,
@@ -189,7 +202,19 @@ const Product = () => {
         </ul>
 
         <div className="tab-content border p-3">
-          {activeTab === "desc" && <p>{description}</p>}
+          {activeTab === "desc" && (
+            <div className="mx-1 my-2">
+              <p className="m-0">{description.content}</p>
+              {description.translated && (
+                <div className="text-muted small fst-italic d-flex gap-1 align-items-center">
+                  <HiTranslate />
+                  {t("automatically_translated", {
+                    sourceLang: getLangName(description.sourceLang, description.targetLang),
+                  })}
+                </div>
+              )}
+            </div>
+          )}
           {activeTab === "reviews" && <Reviews reviews={reviews} setReviews={setReviews} />}
         </div>
       </div>

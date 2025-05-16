@@ -14,5 +14,12 @@
     "star": "estrella",
     "stars": "estrellas",
     "reviews": "Valoraciones"
+  },
+  "automatically_translated": "Traducido automáticamente del {{sourceLang}}",
+  "alert": {
+    "title": "No has iniciado sesión",
+    "content": "Inicia sesión para agregar productos a tu carrito",
+    "ok": "Iniciar sesión",
+    "cancel": "Cancelar"
   }
 }

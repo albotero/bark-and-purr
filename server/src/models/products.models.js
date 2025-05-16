@@ -1,7 +1,8 @@
 import format from "pg-format"
 import executeQuery from "./executeQuery.js"
+import { doTranslation } from "../common/translate.js"
 
-export const findProduct = async ({ id }) => {
+export const findProduct = async ({ id, lang }) => {
   const query = format(
     `SELECT
         p.*,
@@ -18,10 +19,27 @@ export const findProduct = async ({ id }) => {
     id
   )
   const rows = await executeQuery(query)
-  return !rows || rows.length === 0 ? { message: "not_found" } : rows[0]
+  const product = !rows || rows.length === 0 ? { message: "not_found" } : rows[0]
+  if (!product) return
+
+  const translate = async (text) => {
+    const { translated, translation, sourceLang, targetLang } = await doTranslation("auto", lang, text)
+    return {
+      content: translated ? translation : text,
+      translated,
+      sourceLang,
+      targetLang,
+    }
+  }
+
+  return {
+    ...product,
+    title: await translate(product.title),
+    description: await translate(product.description),
+  }
 }
 
-const prepareHATEOAS = ({ totalProducts, products, histogram, filters, orderBy, resultsPerPage, page }) => {
+const prepareHATEOAS = async ({ totalProducts, lang, products, histogram, filters, orderBy, resultsPerPage, page }) => {
   const currentPage = Number(page)
   const totalPages = Math.ceil(totalProducts / resultsPerPage)
 
@@ -44,14 +62,24 @@ const prepareHATEOAS = ({ totalProducts, products, histogram, filters, orderBy, 
     // Build URL
     return "/api/products?" + params.join("&")
   }
-  const results = products.map(({ id, title, price, thumbnail, rating }) => ({
-    id,
-    title,
-    price,
-    rating,
-    thumbnail,
-    link: `/api/product/${id}`,
-  }))
+  const results = await Promise.all(
+    products.map(async ({ id, title, price, thumbnail, rating }) => {
+      const { translated, translation, sourceLang, targetLang } = await doTranslation("auto", lang, title)
+      return {
+        id,
+        title: {
+          content: translated ? translation : title,
+          translated,
+          sourceLang,
+          targetLang,
+        },
+        price,
+        rating,
+        thumbnail,
+        link: `/api/product/${lang}/${id}`,
+      }
+    })
+  )
   const thisPage = prepareProductsUrl(currentPage)
   const firstPage = currentPage > 1 ? prepareProductsUrl(1) : undefined
   const lastPage = currentPage < totalPages ? prepareProductsUrl(totalPages) : undefined
@@ -85,6 +113,7 @@ const prepareHATEOAS = ({ totalProducts, products, histogram, filters, orderBy, 
  * order_by: ${column}_${asc|desc}
  */
 export const findProducts = async ({
+  lang,
   search,
   min_stock: minStock,
   min_price: minPrice,
@@ -200,8 +229,9 @@ export const findProducts = async ({
       ${filtersHistogram ? `WHERE ${filtersHistogram}` : ""}
     `)
 
-  return prepareHATEOAS({
+  return await prepareHATEOAS({
     totalProducts,
+    lang,
     products,
     histogram: histogram[0],
     filters: { search, minPrice, maxPrice, minStock },

@@ -29,7 +29,7 @@ const Discover = () => {
     minStock: filters?.min_stock,
   })
 
-  const { t } = useTranslation("discover")
+  const { t, i18n } = useTranslation("discover")
   const [fetchProducts] = useApi()
 
   // Fetch products at load
@@ -37,14 +37,14 @@ const Discover = () => {
     const fetchData = async () => {
       setIsLoading(true)
       const data = await fetchProducts({
-        endpoint: "products",
+        endpoint: `products/${i18n.language}`,
         query: initialFilters,
       })
       setProductsData(data)
       setIsLoading(false)
     }
     fetchData()
-  }, [fetchProducts, t])
+  }, [fetchProducts, t, i18n.language])
 
   const handleSearchQueryChange = ({ target: { value } }) => {
     setSearchQuery(value)
@@ -54,7 +54,7 @@ const Discover = () => {
     e.preventDefault()
     setIsLoading(true)
     const data = await fetchProducts({
-      endpoint: "products",
+      endpoint: `products/${i18n.language}`,
       query: { search: encodeURIComponent(searchQuery) },
     })
     setProductsData(data)
@@ -66,7 +66,7 @@ const Discover = () => {
     setSearchQuery("")
     setIsLoading(true)
     const data = await fetchProducts({
-      endpoint: "products",
+      endpoint: `products/${i18n.language}`,
       query: initialFilters,
     })
     setProductsData(data)

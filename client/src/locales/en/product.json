@@ -14,5 +14,12 @@
     "star": "star",
     "stars": "stars",
     "reviews": "Reviews"
+  },
+  "automatically_translated": "Automatically translated from {{sourceLang}}",
+  "alert": {
+    "title": "You are not logged in",
+    "content": "Login to add products to your cart",
+    "ok": "Login",
+    "cancel": "Cancel"
   }
 }
