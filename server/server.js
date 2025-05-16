@@ -7,6 +7,7 @@ import favoritesRoutes from "./src/routes/favorites.routes.js"
 import usersRoutes from "./src/routes/user.routes.js"
 import cartRoutes from "./src/routes/cart.routes.js"
 import publicationsRoutes from "./src/routes/publications.routes.js"
+import ordersRoutes from "./src/routes/orders.routes.js"
 
 const whiteList = [envs.SERVER_URL, envs.CLIENT_URL]
 const port = envs.PORT || 3000
@@ -37,5 +38,6 @@ app.use("/favorites", favoritesRoutes)
 app.use("/users", usersRoutes)
 app.use("/api/cart", cartRoutes)
 app.use("/api/publications", publicationsRoutes)
+app.use("/api/orders", ordersRoutes)
 
 app.listen(port, () => console.log(`Listening on Port ${port}`))

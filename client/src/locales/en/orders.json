@@ -1,0 +1,33 @@
+{
+    "orders": {
+        "title": "Orders history",
+        "back_profile": "My Profile",
+        "current": "My Orders",
+        "status_filter": "Filter by status",
+        "all": "All",
+        "paid": "Paid",
+        "active": "Active",
+        "payment_pending": "Payment pending",
+        "payment_rejected": "Rejected",
+        "canceled": "Canceled",
+        "loading": "Loading orders...",
+        "empty": "No orders found.",
+        "page": "Page",
+        "of": "of",
+        "prev": "← Previous",
+        "next": "Next →",
+        "items": "{{count}} products · ${{total}}",
+        "order_id": "Order ID",
+        "order_date": "Order date",
+        "total": "Total",
+        "total_price": "Total price",
+        "price": "Price",
+        "card": {
+            "title": "Order #{{id}}",
+            "show_details": "Details",
+            "hide_details": "Hide details"
+        },
+        "quantity": "Quantity",
+        "unit_price": "Unit price"
+    }
+}

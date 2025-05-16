@@ -1,0 +1,33 @@
+{
+    "orders": {
+        "title": "Historial de Compras",
+        "back_profile": "Mi perfil",
+        "current": "Mis Compras",
+        "status_filter": "Filtrar por estado",
+        "all": "Todos",
+        "paid": "Pagadas",
+        "active": "Activas",
+        "payment_pending": "Pendientes de pago",
+        "payment_rejected": "Rechazadas",
+        "canceled": "Canceladas",
+        "loading": "Cargando compras...",
+        "empty": "No hay compras registradas.",
+        "page": "Página",
+        "of": "de",
+        "prev": "← Anterior",
+        "next": "Siguiente →",
+        "items": "{{count}} productos · ${{total}}",
+        "order_id": "ID de compra",
+        "order_date": "Fecha de compra",
+        "quantity": "Cantidad",
+        "unit_price": "Precio unitario",
+        "total": "Total",
+        "price": "Precio",
+        "total_price": "Precio total",
+        "card": {
+            "title": "Compra #{{id}}",
+            "show_details": "Ver detalles",
+            "hide_details": "Ocultar detalles"
+        }
+    }
+}
