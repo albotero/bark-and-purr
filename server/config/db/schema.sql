@@ -77,7 +77,8 @@ CREATE TABLE product_images (
 CREATE TABLE favorites (
   id SERIAL NOT NULL PRIMARY KEY,
   user_id INT NOT NULL REFERENCES users(id),
-  product_id INT NOT NULL REFERENCES products(id)
+  product_id INT NOT NULL REFERENCES products(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE reviews (
@@ -191,3 +192,6 @@ VALUES
 (5, 1, 4, 'Funciona bacán pero la app a veces se tranca'),
 (1, 7, 5, 'La mejor compra! Mi perro ahora duerme calentito en las noches frías de Concepción'),
 (4, 1, 3, 'Aunque funciona, no es tan buena. Le doy 3 estrellas');
+
+--AGREAR COLUMNA en tabla
+ALTER TABLE favorites ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
