@@ -16,6 +16,7 @@ import Publications from "./pages/Publications"
 import EditProduct from "./pages/EditProduct";
 import ProtectedRoute from "./components/ProtectedRoute"
 import ErrorMsg from "./components/ErrorMsg"
+import MyOrders from "./pages/Orders"
 
 function App() {
   const { token } = useUser()
@@ -49,7 +50,14 @@ function App() {
               }
             />
             <Route path="notifications" element={<></>} />
-            <Route path="purchases" element={<></>} />
+            <Route
+              path="purchases"
+              element={
+                <ProtectedRoute>
+                  <MyOrders />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="publications"
               element={

@@ -8,6 +8,8 @@ import Swal from "sweetalert2";
 const Publications = () => {
   const { t } = useTranslation("publications");
   const [publications, setPublications] = useState([]);
+  const [loadingStatusId, setLoadingStatusId] = useState(null);
+
 
   const token = localStorage.getItem("token");
 
@@ -70,7 +72,7 @@ const Publications = () => {
 
   const toggleStatus = async (id, currentStatus) => {
     try {
-      const token = localStorage.getItem("token");
+      setLoadingStatusId(id); // ← Bloquea solo ese botón
       const response = await fetch(
         `http://localhost:3000/api/publications/${id}/status`,
         {
@@ -88,18 +90,14 @@ const Publications = () => {
       const updated = await response.json();
 
       setPublications((prev) =>
-        prev.map((item) =>
-          item.id === id
-            ? { ...item, ...updated } 
-            : item
-        )
+        prev.map((item) => (item.id === id ? { ...item, ...updated } : item))
       );
-
     } catch (error) {
       console.error("Error toggling publication:", error);
+    } finally {
+      setLoadingStatusId(null); 
     }
   };
-  
   
 
   return (
@@ -132,7 +130,13 @@ const Publications = () => {
             <Row className="g-4">
               {publications.map((product) => (
                 <Col key={product.id} xs={12} sm={6} md={4} lg={3}>
-                  <Card className="h-100 border rounded-4 p-3 shadow-sm bg-white">
+                  <Card
+                    className={`h-100 border rounded-4 p-3 shadow-sm ${
+                      product.is_active_product
+                        ? "bg-white"
+                        : "bg-secondary-subtle"
+                    }`}
+                  >
                     <Card.Body>
                       <Row className="justify-content-between align-items-start mb-2">
                         <Col>
@@ -141,13 +145,22 @@ const Publications = () => {
                           </Card.Title>
                         </Col>
                         <Col xs="auto">
-                          <Link
-                            to={`/user/edit-product/${product.id}`}
-                            title="Edit publication"
-                            className="text-decoration-none text-dark"
-                          >
-                            <FaEdit role="button" size={24} />
-                          </Link>
+                          {product.is_active_product ? (
+                            <Link
+                              to={`/user/edit-product/${product.id}`}
+                              title="Edit publication"
+                              className="text-decoration-none text-dark"
+                            >
+                              <FaEdit role="button" size={24} />
+                            </Link>
+                          ) : (
+                            <span className="text-muted" title="Desactivada">
+                              <FaEdit
+                                size={24}
+                                style={{ opacity: 0.4, pointerEvents: "none" }}
+                              />
+                            </span>
+                          )}
                         </Col>
                       </Row>
 
@@ -174,40 +187,65 @@ const Publications = () => {
                       <div className="mb-2">
                         <strong>Price:</strong> ${product.price}
                       </div>
-                      <Link
-                        to={`/product/${product.id}`}
-                        className="text-decoration-none text-primary me-5"
-                      >
-                        <FaStar className="me-1" />
-                        {(product.review_count ?? 0) === 1
-                          ? "Review"
-                          : "Reviews"}{" "}
-                        ({product.review_count ?? 0})
-                      </Link>
+
+                      {product.is_active_product ? (
+                        <Link
+                          to={`/product/${product.id}`}
+                          className="text-decoration-none text-primary me-5"
+                        >
+                          <FaStar className="me-1" />
+                          {(product.review_count ?? 0) === 1
+                            ? "Review"
+                            : "Reviews"}{" "}
+                          ({product.review_count ?? 0})
+                        </Link>
+                      ) : (
+                        <span className="text-muted me-5" title="Desactivada">
+                          <FaStar className="me-1" />
+                          {(product.review_count ?? 0) === 1
+                            ? "Review"
+                            : "Reviews"}{" "}
+                          ({product.review_count ?? 0})
+                        </span>
+                      )}
 
                       <Button
                         onClick={() =>
                           toggleStatus(product.id, product.is_active_product)
                         }
-                        className={`btn ${
-                          product.is_active_product
-                            ? "btn-success"
-                            : "btn-danger"
-                        } position-absolute start-0 bottom-0 m-4`}
+                        disabled={loadingStatusId === product.id}
+                        className={`position-absolute start-0 bottom-0 m-4 text-white fw-semibold ${
+                          product.is_active_product ? "bg-success" : "bg-danger"
+                        }`}
                       >
-                        {product.is_active_product ? "Activa" : "Desactivada"}
+                        {loadingStatusId === product.id
+                          ? "Cambiando..."
+                          : product.is_active_product
+                          ? "Activar"
+                          : "Desactivar"}
                       </Button>
                     </Card.Body>
 
                     <Card.Footer className="bg-transparent border-0 text-end">
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => removePublication(product.id)}
-                        title="Delete publication"
-                      >
-                        <FaTrash />
-                      </Button>
+                      {product.is_active_product ? (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => removePublication(product.id)}
+                          title="Delete publication"
+                        >
+                          <FaTrash />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline-secondary"
+                          size="sm"
+                          disabled
+                          title="Desactiva el producto para protegerlo"
+                        >
+                          <FaTrash style={{ opacity: 0.4 }} />
+                        </Button>
+                      )}
                     </Card.Footer>
                   </Card>
                 </Col>

@@ -20,13 +20,25 @@ export const createFavorite = async ({ userId, productId }) => {
 export const getFavoritesByUser = async ({ userId }) => {
   try {
     const result = await connectionDb.query(
-      `SELECT f.id as favorite_id, p.* 
-       FROM favorites f
-       JOIN products p ON f.product_id = p.id
-       WHERE f.user_id = $1`,
+      `SELECT DISTINCT ON (p.id) f.id as favorite_id, p.*
+      FROM favorites f
+      JOIN products p ON f.product_id = p.id
+      WHERE f.user_id = $1
+      ORDER BY p.id, f.created_at DESC`,
       [userId]
     );
-    return result.rows;
+
+    const uniqueProducts = [];
+    const seenIds = new Set();
+
+    for (const row of result.rows) {
+      if (!seenIds.has(row.id)) {
+        seenIds.add(row.id);
+        uniqueProducts.push(row);
+      }
+    }
+
+    return uniqueProducts;
   } catch (error) {
     throw new Error("Error getting favorites: " + error.message);
   }
@@ -49,6 +61,8 @@ export const deleteFavorite = async ({ favoriteId }) => {
     // No devolver mensaje, ya que 204 no lleva cuerpo
     return null;
   } catch (error) {
-    throw new Error("Error deleting favorite: " + error.message);
+    const err = new Error("Error deleting favorite: " + error.message);
+    err.status = error.status || 500;
+    throw err;
   }
 };
