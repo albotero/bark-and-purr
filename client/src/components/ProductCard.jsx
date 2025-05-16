@@ -16,7 +16,7 @@ import Swal from "sweetalert2"
 export function ProductCard({ product, showAddToCart = true }) {
   const { id: productId, title, price, thumbnail, rating } = product
   const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart()
-  const { isAuthenticated } = useUser
+  const { isAuthenticated } = useUser()
   const { favorites, toggleFavorite } = useFavorites()
   const navigate = useNavigate()
 

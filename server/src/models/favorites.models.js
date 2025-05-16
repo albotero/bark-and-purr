@@ -1,68 +1,70 @@
-import connectionDb from "../../config/db/connection.db.js";
+import format from "pg-format"
+import executeQuery from "./executeQuery.js"
 
 // Crear un favorito
 export const createFavorite = async ({ userId, productId }) => {
   try {
-    console.log(" Creando favorito con:", { userId, productId });
-    const result = await connectionDb.query(
-      "INSERT INTO favorites (user_id, product_id) VALUES ($1, $2) RETURNING *",
-      [userId, productId]
-    );
-    console.log("Favorito creado:", result.rows[0]);
-    return result.rows[0];
+    console.log(" Creando favorito con:", { userId, productId })
+    const [favorite] = await executeQuery(
+      format("INSERT INTO favorites (user_id, product_id) VALUES (%s, %s) RETURNING *", userId, productId)
+    )
+    return favorite
   } catch (error) {
-    console.error(" Error en createFavorite:", error.message);
-    throw new Error("Error creating favorite: " + error.message);
+    console.error(" Error en createFavorite:", error.message)
+    throw new Error("Error creating favorite: " + error.message)
   }
-};
+}
 
 // Obtener favoritos por ID de usuario
 export const getFavoritesByUser = async ({ userId }) => {
   try {
-    const result = await connectionDb.query(
-      `SELECT DISTINCT ON (p.id) f.id as favorite_id, p.*
-      FROM favorites f
-      JOIN products p ON f.product_id = p.id
-      WHERE f.user_id = $1
-      ORDER BY p.id, f.created_at DESC`,
-      [userId]
-    );
+    const results = await executeQuery(
+      format(
+        `SELECT DISTINCT ON (p.id) f.id as favorite_id, p.*
+          FROM favorites f
+          JOIN products p ON f.product_id = p.id
+          WHERE f.user_id = %s
+          ORDER BY p.id, f.created_at DESC`,
+        userId
+      )
+    )
 
-    const uniqueProducts = [];
-    const seenIds = new Set();
+    const uniqueProducts = []
+    const seenIds = new Set()
 
-    for (const row of result.rows) {
+    results.forEach((row) => {
       if (!seenIds.has(row.id)) {
-        seenIds.add(row.id);
-        uniqueProducts.push(row);
+        seenIds.add(row.id)
+        uniqueProducts.push(row)
       }
-    }
+    })
 
-    return uniqueProducts;
+    return uniqueProducts
   } catch (error) {
-    throw new Error("Error getting favorites: " + error.message);
+    throw new Error("Error getting favorites: " + error.message)
   }
-};
+}
 
 // Eliminar favorito por su ID
-export const deleteFavorite = async ({ favoriteId }) => {
+export const deleteFavorite = async ({ favoriteId, userId }) => {
   try {
-    const result = await connectionDb.query(
-      "DELETE FROM favorites WHERE id = $1",
-      [favoriteId]
-    );
+    const [deletedItem] = await executeQuery(
+      format("DELETE FROM favorites WHERE id = %s AND user_id = %s RETURNING *", favoriteId, userId)
+    )
 
-    if (result.rowCount === 0) {
-      const error = new Error("Favorite not found");
-      error.status = 404;
-      throw error;
+    console.log("deleted", deletedItem)
+
+    if (!deletedItem) {
+      const error = new Error("Favorite not found")
+      error.status = 404
+      throw error
     }
 
     // No devolver mensaje, ya que 204 no lleva cuerpo
-    return null;
+    return null
   } catch (error) {
-    const err = new Error("Error deleting favorite: " + error.message);
-    err.status = error.status || 500;
-    throw err;
+    const err = new Error("Error deleting favorite: " + error.message)
+    err.status = error.status || 500
+    throw err
   }
-};
+}

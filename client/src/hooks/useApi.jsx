@@ -19,7 +19,7 @@ export const useApi = () => {
     let data, error
 
     // Try n times before sending an error
-    for (let n = 0; n <= fetchRetries && !data; n++) {
+    for (let n = 0; n <= fetchRetries; n++) {
       try {
         const headers = {
           "Content-Type": "application/json",
@@ -34,6 +34,11 @@ export const useApi = () => {
 
         const res = await axios({ method, url, headers, data: body })
         data = res.data
+
+        if (res.status >= 200 && res.status < 300) {
+          // Succeeded
+          break
+        }
       } catch ({ request, response }) {
         error =
           (response && `fetch.${response.status}`) || // Server answered with error code
