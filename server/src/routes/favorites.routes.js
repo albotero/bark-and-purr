@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { postFavorite, getFavorites, removeFavorite } from "../controllers/favorites.controllers.js";
 import { validateFavorite } from "../middlewares/validateFavorite.js";
-import { authenticate } from "../middlewares/auth.js";
+import { verifyToken } from "../middlewares/verifyToken.js";
+
 
 const router = Router();
 
-router.post("/", authenticate, validateFavorite, postFavorite);
-router.get("/", authenticate, getFavorites);
-router.delete("/:id", authenticate, removeFavorite);
+router.post("/", verifyToken, validateFavorite, postFavorite );
+router.get("/", verifyToken, getFavorites);
+router.delete("/:id", verifyToken, removeFavorite );
 
 export default router;
