@@ -64,7 +64,8 @@ CREATE TABLE products_by_cart (
   id SERIAL NOT NULL PRIMARY KEY,
   cart_id INT NOT NULL REFERENCES carts(id),
   product_id INT NOT NULL REFERENCES products(id),
-  quantity INT NOT NULL
+  quantity INT NOT NULL,
+  unit_price INT NOT NULL
 );
 
 CREATE TABLE product_images (
@@ -149,13 +150,13 @@ VALUES
 (5, 'active', CURRENT_TIMESTAMP);
 
 -- Insert products into carts (Chilean pesos values)
-INSERT INTO products_by_cart (cart_id, product_id, quantity)
+INSERT INTO products_by_cart (cart_id, product_id, quantity, unit_price)
 VALUES
-(1, 1, 1),  -- Javiera tiene un comedero automático en su carro
-(1, 2, 2),  -- y dos arneses
-(1, 6, 3),  -- y tres paquetes de snacks
-(3, 3, 1),  -- Camila tiene un rascador
-(3, 7, 1);  -- y una cama térmica
+(1, 1, 1, 59990),  -- Javiera tiene un comedero automático en su carro
+(1, 2, 2, 24990),  -- y dos arneses
+(1, 6, 3, 12990),  -- y tres paquetes de snacks
+(3, 3, 1, 34990),  -- Camila tiene un rascador
+(3, 7, 1, 45990);  -- y una cama térmica
 
 -- Insert product images with Chilean references
 INSERT INTO product_images (product_id, url, key)
