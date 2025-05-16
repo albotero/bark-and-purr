@@ -6,7 +6,7 @@ import { authenticate } from "../middlewares/auth.js";
 const router = Router();
 
 router.post("/", authenticate, validateFavorite, postFavorite);
-router.get("/user", authenticate, getFavorites);
+router.get("/", authenticate, getFavorites);
 router.delete("/:id", authenticate, removeFavorite);
 
 export default router;

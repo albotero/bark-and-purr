@@ -30,11 +30,9 @@ export function ProductCard({ product, showAddToCart = true }) {
     const fav = favorites.find(
       (favItem) => favItem.id === productId || favItem.product_id === productId
     );
-
     setIsFavorite(!!fav);
   }, [favorites, productId]);
 
-  // Maneja click en el corazón de favoritos
   const handleFavoriteClick = async (e) => {
     e.stopPropagation();
 
@@ -146,7 +144,7 @@ export function ProductCard({ product, showAddToCart = true }) {
       {/* CORAZÓN FAVORITOS*/}
       <button
         aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
-        title={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"} // Tooltip aquí
+        title={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"} 
         onClick={handleFavoriteClick}
         className={`favorite-heart-btn ${isFavorite ? "favorited" : ""}`}
       >
