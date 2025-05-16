@@ -1,9 +1,5 @@
 import execute from "./execute.js";
-import {
-  createFavorite,
-  getFavoritesByUser,
-  deleteFavorite,
-} from "../models/favorites.models.js";
+import { createFavorite, getFavoritesByUser, deleteFavorite } from "../models/favorites.models.js";
 
 // POST /favorites
 export const postFavorite = (req, res) =>
@@ -11,7 +7,7 @@ export const postFavorite = (req, res) =>
     res,
     success: 201,
     callback: createFavorite,
-    args: { userId: req.user.id, productId: req.body.product_id }, 
+    args: { userId: req.user.id, productId: req.body.product_id },
   });
 
 // GET /favorites/user
