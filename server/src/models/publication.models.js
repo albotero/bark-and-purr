@@ -4,18 +4,25 @@ export const getAllPublications = async () => {
   const result = await connectionDb.query(`
     SELECT 
       p.*,
-      COALESCE(json_agg(DISTINCT jsonb_build_object('url', pi.url, 'key', pi.key)) FILTER (WHERE p.is_active = true), '[]') AS images,
+      COALESCE(
+        json_agg(
+          DISTINCT jsonb_build_object('url', pi.url, 'key', pi.key)
+        ) FILTER (WHERE pi.url IS NOT NULL),
+        '[]'
+      ) AS images,
       COUNT(DISTINCT r.id) AS review_count,
       ROUND(AVG(r.rating), 1) AS average_rating
     FROM products p
     LEFT JOIN product_images pi ON pi.product_id = p.id
     LEFT JOIN reviews r ON r.product_id = p.id
+    WHERE p.is_active_product = true
     GROUP BY p.id
     ORDER BY p.created_at DESC
   `);
 
   return result.rows;
 };
+
 
 export const getPublicationsByUser = async (userId) => {
   const result = await connectionDb.query(

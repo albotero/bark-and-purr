@@ -3,6 +3,9 @@ import { createFavorite, getFavoritesByUser, deleteFavorite } from "../models/fa
 
 // POST /favorites
 export const postFavorite = (req, res) => {
+  console.log(" POST /favorites");
+  console.log(" req.user:", req.user);
+  console.log(" req.body:", req.body);
   const { product_id } = req.body;
   if (!product_id) {
     return res.status(400).json({ error: "product_id is required" });
@@ -27,9 +30,12 @@ export const getFavorites = (req, res) =>
 // DELETE /favorites/:id
 export const removeFavorite = (req, res) => {
   const { id } = req.params;
+  console.log("DELETE favorite with id:", id);
+
   if (!id) {
     return res.status(400).json({ error: "Favorite ID is required" });
   }
+
   return execute({
     res,
     success: 204,

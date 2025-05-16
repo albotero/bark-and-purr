@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
+import { useTranslation } from "react-i18next"
 import ErrorMsg from "../components/ErrorMsg"
 import Loading from "../components/Loading"
 import Reviews from "../components/Reviews"
@@ -20,6 +21,7 @@ const Product = () => {
   const { token } = useUser()
   const [fetchData] = useApi()
   const navigate = useNavigate()
+  const { t } = useTranslation("product")
 
   const { message, id, name, images, discount, price, stock, brand, description, vendor } = product
   const { total_reviews: totalReviews } = reviews
@@ -28,15 +30,17 @@ const Product = () => {
 
   useEffect(() => {
     if (!productId) return
-    const populate = async () => {
-      const fetchedProduct = await fetchData({ endpoint: `product/${productId}` })
-      const fetchedReviews = await fetchData({ endpoint: `product/${productId}/reviews` })
-      const fetchedRating = await fetchData({ endpoint: `product/${productId}/rating` })
-      setProduct(fetchedProduct)
-      setReviews(fetchedReviews)
-      setRating(Number(fetchedRating.rating))
+    const fetchProductData = async () => {
+      const [productData, reviewsData, ratingData] = await Promise.all([
+        fetchData({ endpoint: `product/${productId}` }),
+        fetchData({ endpoint: `product/${productId}/reviews` }),
+        fetchData({ endpoint: `product/${productId}/rating` }),
+      ])
+      setProduct(productData)
+      setReviews(reviewsData)
+      setRating(Number(ratingData.rating))
     }
-    populate()
+    fetchProductData()
   }, [productId, fetchData])
 
   const handleGoBack = () => {
@@ -55,7 +59,7 @@ const Product = () => {
   ) : (
     <div className="container mt-4 mb-5 bg-tertiary">
       <button className="btn btn-link mb-3" onClick={handleGoBack}>
-        ← Go back
+        ← {t("go_back")}
       </button>
 
       <div className="row">
@@ -94,7 +98,7 @@ const Product = () => {
         <div className="col-md-6">
           <h2>{name}</h2>
           <div className="mb-2">
-            <span className="text-warning">★</span> {rating} ({totalReviews} reviews)
+            <span className="text-warning">★</span> {rating} ({t("total_reviews", { totalReviews })})
           </div>
 
           <div className="d-flex align-items-baseline gap-2 mb-2">
@@ -105,7 +109,7 @@ const Product = () => {
           </div>
 
           <div className={`mb-2 ${stock > 0 ? "text-success" : "text-danger"}`}>
-            {stock > 0 ? `In stock (${stock} available)` : "Out of stock"}
+            {stock > 0 ? t("in_stock", { stock }) : t("out_of_stock")}
           </div>
 
           <div className="input-group mb-3" style={{ width: "150px" }}>
@@ -147,19 +151,19 @@ const Product = () => {
             }}
             disabled={stock === 0}
           >
-            🛒 Add to cart
+            🛒 {t("add_to_cart")}
           </button>
 
           <ul className="list-unstyled text-muted small">
             {brand && (
               <li>
-                <strong>Brand:</strong> {brand}
+                <strong>{t("brand")}:</strong> {brand}
               </li>
             )}
             <li>
-              <strong>Seller:</strong> {vendor}
+              <strong>{t("seller")}:</strong> {vendor}
             </li>
-            <li>🚚 Free shipping on orders over $999</li>
+            <li>🚚 {t("free_shipping", { price: 999 })}</li>
           </ul>
         </div>
       </div>
@@ -167,8 +171,8 @@ const Product = () => {
       <div className="mt-4">
         <ul className="nav nav-tabs mb-3" id="productTabs" role="tablist">
           {[
-            { key: "desc", label: "Description" },
-            { key: "reviews", label: `Reviews (${totalReviews})` },
+            { key: "desc", label: t("description") },
+            { key: "reviews", label: t("reviews.title", { totalReviews }) },
           ].map((tab) => (
             <li className="nav-item" role="presentation" key={tab.key}>
               <button

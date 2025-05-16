@@ -23,7 +23,7 @@ export const findCartItemsByUser = async (userId) => {
       pbc.id,
       pbc.quantity,
       p.title,
-      pbc.price_unitario AS price,
+      pbc.unit_price AS price,
       (
         SELECT url
         FROM product_images
@@ -31,7 +31,7 @@ export const findCartItemsByUser = async (userId) => {
         ORDER BY id ASC
         LIMIT 1
       ) AS thumbnail,
-      pbc.price_unitario * pbc.quantity AS total
+      pbc.unit_price * pbc.quantity AS total
     FROM products_by_cart pbc
     JOIN products p ON p.id = pbc.product_id
     WHERE pbc.cart_id = $1
@@ -65,7 +65,7 @@ export const insertCartItem = async (userId, productId, quantity) => {
 
   return await pool.query(
     `
-    INSERT INTO products_by_cart (cart_id, product_id, quantity, price_unitario)
+    INSERT INTO products_by_cart (cart_id, product_id, quantity, unit_price)
     VALUES ($1, $2, $3, $4)
     `,
     [cart.id, productId, quantity, unitPrice]
@@ -105,7 +105,7 @@ export const getActiveCart = async (userId) => {
   return result.rows[0];
 };
 
-
+// Actualizar el estado del carrito
 export const updateCartStatus = async (cartId, status) => {
   return await pool.query(`UPDATE carts SET status = $1 WHERE id = $2`, [
     status,

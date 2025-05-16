@@ -99,8 +99,18 @@ export const findProducts = async ({
   const filters = []
 
   const addFilter = (key, column, operator, value) => {
-    filters.push({ key, value, query: format(`${column} ${operator} %s`, value) })
+    filters.push({
+      key: "is_active",
+      value: true,
+      query: "is_active_product = true",
+    });
+    // filters.push({
+    //   key,
+    //   value,
+    //   query: format(`${column} ${operator} %s`, value),
+    // });
   }
+  
 
   // Add requested filters
   if (search)
@@ -108,6 +118,8 @@ export const findProducts = async ({
   if (minStock) addFilter("min_stock", "stock", ">=", minStock)
   if (minPrice) addFilter("min_price", "price", ">=", minPrice)
   if (maxPrice) addFilter("max_price", "price", "<=", maxPrice)
+    addFilter("active", "is_active_product", "=", true);
+
 
   const filtersTotal = filters.map(({ query }) => query).join(" AND ")
   const filtersHistogram = filters
