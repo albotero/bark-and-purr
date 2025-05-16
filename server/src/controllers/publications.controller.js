@@ -1,13 +1,6 @@
 import cloudinary from "../../config/cloudinary.js";
 import execute from "../controllers/execute.js";
-import {
-  getPublicationsByUser,
-  getPublicationById,
-  getAllPublications,
-  deletePublicationById,
-  updatePublication,
-  insertProductImages,
-} from "../models/publication.models.js";
+import { getPublicationsByUser, getPublicationById, getAllPublications, deletePublicationById, updatePublication, insertProductImages } from "../models/publication.models.js";
 import connectionDb from "../../config/db/connection.db.js";
 
 // Get all publications by the authenticated user

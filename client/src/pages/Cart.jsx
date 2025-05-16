@@ -15,8 +15,6 @@ const Cart = () => {
   const { cart, removeFromCart, buyCart, increaseQty, decreaseQty } = useCart();
   const { t } = useTranslation("cart");
 
-  // const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-
   const treeItems = [
     { key: "home", href: "/" },
     { key: "cart", isActive: true },
