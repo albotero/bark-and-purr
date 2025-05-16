@@ -3,12 +3,15 @@ import connectionDb from "../../config/db/connection.db.js";
 // Crear un favorito
 export const createFavorite = async ({ userId, productId }) => {
   try {
+    console.log("🛠️ Creando favorito con:", { userId, productId });
     const result = await connectionDb.query(
       "INSERT INTO favorites (user_id, product_id) VALUES ($1, $2) RETURNING *",
       [userId, productId]
     );
+    console.log("✅ Favorito creado:", result.rows[0]);
     return result.rows[0];
   } catch (error) {
+    console.error("❌ Error en createFavorite:", error.message);
     throw new Error("Error creating favorite: " + error.message);
   }
 };
@@ -32,11 +35,19 @@ export const getFavoritesByUser = async ({ userId }) => {
 // Eliminar favorito por su ID
 export const deleteFavorite = async ({ favoriteId }) => {
   try {
-    const result = await connectionDb.query("DELETE FROM favorites WHERE id = $1", [favoriteId]);
+    const result = await connectionDb.query(
+      "DELETE FROM favorites WHERE id = $1",
+      [favoriteId]
+    );
+
     if (result.rowCount === 0) {
-      throw new Error("Favorite not found");
+      const error = new Error("Favorite not found");
+      error.status = 404;
+      throw error;
     }
-    return { message: "Favorite deleted" };
+
+    // No devolver mensaje, ya que 204 no lleva cuerpo
+    return null;
   } catch (error) {
     throw new Error("Error deleting favorite: " + error.message);
   }

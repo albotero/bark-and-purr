@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { useApi } from "../hooks/useApi";
 import Swal from "sweetalert2";
 
@@ -10,169 +17,222 @@ export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [fetchData] = useApi();
-  const token = localStorage.getItem("token");
-  const isAuthenticated = !!token;
 
-  // Obtener favoritos del backend con manejo de errores
+  const getToken = () => localStorage.getItem("token");
+
+  const isAuthenticated = !!getToken();
+
   const fetchFavorites = useCallback(async () => {
     if (!isAuthenticated) {
       setError("Usuario no autenticado");
+      setFavorites([]);
       setIsLoading(false);
       return;
     }
-
     setIsLoading(true);
+    setError(null);
+
     try {
       const response = await fetchData({
-        endpoint: "favorites/",
+        endpoint: "favorites",
         method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+        token: getToken(),
       });
-
-      if (!response || response.error) {
-        setError(response?.error || "Unknown error fetching favorites");
+      if (response.error) {
+        setError(response.error || "Error desconocido al obtener favoritos");
         setFavorites([]);
       } else {
-        setFavorites(response || []);
+        setFavorites(Array.isArray(response) ? response : []);
         setError(null);
       }
-    } catch (error) {
-      setError(error.message || "Unexpected error fetching favorites");
+    } catch (err) {
+      setError(err.message || "Error inesperado al obtener favoritos");
       setFavorites([]);
     } finally {
       setIsLoading(false);
     }
-  }, [fetchData, token, isAuthenticated]);
+  }, [fetchData, isAuthenticated]);
 
   useEffect(() => {
     fetchFavorites();
   }, [fetchFavorites]);
 
-  // Toggle favorito (add or remove) con manejo de errores
-  const toggleFavorite = useCallback(async (product) => {
-    const currentToken = localStorage.getItem("token");
-    const isAuthenticated = !!currentToken;
-
-    if (!isAuthenticated) {
-      Swal.fire({
-        icon: "warning",
-        title: "You must log in",
-        text: "To add products to favorites, please log in first.",
-      });
-      return null;
-    }
-
-    try {
-      const existingFavorite = favorites.find(
-        (fav) => getFavoriteId(fav) === product.id || fav.product_id === product.id
-      );
-
-      if (existingFavorite) {
-        // Remove favorite
-        const response = await fetchData({
-          endpoint: `favorites/${getFavoriteId(existingFavorite)}`,
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${currentToken}` },
-        });
-
-        if (!response?.error) {
-          setFavorites((prev) =>
-            prev.filter((item) => getFavoriteId(item) !== getFavoriteId(existingFavorite))
-          );
-          return "removed";
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error removing favorite",
-            text: response.error || "Please try again",
-          });
-          return null;
-        }
-      } else {
-        // Add favorite
-        const response = await fetchData({
-          endpoint: "favorites",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${currentToken}`,
-          },
-          body: JSON.stringify({ product_id: product.id }),
-        });
-
-        if (!response?.error) {
-          const newFavorite = {
-            ...product,
-            favorite_id: response.id || response.favorite_id || response.id,
-          };
-          setFavorites((prev) => [...prev, newFavorite]);
-          return "added";
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error adding favorite",
-            text: response.error || "Please try again",
-          });
-          return null;
-        }
+  const toggleFavorite = useCallback(
+    async (product, e) => {
+      // Si se pasa evento, evitar propagación y recargas no deseadas
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
       }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Unexpected error",
-        text: error.message || "Please try again",
-      });
-      return null;
-    }
-  }, [fetchData, favorites]);
 
-  // Eliminar favorito con manejo de errores
-  const removeFromFavorites = useCallback(async (favoriteId) => {
-    const currentToken = localStorage.getItem("token");
+      console.trace("toggleFavorite llamado");
+      if (isDeleting) {
+        console.log("Cancelado porque ya se está eliminando un favorito.");
+        return null;
+      }
 
-    try {
-      const response = await fetchData({
-        endpoint: `favorites/${favoriteId}`,
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${currentToken}` },
-      });
-
-      if (!response?.error) {
-        setFavorites((prev) =>
-          prev.filter((item) => getFavoriteId(item) !== favoriteId)
-        );
+      const currentToken = getToken();
+      if (!currentToken) {
         Swal.fire({
-          icon: "success",
-          title: "Product removed from favorites",
-          timer: 2000,
-          showConfirmButton: false,
+          icon: "warning",
+          title: "Debes iniciar sesión",
+          text: "Para agregar productos a favoritos, primero inicia sesión.",
         });
-      } else {
+        return null;
+      }
+
+      setIsDeleting(true);
+
+      try {
+        const existingFavorite = favorites.find(
+          (fav) => fav.product_id === product.id
+        );
+
+        if (existingFavorite) {
+          const response = await fetchData({
+            endpoint: `favorites/${getFavoriteId(existingFavorite)}`,
+            method: "DELETE",
+            token: currentToken,
+          });
+
+          if (!response.error) {
+            setFavorites((prev) =>
+              prev.filter(
+                (item) =>
+                  getFavoriteId(item) !== getFavoriteId(existingFavorite)
+              )
+            );
+            return "removed";
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Error al eliminar favorito",
+              text: response.error || "Intenta nuevamente",
+            });
+            return null;
+          }
+        } else {
+          const response = await fetchData({
+            endpoint: "favorites",
+            method: "POST",
+            token: currentToken,
+            body: { product_id: product.id },
+          });
+
+          if (!response.error) {
+            const favoriteId = response.id || response.favorite_id;
+            if (!favoriteId) {
+              Swal.fire({
+                icon: "error",
+                title: "Error al agregar favorito",
+                text: "No se recibió el ID del favorito desde el servidor.",
+              });
+              return null;
+            }
+
+            const newFavorite = {
+              ...product,
+              favorite_id: favoriteId,
+              product_id: product.id,
+            };
+
+            setFavorites((prev) => [...prev, newFavorite]);
+            return "added";
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Error al agregar favorito",
+              text: response.error || "Intenta nuevamente",
+            });
+            return null;
+          }
+        }
+      } catch (error) {
+        console.error("Error inesperado en toggleFavorite:", error);
         Swal.fire({
           icon: "error",
-          title: "Error removing product",
-          text: response.error || "Please try again",
+          title: "Error inesperado",
+          text: error.message || "Intenta nuevamente",
         });
+        return null;
+      } finally {
+        setIsDeleting(false);
       }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Unexpected error",
-        text: error.message || "Please try again",
-      });
-    }
-  }, [fetchData]);
+    },
+    [fetchData, favorites, isDeleting]
+  );
 
-  const contextValue = useMemo(() => ({
-    favorites,
-    setFavorites,
-    isLoading,
-    error,
-    removeFromFavorites,
-    toggleFavorite,
-  }), [favorites, isLoading, error, removeFromFavorites, toggleFavorite]);
+  const removeFromFavorites = useCallback(
+    async (favoriteId, e) => {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+
+      if (isDeleting) {
+        console.log(
+          "Ya hay una eliminación en curso, ignorando llamada repetida."
+        );
+        return;
+      }
+
+      setIsDeleting(true);
+
+      try {
+        const token = getToken();
+
+        const response = await fetchData({
+          endpoint: `favorites/${favoriteId}`,
+          method: "DELETE",
+          token,
+        });
+
+        if (!response.error) {
+          setFavorites((prev) =>
+            prev.filter((item) => getFavoriteId(item) !== favoriteId)
+          );
+
+          Swal.fire({
+            icon: "success",
+            title: "Producto eliminado de favoritos",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error al eliminar producto",
+            text: response.error || "Intenta nuevamente",
+          });
+        }
+      } catch (error) {
+        console.error("Error inesperado en removeFromFavorites:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error inesperado",
+          text: error.message || "Intenta nuevamente",
+        });
+      } finally {
+        setIsDeleting(false);
+      }
+    },
+    [fetchData, isDeleting]
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      favorites,
+      setFavorites,
+      isLoading,
+      error,
+      removeFromFavorites,
+      toggleFavorite,
+    }),
+    [favorites, isLoading, error, removeFromFavorites, toggleFavorite]
+  );
 
   return (
     <FavoritesContext.Provider value={contextValue}>

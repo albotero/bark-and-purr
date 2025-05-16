@@ -27,10 +27,15 @@ export function ProductCard({ product, showAddToCart = true }) {
 
   // Actualizar estado si el producto está en favoritos
   useEffect(() => {
-    const fav = favorites.find(
-      (favItem) => favItem.id === productId || favItem.product_id === productId
-    );
-    setIsFavorite(!!fav);
+    if (Array.isArray(favorites)) {
+      const fav = favorites.find(
+        (favItem) => favItem.id === productId || favItem.product_id === productId
+      );
+      setIsFavorite(!!fav);
+    } else {
+      // Si favorites no es array, aseguramos que isFavorite sea false
+      setIsFavorite(false);
+    }
   }, [favorites, productId]);
 
   const handleFavoriteClick = async (e) => {
@@ -58,7 +63,7 @@ export function ProductCard({ product, showAddToCart = true }) {
         confirmButtonText: "Ver favoritos",
       }).then((res) => {
         if (res.isConfirmed) {
-          navigate("/favorites");
+          navigate("/user/favorites");
         }
       });
     } else if (result === "removed") {
