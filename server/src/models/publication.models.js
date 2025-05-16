@@ -119,17 +119,35 @@ export const updatePublication = async (id, fields) => {
 };
 
 export const deletePublicationById = async (id) => {
+  // Borrar relaciones con carritos
+  await connectionDb.query(
+    "DELETE FROM products_by_cart WHERE product_id = $1",
+    [id]
+  );
+
+  // Borrar imágenes del producto
   await connectionDb.query("DELETE FROM product_images WHERE product_id = $1", [
     id,
   ]);
 
+  // Borrar la publicación
   const result = await connectionDb.query(
     "DELETE FROM products WHERE id = $1 RETURNING *",
     [id]
   );
 
+  if (result.rowCount === 0) {
+    throw Object.assign(
+      new Error("Product not found or could not be deleted"),
+      {
+        status: 404,
+      }
+    );
+  }
+
   return result;
 };
+
 
 export const insertProductImages = async (productId, images) => {
   const values = [];

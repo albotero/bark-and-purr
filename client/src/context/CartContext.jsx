@@ -27,14 +27,15 @@ export const CartProvider = ({ children }) => {
   
   const addToCart = async (product, quantity = 1) => {
     try {
-      const { id: product_id } = product;
+      const { id: product_id, price } = product;
+
       const res = await fetch("http://localhost:3000/api/cart", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ product_id, quantity }),
+        body: JSON.stringify({ product_id, quantity, price }), // ← AÑADIR PRECIO
       });
 
       if (!res.ok) {
@@ -47,6 +48,7 @@ export const CartProvider = ({ children }) => {
       console.error("Error adding product to cart:", err);
     }
   };
+  
   
   const updateItemQuantity = async (itemId, newQuantity) => {
     try {

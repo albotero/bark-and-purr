@@ -15,7 +15,7 @@ const Cart = () => {
   const { cart, removeFromCart, buyCart, increaseQty, decreaseQty } = useCart();
   const { t } = useTranslation("cart");
 
-  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+  // const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const treeItems = [
     { key: "home", href: "/" },
@@ -23,8 +23,13 @@ const Cart = () => {
   ];
 
   const [shippingMethod, setShippingMethod] = useState("pickup");
+  const subtotal = cart.reduce(
+    (acc, item) => acc + item.quantity * item.price,
+    0
+  );
   const shippingCost = shippingMethod === "delivery" ? 3000 : 0;
-  const totalWithShipping = totalItems + shippingCost;
+  const totalWithShipping = subtotal + shippingCost;
+  
 
   const handleBuy = async () => {
     try {
@@ -138,7 +143,7 @@ const Cart = () => {
 
                 <ListGroup className="mb-3">
                   <ListGroup.Item>
-                    Subtotal: ${totalItems.toFixed(2)}
+                    Subtotal: ${subtotal.toFixed(2)}
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Card.Subtitle className="mb-2 fw-bold">

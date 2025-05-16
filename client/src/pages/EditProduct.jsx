@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import  Button from "react-bootstrap/Button";
+import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -11,6 +11,8 @@ import Swal from "sweetalert2";
 const EditProduct = () => {
   const { id: productId } = useParams();
   const navigate = useNavigate();
+  const fileInputRef = useRef(null); // Referencia para el input de archivo
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -57,10 +59,10 @@ const EditProduct = () => {
   const handleImageDelete = async (publicId) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "Do you want to save the changes?",
+      text: "Do you want to delete this image?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, save",
+      confirmButtonText: "Yes, delete",
       cancelButtonText: "Cancel",
     });
 
@@ -69,7 +71,6 @@ const EditProduct = () => {
     setImagesToDelete((prev) => [...prev, publicId]);
     setExistingImages((prev) => prev.filter((img) => img.key !== publicId));
   };
-  
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
@@ -238,6 +239,7 @@ const EditProduct = () => {
                   Elegir archivos
                 </div>
                 <Form.Control
+                  ref={fileInputRef}
                   type="file"
                   id="customFileInput"
                   multiple
@@ -283,6 +285,11 @@ const EditProduct = () => {
                               const updatedImages = [...newImages];
                               updatedImages.splice(index, 1);
                               setNewImages(updatedImages);
+
+                              // Resetear el input para permitir volver a subir la misma imagen
+                              if (fileInputRef.current) {
+                                fileInputRef.current.value = null;
+                              }
                             }}
                           >
                             ×
@@ -318,4 +325,3 @@ const EditProduct = () => {
 };
 
 export default EditProduct;
-

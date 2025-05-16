@@ -39,6 +39,7 @@ export const addToCart = async (req, res) => {
   if (existing) {
     await updateCartItemQuantity(existing.quantity + quantity, existing.id);
   } else {
+    // ✅ El modelo ya se encarga de obtener el precio
     await insertCartItem(userId, product_id, quantity);
   }
 
