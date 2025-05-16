@@ -20,7 +20,7 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState("desc")
   const { addToCart } = useCart()
-  const { token } = useUser()
+  const { isAuthenticated } = useUser()
   const [fetchData] = useApi()
   const navigate = useNavigate()
   const { t, i18n } = useTranslation("product")
@@ -138,7 +138,7 @@ const Product = () => {
           <button
             className="btn btn-primary mb-3"
             onClick={() => {
-              if (!token) {
+              if (!isAuthenticated) {
                 Swal.fire({
                   icon: "warning",
                   title: t("alert.title"),

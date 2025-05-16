@@ -1,60 +1,59 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
-import Swal from "sweetalert2";
+import { useEffect, useState, useRef } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import Button from "react-bootstrap/Button"
+import Form from "react-bootstrap/Form"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+import Card from "react-bootstrap/Card"
+import Container from "react-bootstrap/Container"
+import Swal from "sweetalert2"
+import { useUser } from "../context/UserContext"
 
 const EditProduct = () => {
-  const { id: productId } = useParams();
-  const navigate = useNavigate();
-  const fileInputRef = useRef(null);
+  const { id: productId } = useParams()
+  const { getToken } = useUser()
+  const navigate = useNavigate()
+  const fileInputRef = useRef(null)
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
     stock: "",
-  });
-  const [existingImages, setExistingImages] = useState([]);
-  const [imagesToDelete, setImagesToDelete] = useState([]);
-  const [newImages, setNewImages] = useState([]);
+  })
+  const [existingImages, setExistingImages] = useState([])
+  const [imagesToDelete, setImagesToDelete] = useState([])
+  const [newImages, setNewImages] = useState([])
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-          `http://localhost:3000/api/publications/product/${productId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
+        const token = getToken()
+        const response = await fetch(`http://localhost:3000/api/publications/product/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        const data = await response.json()
         setFormData({
           title: data.title,
           description: data.description,
           price: data.price,
           stock: data.stock,
-        });
-        setExistingImages(data.images || []);
+        })
+        setExistingImages(data.images || [])
       } catch (err) {
-        console.error("Error fetching product:", err);
+        console.error("Error fetching product:", err)
       }
-    };
+    }
 
-    fetchProduct();
-  }, [productId]);
+    fetchProduct()
+  }, [productId, getToken])
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleImageDelete = async (publicId) => {
     const result = await Swal.fire({
@@ -64,16 +63,16 @@ const EditProduct = () => {
       showCancelButton: true,
       confirmButtonText: "Yes, delete",
       cancelButtonText: "Cancel",
-    });
+    })
 
-    if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return
 
-    setImagesToDelete((prev) => [...prev, publicId]);
-    setExistingImages((prev) => prev.filter((img) => img.key !== publicId));
-  };
+    setImagesToDelete((prev) => [...prev, publicId])
+    setExistingImages((prev) => prev.filter((img) => img.key !== publicId))
+  }
 
   const handleEditSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -82,48 +81,43 @@ const EditProduct = () => {
       showCancelButton: true,
       confirmButtonText: "Yes, save",
       cancelButtonText: "Cancel",
-    });
+    })
 
-    if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("title", formData.title);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("price", formData.price);
-    formDataToSend.append("stock", formData.stock);
-    formDataToSend.append("imagesToDelete", JSON.stringify(imagesToDelete));
+    const formDataToSend = new FormData()
+    formDataToSend.append("title", formData.title)
+    formDataToSend.append("description", formData.description)
+    formDataToSend.append("price", formData.price)
+    formDataToSend.append("stock", formData.stock)
+    formDataToSend.append("imagesToDelete", JSON.stringify(imagesToDelete))
 
     newImages.forEach((file) => {
-      formDataToSend.append("files", file);
-    });
+      formDataToSend.append("files", file)
+    })
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:3000/api/publications/${productId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formDataToSend,
-        }
-      );
+      const token = getToken()
+      const response = await fetch(`http://localhost:3000/api/publications/${productId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || "Error al actualizar la publicación"
-        );
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Error al actualizar la publicación")
       }
 
-      Swal.fire("Success!", "The post has been updated.", "success");
-      navigate("/user/publications");
+      Swal.fire("Success!", "The post has been updated.", "success")
+      navigate("/user/publications")
     } catch (error) {
-      console.error("Error updating publication:", error);
-      Swal.fire("Error", "There was an error updating the post.", "error");
+      console.error("Error updating publication:", error)
+      Swal.fire("Error", "There was an error updating the post.", "error")
     }
-  };
+  }
 
   return (
     <Container className="my-4">
@@ -132,13 +126,7 @@ const EditProduct = () => {
         <Form onSubmit={handleEditSubmit}>
           <Form.Group className="mb-3">
             <Form.Label className="fs-4">Title</Form.Label>
-            <Form.Control
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
+            <Form.Control type="text" name="title" value={formData.title} onChange={handleChange} required />
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -214,14 +202,9 @@ const EditProduct = () => {
 
             <Col md={6}>
               <Form.Group>
-                <Form.Label className="fs-5 fw-semibold">
-                  Upload New Images
-                </Form.Label>
+                <Form.Label className="fs-5 fw-semibold">Upload New Images</Form.Label>
                 <div className="mb-2">
-                  <label
-                    htmlFor="customFileInput"
-                    className="btn btn-secondary"
-                  >
+                  <label htmlFor="customFileInput" className="btn btn-secondary">
                     Elegir archivos
                   </label>
                   <Form.Control
@@ -241,11 +224,7 @@ const EditProduct = () => {
                   <h6 className="mt-4 text-secondary">New Images Preview</h6>
                   <Row>
                     {newImages.map((file, index) => (
-                      <Col
-                        key={index}
-                        xs={6}
-                        className="mb-3 text-center position-relative"
-                      >
+                      <Col key={index} xs={6} className="mb-3 text-center position-relative">
                         <div className="position-relative">
                           <img
                             src={URL.createObjectURL(file)}
@@ -262,11 +241,11 @@ const EditProduct = () => {
                             size="sm"
                             className="position-absolute top-0 end-0 m-1 rounded-circle"
                             onClick={() => {
-                              const updatedImages = [...newImages];
-                              updatedImages.splice(index, 1);
-                              setNewImages(updatedImages);
+                              const updatedImages = [...newImages]
+                              updatedImages.splice(index, 1)
+                              setNewImages(updatedImages)
                               if (fileInputRef.current) {
-                                fileInputRef.current.value = null;
+                                fileInputRef.current.value = null
                               }
                             }}
                           >
@@ -283,10 +262,7 @@ const EditProduct = () => {
 
           <Row className="justify-content-center">
             <Col xs="auto">
-              <Button
-                variant="outline-primary"
-                onClick={() => navigate("/user/publications")}
-              >
+              <Button variant="outline-primary" onClick={() => navigate("/user/publications")}>
                 Cancel
               </Button>
             </Col>
@@ -299,7 +275,7 @@ const EditProduct = () => {
         </Form>
       </Card>
     </Container>
-  );
-};
+  )
+}
 
-export default EditProduct;
+export default EditProduct

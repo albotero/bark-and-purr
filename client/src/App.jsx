@@ -9,21 +9,18 @@ import Product from "./pages/Product"
 import Cart from "./pages/Cart"
 import Footer from "./components/Footer"
 import Discover from "./pages/Discover"
-import { useUser } from "./context/UserContext"
 import Favorites from "./pages/Favorites"
 import NewProduct from "./pages/NewProduct"
 import Publications from "./pages/Publications"
-import EditProduct from "./pages/EditProduct";
+import EditProduct from "./pages/EditProduct"
 import ProtectedRoute from "./components/ProtectedRoute"
 import ErrorMsg from "./components/ErrorMsg"
 import MyOrders from "./pages/Orders"
 
 function App() {
-  const { token } = useUser()
-
   return (
     <>
-      <Navbar token={token} />
+      <Navbar />
       <Container className="container-main">
         <Routes>
           <Route index element={<Home />} />
@@ -88,7 +85,7 @@ function App() {
       </Container>
       <Footer />
     </>
-  );
+  )
 }
 
 export default App

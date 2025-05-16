@@ -11,6 +11,7 @@ import Spinner from "react-bootstrap/esm/Spinner"
 import Row from "react-bootstrap/esm/Row"
 import EditIcon from "../components/EditIcon"
 import ProfileInfoItem from "../components/ProfileInfoItem"
+import { useUser } from "../context/UserContext"
 import Swal from "sweetalert2"
 
 const displayOrDash = (value) => value?.toString().trim() || "-"
@@ -41,6 +42,7 @@ const Profile = () => {
   const [inputAvatar, setInputAvatar] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
   const { i18n, t } = useTranslation("profile")
+  const { getToken } = useUser()
 
   const addressItems = [
     { id: "line1", label: t("address.line", { num: 1 }) },
@@ -51,12 +53,13 @@ const Profile = () => {
     { id: "country", label: t("address.country") },
   ]
 
-useEffect(() => {
+  useEffect(() => {
     const fetchProfile = async () => {
+      const token = getToken()
       try {
         const res = await fetch("http://localhost:3000/api/auth/profile", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         })
         const data = await res.json()
@@ -105,187 +108,187 @@ useEffect(() => {
     }
 
     fetchProfile()
-  }, [i18n.language])
+  }, [i18n.language, getToken])
 
+  const languageLabel = (id) => languages.find((el) => el.id == id)?.label
 
-const languageLabel = (id) => languages.find((el) => el.id == id)?.label
+  const handleSaveAvatar = async () => {
+    if (!inputAvatar) {
+      Swal.fire({
+        icon: "info",
+        title: t("alerts.no_changes"),
+        text: t("alerts.no_avatar_change"),
+      })
+      return
+    }
 
-const handleSaveAvatar = async () => {
-  if (!inputAvatar) {
-    Swal.fire({
-      icon: "info",
-      title: t("alerts.no_changes"),
-      text: t("alerts.no_avatar_change"),
-    })
-    return
+    setIsUploading(true)
+
+    const formData = new FormData()
+    formData.append("avatar", inputAvatar)
+
+    const token = getToken()
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/profile/avatar", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
+
+      setUserInfo((prev) => ({ ...prev, avatar: data.avatar_url }))
+      setIsEditingAvatar(false)
+
+      Swal.fire({
+        icon: "success",
+        title: t("alerts.avatar_updated"),
+        text: t("alerts.avatar_success"),
+        timer: 2000,
+        showConfirmButton: true,
+      })
+    } catch (err) {
+      console.error("Failed to update avatar:", err)
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: t("alerts.avatar_error"),
+      })
+    } finally {
+      setIsUploading(false)
+    }
   }
 
-  setIsUploading(true)
-
-  const formData = new FormData()
-  formData.append("avatar", inputAvatar)
-
-  try {
-    const res = await fetch("http://localhost:3000/api/auth/profile/avatar", {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: formData,
-    })
-
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.message)
-
-    setUserInfo((prev) => ({ ...prev, avatar: data.avatar_url }))
-    setIsEditingAvatar(false)
-
-    Swal.fire({
-      icon: "success",
-      title: t("alerts.avatar_updated"),
-      text: t("alerts.avatar_success"),
-      timer: 2000,
-      showConfirmButton: true,
-    })
-  } catch (err) {
-    console.error("Failed to update avatar:", err)
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: t("alerts.avatar_error"),
-    })
-  } finally {
-    setIsUploading(false)
-  }
-}
-
-const handleInputAddressChange = ({ target }) => {
+  const handleInputAddressChange = ({ target }) => {
     const { value, dataset } = target
     const { property } = dataset
     setInputAddress((prev) => ({ ...prev, [property]: value }))
-}
-
-const handleLanguageSelectionChange = ({ target: { value: language } }) => {
-  setInputPreferences((prev) => ({ ...prev, language }))
-}
-
-const handleNotificationCheckChange = ({ target }) => {
-  const { checked: isActive, dataset } = target
-  const { id } = dataset
-  const updateNotification = (nots) => nots.map((el) => (el.id == id ? { ...el, isActive } : el))
-  setInputPreferences((prev) => ({ ...prev, notifications: updateNotification(prev.notifications) }))
-}
-const handleSaveAddress = async () => {
-  const isUnchanged = JSON.stringify(inputAddress) === JSON.stringify(address);
-
-  if (isUnchanged) {
-    Swal.fire({
-      icon: "info",
-      title: t("alerts.no_changes"),
-      text: t("alerts.no_address_change"),
-      timer: 2000,
-      showConfirmButton: true
-    })
-    return;
   }
-  try {
-    const res = await fetch("http://localhost:3000/api/auth/profile", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(inputAddress)
 
-    })
-
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.message)
-
-    setAddress(inputAddress)
-    setIsEditingAddress(false)
-    Swal.fire({
-      icon: "success",
-      title: t("alerts.address_updated"),
-      text: t("alerts.address_success"),
-      timer: 2000,
-      showConfirmButton: true,
-    })
-  } catch (err) {
-    console.error("Failed to update address:", err)
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: t("alerts.address_error"),
-      showConfirmButton: true,
-    })
-
+  const handleLanguageSelectionChange = ({ target: { value: language } }) => {
+    setInputPreferences((prev) => ({ ...prev, language }))
   }
-}
 
-const handleSavePreferences = async () => {
-  try {
-    const res = await fetch("http://localhost:3000/api/auth/profile", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(preferencesToPayload(inputPreferences))
+  const handleNotificationCheckChange = ({ target }) => {
+    const { checked: isActive, dataset } = target
+    const { id } = dataset
+    const updateNotification = (nots) => nots.map((el) => (el.id == id ? { ...el, isActive } : el))
+    setInputPreferences((prev) => ({ ...prev, notifications: updateNotification(prev.notifications) }))
+  }
+  const handleSaveAddress = async () => {
+    const isUnchanged = JSON.stringify(inputAddress) === JSON.stringify(address)
 
-    })
+    if (isUnchanged) {
+      Swal.fire({
+        icon: "info",
+        title: t("alerts.no_changes"),
+        text: t("alerts.no_address_change"),
+        timer: 2000,
+        showConfirmButton: true,
+      })
+      return
+    }
 
-    if (!res.ok) throw new Error("Failed to update preferences")
+    const token = getToken()
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(inputAddress),
+      })
 
-    i18n.changeLanguage(inputPreferences.language)
-    setPreferences(inputPreferences)
-    setIsEditingPreferences(false)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
 
-    Swal.fire({
-      icon: "success",
-      title: t("alerts.prefs_updated"),
-      text: t("alerts.prefs_success"),
-      timer: 2000,
-      showConfirmButton: true,
-    })
-  } catch (err) {
-    console.error(err)
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: t("alerts.prefs_error"),
-      showConfirmButton: true,
+      setAddress(inputAddress)
+      setIsEditingAddress(false)
+      Swal.fire({
+        icon: "success",
+        title: t("alerts.address_updated"),
+        text: t("alerts.address_success"),
+        timer: 2000,
+        showConfirmButton: true,
+      })
+    } catch (err) {
+      console.error("Failed to update address:", err)
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: t("alerts.address_error"),
+        showConfirmButton: true,
       })
     }
   }
 
-const preferencesToPayload = (prefs) => {
-  if (!prefs || !Array.isArray(prefs.notifications)) {
-    return {
-      language: prefs?.language || "es", // fallback
-      notify_shipping: true,
-      notify_purchase: true,
-      notify_publication: true,
-      notify_review: true,
-      notify_pass_change: true
+  const handleSavePreferences = async () => {
+    const token = getToken()
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(preferencesToPayload(inputPreferences)),
+      })
+
+      if (!res.ok) throw new Error("Failed to update preferences")
+
+      i18n.changeLanguage(inputPreferences.language)
+      setPreferences(inputPreferences)
+      setIsEditingPreferences(false)
+
+      Swal.fire({
+        icon: "success",
+        title: t("alerts.prefs_updated"),
+        text: t("alerts.prefs_success"),
+        timer: 2000,
+        showConfirmButton: true,
+      })
+    } catch (err) {
+      console.error(err)
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: t("alerts.prefs_error"),
+        showConfirmButton: true,
+      })
     }
   }
 
-  const notifications = prefs.notifications.reduce((acc, curr) => {
-    if (curr.text.includes("purchase")) acc.notify_purchase = curr.isActive
-    if (curr.text.includes("shipped")) acc.notify_shipping = curr.isActive
-    if (curr.text.includes("publish")) acc.notify_publication = curr.isActive
-    if (curr.text.includes("review")) acc.notify_review = curr.isActive
-    if (curr.text.includes("password")) acc.notify_pass_change = curr.isActive
-    return acc
-  }, {})
+  const preferencesToPayload = (prefs) => {
+    if (!prefs || !Array.isArray(prefs.notifications)) {
+      return {
+        language: prefs?.language || "es", // fallback
+        notify_shipping: true,
+        notify_purchase: true,
+        notify_publication: true,
+        notify_review: true,
+        notify_pass_change: true,
+      }
+    }
 
-  return {
-    language: prefs.language,
-    ...notifications,
+    const notifications = prefs.notifications.reduce((acc, curr) => {
+      if (curr.text.includes("purchase")) acc.notify_purchase = curr.isActive
+      if (curr.text.includes("shipped")) acc.notify_shipping = curr.isActive
+      if (curr.text.includes("publish")) acc.notify_publication = curr.isActive
+      if (curr.text.includes("review")) acc.notify_review = curr.isActive
+      if (curr.text.includes("password")) acc.notify_pass_change = curr.isActive
+      return acc
+    }, {})
+
+    return {
+      language: prefs.language,
+      ...notifications,
+    }
   }
-}
-t
+  t
 
   return (
     <Container className="section-padding">
@@ -294,12 +297,16 @@ t
         <Col xs={12} md={5}>
           <div className="avatar-container position-relative">
             <img className="avatar-img" src={userInfo.avatar} alt="Avatar" />
-            <EditIcon className="avatar-icon" type="edit" callback={() => {
-              setIsEditingAvatar(true)
-              setInputAvatar(null)
-            }} />
+            <EditIcon
+              className="avatar-icon"
+              type="edit"
+              callback={() => {
+                setIsEditingAvatar(true)
+                setInputAvatar(null)
+              }}
+            />
           </div>
-          
+
           {isEditingAvatar && (
             <Form className="pt-3">
               <Form.Group className="mb-4">
@@ -323,17 +330,15 @@ t
                   </div>
 
                   <div className="d-grid w-100">
-                  <Button
-                    onClick={handleSaveAvatar}
-                    disabled={!inputAvatar || isUploading}
-                    variant="primary"
-                    className="d-flex align-items-center justify-content-center"
-                  >
-                    {isUploading ? (
-                      <Spinner animation="border" size="sm" role="status" className="me-2" />
-                    ) : null}
-                    {t("form.save_avatar")}
-                  </Button>
+                    <Button
+                      onClick={handleSaveAvatar}
+                      disabled={!inputAvatar || isUploading}
+                      variant="primary"
+                      className="d-flex align-items-center justify-content-center"
+                    >
+                      {isUploading ? <Spinner animation="border" size="sm" role="status" className="me-2" /> : null}
+                      {t("form.save_avatar")}
+                    </Button>
                   </div>
                 </div>
 
@@ -390,19 +395,19 @@ t
                 </Form>
               ) : (
                 <>
-                <Row>
-                  <Col xs={12}>
-                    {`${t("address.address")}: ${displayOrDash(address.line1)} ${displayOrDash(address.line2)}`}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs={12} md={6}>{`${t("address.city")}: ${displayOrDash(address.city)}`}</Col>
-                  <Col xs={12} md={6}>{`${t("address.state")}: ${displayOrDash(address.state)}`}</Col>
-                </Row>
-                <Row>
-                  <Col xs={12} md={6}>{`${t("address.zip")}: ${displayOrDash(address.zip)}`}</Col>
-                  <Col xs={12} md={6}>{`${t("address.country")}: ${displayOrDash(address.country)}`}</Col>
-                </Row>
+                  <Row>
+                    <Col xs={12}>
+                      {`${t("address.address")}: ${displayOrDash(address.line1)} ${displayOrDash(address.line2)}`}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={6}>{`${t("address.city")}: ${displayOrDash(address.city)}`}</Col>
+                    <Col xs={12} md={6}>{`${t("address.state")}: ${displayOrDash(address.state)}`}</Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={6}>{`${t("address.zip")}: ${displayOrDash(address.zip)}`}</Col>
+                    <Col xs={12} md={6}>{`${t("address.country")}: ${displayOrDash(address.country)}`}</Col>
+                  </Row>
                 </>
               )}
             </Col>
