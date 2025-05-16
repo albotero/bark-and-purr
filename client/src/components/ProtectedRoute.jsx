@@ -3,10 +3,9 @@ import { useUser } from "../context/UserContext"
 import Swal from "sweetalert2"
 
 const ProtectedRoute = ({ children }) => {
-  const { token } = useUser()
+  const { isAuthenticated } = useUser()
 
-  if (!token) {
-
+  if (!isAuthenticated) {
     return <Navigate to="/" replace />
   }
 

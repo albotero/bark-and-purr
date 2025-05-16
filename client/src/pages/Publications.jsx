@@ -4,13 +4,15 @@ import { Link } from "react-router-dom"
 import { FaEdit, FaTrash, FaStar } from "react-icons/fa"
 import { useTranslation } from "react-i18next"
 import Swal from "sweetalert2"
+import { useUser } from "../context/UserContext"
 
 const Publications = () => {
   const { t } = useTranslation("publications")
+  const { getToken } = useUser()
   const [publications, setPublications] = useState([])
   const [loadingStatusId, setLoadingStatusId] = useState(null)
 
-  const token = localStorage.getItem("token")
+  const token = getToken()
 
   useEffect(() => {
     const fetchPublications = async () => {

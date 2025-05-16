@@ -10,11 +10,13 @@ import ButtonGroup from "react-bootstrap/ButtonGroup"
 import Card from "react-bootstrap/Card"
 import { useCart } from "../context/CartContext"
 import { useFavorites } from "../context/FavoritesContext"
+import { useUser } from "../context/UserContext"
 import Swal from "sweetalert2"
 
 export function ProductCard({ product, showAddToCart = true }) {
   const { id: productId, title, price, thumbnail, rating } = product
   const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart()
+  const { isAuthenticated } = useUser
   const { favorites, toggleFavorite } = useFavorites()
   const navigate = useNavigate()
 
@@ -23,15 +25,6 @@ export function ProductCard({ product, showAddToCart = true }) {
 
   // Estado local para manejar si está en favoritos
   const [isFavorite, setIsFavorite] = useState(false)
-
-  // Nuevo estado para saber si el usuario está logueado
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-  // Al montar el componente, verificamos si hay token
-  useEffect(() => {
-    const token = localStorage.getItem("token")
-    setIsAuthenticated(!!token)
-  }, [])
 
   // Actualizar estado si el producto está en favoritos
   useEffect(() => {

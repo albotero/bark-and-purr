@@ -1,48 +1,50 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
-import { FiUploadCloud } from "react-icons/fi";
-import Swal from "sweetalert2";
+import { useState } from "react"
+import { useNavigate, Link } from "react-router-dom"
+import Button from "react-bootstrap/Button"
+import Form from "react-bootstrap/Form"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+import Card from "react-bootstrap/Card"
+import Container from "react-bootstrap/Container"
+import { FiUploadCloud } from "react-icons/fi"
+import Swal from "sweetalert2"
+import { useUser } from "../context/UserContext"
 
 const NewProduct = () => {
-  const navigate = useNavigate();
+  const { getToken } = useUser()
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
     stock: "",
     images: [],
-  });
+  })
 
-  const [previewUrls, setPreviewUrls] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([])
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value, files } = e.target
 
     if (name === "images") {
-      const filesArray = files ? Array.from(files) : [];
+      const filesArray = files ? Array.from(files) : []
       setFormData((prev) => ({
         ...prev,
         images: filesArray,
-      }));
+      }))
 
-      const previews = filesArray.map((file) => URL.createObjectURL(file));
-      setPreviewUrls(previews);
+      const previews = filesArray.map((file) => URL.createObjectURL(file))
+      setPreviewUrls(previews)
     } else {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
-      }));
+      }))
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -52,33 +54,30 @@ const NewProduct = () => {
       confirmButtonColor: "#6f42c1",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, publish it!",
-    });
+    })
 
-    if (!confirm.isConfirmed) return;
+    if (!confirm.isConfirmed) return
 
-    const { title, description, price, stock, images } = formData;
-    const formDataToSend = new FormData();
-    formDataToSend.append("title", title);
-    formDataToSend.append("description", description);
-    formDataToSend.append("price", price);
-    formDataToSend.append("stock", stock);
+    const { title, description, price, stock, images } = formData
+    const formDataToSend = new FormData()
+    formDataToSend.append("title", title)
+    formDataToSend.append("description", description)
+    formDataToSend.append("price", price)
+    formDataToSend.append("stock", stock)
 
     if (images && images.length > 0) {
-      images.forEach((image) => formDataToSend.append("images", image));
+      images.forEach((image) => formDataToSend.append("images", image))
     }
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        "http://localhost:3000/api/publications/create",
-        {
-          method: "POST",
-          body: formDataToSend,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const token = getToken()
+      const response = await fetch("http://localhost:3000/api/publications/create", {
+        method: "POST",
+        body: formDataToSend,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
       if (response.ok) {
         await Swal.fire({
@@ -86,20 +85,20 @@ const NewProduct = () => {
           title: "Published!",
           text: "Your product has been published.",
           confirmButtonColor: "#6f42c1",
-        });
-        navigate("/user/publications");
+        })
+        navigate("/user/publications")
       } else {
-        throw new Error("Server error");
+        throw new Error("Server error")
       }
     } catch (error) {
-      console.error("Error creating publication:", error);
+      console.error("Error creating publication:", error)
       await Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Something went wrong!",
-      });
+      })
     }
-  };
+  }
 
   return (
     <Container className="my-4">
@@ -220,10 +219,7 @@ const NewProduct = () => {
 
           <Row className="justify-content-end">
             <Col xs="auto">
-              <Button
-                variant="outline-secondary"
-                onClick={() => navigate("/user/publications")}
-              >
+              <Button variant="outline-secondary" onClick={() => navigate("/user/publications")}>
                 Cancel
               </Button>
             </Col>
@@ -242,7 +238,7 @@ const NewProduct = () => {
         </Form>
       </Card>
     </Container>
-  );
-};
+  )
+}
 
-export default NewProduct;
+export default NewProduct
