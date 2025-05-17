@@ -1,15 +1,15 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState, useCallback } from "react"
 import { useUser } from "./UserContext"
 
 const CartContext = createContext()
 
 export const useCart = () => useContext(CartContext)
 
-export const CartProvider = ({ children }) => {
+export const CartProvider =  ({ children }) => {
   const [cart, setCart] = useState([])
   const { getToken, isAuthenticated } = useUser()
 
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     if (!isAuthenticated) return
 
     try {
@@ -22,11 +22,11 @@ export const CartProvider = ({ children }) => {
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || "Error fetching cart")
 
-      setCart(data.cart) // ← importante
+      setCart(data.cart) // ← Aquí se actualiza el carrito
     } catch (err) {
       console.error("Error fetching cart:", err)
     }
-  }
+  }, [getToken, isAuthenticated])
 
   const addToCart = async (product, quantity = 1) => {
     try {
@@ -133,7 +133,7 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCart()
-  }, [])
+  }, [fetchCart]) 
 
   return (
     <CartContext.Provider
