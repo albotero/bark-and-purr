@@ -85,20 +85,20 @@ export function ProductCard({ product, showAddToCart = true }) {
         </button>
       )}
 
+      <Card.Img
+        variant="top"
+        src={thumbnail || "/placeholder.png"}
+        alt={title.content}
+        className={"shadow-sm" + (thumbnail ? "" : " bg-secondary")}
+      />
+
       <Card.Body className="d-flex align-items-center">
-        <div
-          className="me-3"
-          style={{
-            width: "100px",
-            height: "100px",
-            backgroundColor: "#d3d3d3",
-          }}
-        >
-          {thumbnail}
-        </div>
         <div className="flex-grow-1">
           <h5>{title.content}</h5>
-          <small>${price.toLocaleString()}/u</small>
+          <div className="d-flex justify-content-between fs-6 flex-wrap">
+            <p className="m-0">${price.toLocaleString()}/u</p>
+            <p className="m-0">Total: ${(price * cartItem.quantity).toLocaleString()}</p>
+          </div>
           <div className="mt-2 d-flex align-items-center gap-2">
             <ButtonGroup>
               <Button variant="secondary" onClick={() => decreaseQuantity(productId)}>
@@ -120,9 +120,6 @@ export function ProductCard({ product, showAddToCart = true }) {
               <BsTrash />
             </Button>
           </div>
-        </div>
-        <div className="text-end">
-          <h6>Total: ${(price * cartItem.quantity).toLocaleString()}</h6>
         </div>
       </Card.Body>
     </Card>
@@ -153,6 +150,7 @@ export function ProductCard({ product, showAddToCart = true }) {
           </div>
         )}
       </div>
+
       <Card.Body>
         <Card.Title>{title.content}</Card.Title>
         <div className="d-flex gap-3 w-100">
