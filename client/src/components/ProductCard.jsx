@@ -85,12 +85,19 @@ export function ProductCard({ product, showAddToCart = true }) {
         </button>
       )}
 
-      <Card.Img
-        variant="top"
-        src={thumbnail || "/placeholder.png"}
-        alt={title.content}
-        className={"shadow-sm" + (thumbnail ? "" : " bg-secondary")}
-      />
+      <div className="position-relative">
+        <Card.Img
+          variant="top"
+          src={thumbnail || "/placeholder.png"}
+          alt={title.content}
+          className={"ratio ratio-16x9 shadow-sm" + (thumbnail ? "" : " bg-secondary")}
+        />
+        {rating && (
+          <div className="product-rating">
+            <TiStarFullOutline className="star" /> {Number(rating).toFixed(1)}
+          </div>
+        )}
+      </div>
 
       <Card.Body className="d-flex align-items-center">
         <div className="flex-grow-1">
