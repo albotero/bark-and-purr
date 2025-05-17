@@ -24,7 +24,7 @@ const Favorites = () => {
       {favorites.length === 0 ? (
         <div className="text-center">
           <FaHeartBroken size={48} className="text-danger mb-2" />
-          <p>{t("favorites.emptyMessage")}</p>
+          <p>{t("emptyMessage")}</p>
         </div>
       ) : (
         <Row className="g-4">
