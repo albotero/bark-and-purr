@@ -91,7 +91,7 @@ const Cart = () => {
                     <Col xs={6}>
                       <h5 className="mb-1">{item.title}</h5>
                       <p className="mb-1 text-muted">
-                        {t("unit_price")}: ${item.price}
+                        {t("unit_price")}: ${item.price.toLocaleString()}
                       </p>
 
                       <div className="d-flex align-items-center gap-2">
@@ -115,7 +115,7 @@ const Cart = () => {
 
                     <Col xs={3} className="text-end">
                       <p className="fw-semibold mb-0">
-                        {t("total")}: ${(item.price * item.quantity).toFixed(2)}
+                        {t("total")}: ${(item.price * item.quantity).toLocaleString()}
                       </p>
                       <Button
                         variant="outline-danger"
@@ -141,7 +141,7 @@ const Cart = () => {
 
                 <ListGroup className="mb-3">
                   <ListGroup.Item>
-                    Subtotal: ${subtotal.toFixed(2)}
+                    ${subtotal.toLocaleString()}
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Card.Subtitle className="mb-2 fw-bold">
@@ -164,7 +164,7 @@ const Cart = () => {
                     />
                   </ListGroup.Item>
                   <ListGroup.Item>
-                    {t("total_amount")}: ${totalWithShipping.toFixed(2)}
+                    {t("total_amount")}: ${totalWithShipping.toLocaleString()}
                   </ListGroup.Item>
                 </ListGroup>
 
