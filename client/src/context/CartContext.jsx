@@ -1,92 +1,154 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react"
+import { useUser } from "./UserContext"
 
-export const CartContext = createContext();
+const CartContext = createContext()
 
-export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState(() => {
-    const storedCart = localStorage.getItem("cart");
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
+export const useCart = () => useContext(CartContext)
+
+export const CartProvider =  ({ children }) => {
+  const [cart, setCart] = useState([])
+  const { getToken, isAuthenticated } = useUser()
+
+  const fetchCart = useCallback(async () => {
+    if (!isAuthenticated) return
+
+    try {
+      const res = await fetch("http://localhost:3000/api/cart", {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || "Error fetching cart")
+
+      setCart(data.cart) // ← Aquí se actualiza el carrito
+    } catch (err) {
+      console.error("Error fetching cart:", err)
+    }
+  }, [getToken, isAuthenticated])
+
+  const addToCart = async (product, quantity = 1) => {
+    try {
+      const { id: product_id, price } = product
+
+      const res = await fetch("http://localhost:3000/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ product_id, quantity, price }), // ← AÑADIR PRECIO
+      })
+
+      if (!res.ok) {
+        const errorText = await res.text()
+        throw new Error(`Error adding to cart: ${errorText}`)
+      }
+
+      await fetchCart()
+    } catch (err) {
+      console.error("Error adding product to cart:", err)
+    }
+  }
+
+  const updateItemQuantity = async (itemId, newQuantity) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/cart/${itemId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ quantity: newQuantity }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || "Error updating quantity")
+
+      await fetchCart()
+    } catch (err) {
+      console.error("Error updating quantity:", err)
+    }
+  }
+
+  const removeFromCart = async (itemId) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/cart/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || "Error deleting product")
+
+      fetchCart()
+    } catch (err) {
+      console.error("Error removing product from cart:", err)
+    }
+  }
+
+  const increaseQty = async (itemId) => {
+    const item = cart.find((i) => i.id === itemId)
+    if (item) {
+      await updateItemQuantity(itemId, item.quantity + 1)
+    }
+  }
+
+  const decreaseQty = async (itemId) => {
+    const item = cart.find((i) => i.id === itemId)
+    if (item) {
+      if (item.quantity <= 1) {
+        await removeFromCart(itemId)
+      } else {
+        await updateItemQuantity(itemId, item.quantity - 1)
+      }
+    }
+  }
+
+  const clearCart = async () => {
+    const deletions = cart.map((item) => removeFromCart(item.id))
+    await Promise.all(deletions)
+  }
+
+  const buyCart = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/cart/complete-payment", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || "Error completing payment")
+
+      fetchCart()
+    } catch (err) {
+      console.error("Error at checkout:", err)
+    }
+  }
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  // Agregar producto
-  const addToCart = (product) => {
-    setCart((prevCart) => {
-      const existing = prevCart.find((item) => item.id === product.id);
-      if (existing) {
-        return prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + product.quantity }
-            : item
-        );
-      } else {
-        return [...prevCart, product];
-      }
-    });
-  };
-
-  // Remover producto completamente
-  const removeFromCart = (productId) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
-  };
-
-  // Aumentar cantidad
-  const increaseQty = (productId) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
-
-  // Disminuir cantidad (y eliminar si llega a 0)
-  const decreaseQty = (productId) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
-  };
-
-  // Vaciar carrito
-  const clearCart = () => setCart([]);
-
-  // Simular compra
-  const buyCart = () => {
-    alert("Purchase completed successfully!");
-    clearCart();
-    // Aquí podrías enviar los datos al backend
-  };
-
-  // Calcular total
-  const cartTotal = cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+    fetchCart()
+  }, [fetchCart]) 
 
   return (
     <CartContext.Provider
       value={{
         cart,
         addToCart,
+        updateItemQuantity,
         removeFromCart,
         increaseQty,
         decreaseQty,
         clearCart,
         buyCart,
-        cartTotal,
       }}
     >
       {children}
     </CartContext.Provider>
-  );
-};
-
-export const useCart = () => useContext(CartContext);
+  )
+}

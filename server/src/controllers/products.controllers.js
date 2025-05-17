@@ -15,7 +15,7 @@ export const getProducts = (req, res) =>
     res,
     success: 200,
     callback: findProducts,
-    args: req.query,
+    args: { ...req.params, ...req.query },
   })
 
 export const getRating = (req, res) =>
@@ -31,5 +31,5 @@ export const getReviews = (req, res) =>
     res,
     success: 200,
     callback: findReviews,
-    args: { productId: req.params.id, ...req.query },
+    args: { productId: req.params.id, lang: req.params.lang, ...req.query },
   })

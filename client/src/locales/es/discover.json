@@ -1,11 +1,12 @@
 {
+  "loading": "Cargando",
   "search": "Buscar",
   "products": "productos",
   "filter": {
     "title": "Filtrar",
     "price": "Por precio",
     "stock": "Por unidades disponibles",
-    "stock_a": "Más de",
+    "stock_a": "Mínimo",
     "stock_b": "unidades"
   },
   "order": {
@@ -13,5 +14,16 @@
     "price": "Precio",
     "rating": "Calificación",
     "date": "Fecha"
+  },
+  "page": {
+    "title": "Páginas",
+    "current": "Productos {{start}}-{{end}} de {{total_products}}. Página {{current}} de {{total}}",
+    "results_per_page": "{{num}} resultados por página"
+  },
+  "error_fetching": "No se pudo obtener la lista de productos",
+  "alert": {
+    "success": "¡Éxito!",
+    "ok": "Aceptar",
+    "filters_cleared": "Se borraron todos los filtros"
   }
 }

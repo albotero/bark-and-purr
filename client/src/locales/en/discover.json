@@ -1,11 +1,12 @@
 {
+  "loading": "Loading",
   "search": "Search",
   "products": "products",
   "filter": {
     "title": "Filter Results",
     "price": "By price",
     "stock": "By available stock",
-    "stock_a": "More than",
+    "stock_a": "At least",
     "stock_b": "units"
   },
   "order": {
@@ -13,5 +14,16 @@
     "price": "Price",
     "rating": "Rating",
     "date": "Date"
+  },
+  "page": {
+    "title": "Pages",
+    "current": "Products {{start}}-{{end}} of {{total_products}}. Page {{current}} of {{total}}",
+    "results_per_page": "{{num}} results per page"
+  },
+  "error_fetching": "Couldn't fetch the products list",
+  "alert": {
+    "success": "Success!",
+    "ok": "Ok",
+    "filters_cleared": "All filters cleared"
   }
 }

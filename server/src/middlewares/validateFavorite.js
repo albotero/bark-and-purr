@@ -1,11 +1,9 @@
 export const validateFavorite = (req, res, next) => {
-  const { user_id, product_id } = req.body;
+  const { product_id } = req.body
 
-  if (!user_id || !product_id) {
-    return res
-      .status(400)
-      .json({ error: "User ID and Product ID are required" });
+  if (!product_id) {
+    return res.status(400).json({ error: "Product ID is required" })
   }
 
-  next();
-};
+  next()
+}

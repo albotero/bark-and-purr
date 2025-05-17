@@ -1,0 +1,25 @@
+{
+  "go_back": "Volver",
+  "total_reviews": "{{totalReviews}} valoraciones",
+  "in_stock": "En stock ({{stock}} disponibles)",
+  "out_of_stock": "Fuera de stock",
+  "add_to_cart": "Agregar al carrito",
+  "brand": "Marca",
+  "seller": "Vendedor",
+  "free_shipping": "Envío gratis a partir de ${{price}}",
+  "description": "Descripción",
+  "reviews": {
+    "title": "Valoraciones ({{totalReviews}})",
+    "filter": "Filtrar",
+    "star": "estrella",
+    "stars": "estrellas",
+    "reviews": "Valoraciones"
+  },
+  "automatically_translated": "Traducido automáticamente del {{sourceLang}}",
+  "alert": {
+    "title": "No has iniciado sesión",
+    "content": "Inicia sesión para agregar productos a tu carrito",
+    "ok": "Iniciar sesión",
+    "cancel": "Cancelar"
+  }
+}

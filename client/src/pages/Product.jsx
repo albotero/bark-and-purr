@@ -1,115 +1,131 @@
-import { useParams, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import Swal from "sweetalert2"
+import { useTranslation } from "react-i18next"
+import { HiTranslate } from "react-icons/hi"
+import ErrorMsg from "../components/ErrorMsg"
+import FavHeart from "../components/FavHeart"
+import Loading from "../components/Loading"
+import Reviews from "../components/Reviews"
 import { useCart } from "../context/CartContext"
 import { useUser } from "../context/UserContext"
-import Swal from "sweetalert2"
-
-const mockProduct = {
-  id: "p123",
-  name: "Royal Canin Medium Adult - Dog Food",
-  price: 89.99,
-  discount: 0.15,
-  stock: 18,
-  brand: "Royal Canin",
-  seller: "PetHappy Store",
-  rating: 4.5,
-  reviews: [
-    {
-      id: 1,
-      user: "Alejandro B.",
-      rating: 5,
-      date: "2025-01-15",
-      content: "Excellent product, my dog loves it and his coat has improved significantly.",
-    },
-    {
-      id: 2,
-      user: "Janis C.",
-      rating: 4,
-      date: "2025-02-03",
-      content: "Good quality, although a bit pricey.",
-    },
-    {
-      id: 3,
-      user: "Pam Y.",
-      rating: 5,
-      date: "2025-03-21",
-      content: "I always buy this one, it’s the only food that works well for my pet.",
-    },
-  ],
-  images: [
-    "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1605897472359-85e4b94d685d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  ],
-  description:
-    "Royal Canin Medium Adult is a high-quality dry food for medium-sized adult dogs (11–25 kg) from 12 months of age. Specifically formulated to meet the nutritional needs of medium breed dogs.",
-  features: [
-    "Formulated for adult dogs weighing 11–25 kg",
-    "Contains high-quality proteins",
-    "Supports digestive health",
-    "Optimal nutrient balance",
-    "Promotes healthy bones and joints",
-  ],
-}
+import { useApi } from "../hooks/useApi"
+import getLangName from "../utils/langName"
 
 const Product = () => {
-  const { id } = useParams()
-  const [product, setProduct] = useState(null)
+  const { productId } = useParams()
+  const [product, setProduct] = useState({})
+  const [reviews, setReviews] = useState("")
+  const [rating, setRating] = useState(0)
+  const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState("desc")
   const { addToCart } = useCart()
-  const { token } = useUser()
+  const { isAuthenticated } = useUser()
+  const [fetchData] = useApi()
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation("product")
+
+  const { message, id, title, images, discount, price, stock, brand, description, vendor } = product
+  const { total_reviews: totalReviews } = reviews
+  const discounted = discount > 0
+  const finalPrice = price * (1 - (discount || 0))
 
   useEffect(() => {
-    setTimeout(() => setProduct(mockProduct), 300)
-  }, [id])
+    if (!productId) return
+    const fetchProductData = async () => {
+      const [productData, reviewsData, ratingData] = await Promise.all([
+        fetchData({ endpoint: `product/${i18n.language}/${productId}` }),
+        fetchData({ endpoint: `product/${i18n.language}/${productId}/reviews` }),
+        fetchData({ endpoint: `product/${productId}/rating` }),
+      ])
+      setProduct(productData)
+      setReviews(reviewsData)
+      setRating(Number(ratingData.rating))
+    }
+    fetchProductData()
+  }, [productId, fetchData, i18n.language])
 
-  if (!product) return <div className="text-center mt-5">Loading product...</div>
+  const handleGoBack = () => {
+    navigate(-1)
+  }
 
-  const discounted = product.discount > 0
-  const finalPrice = (product.price * (1 - product.discount)).toFixed(2)
+  const handleImageClick = ({ target }) => {
+    const { imageIndex } = target.dataset
+    setActiveImage(imageIndex)
+  }
 
-  return (
-    <div className="container mt-4 bg-tertiary">
-      <button className="btn btn-link mb-3" onClick={() => window.history.back()}>
-        ← Back to products
+  return message === "not_found" ? (
+    <ErrorMsg />
+  ) : !id ? (
+    <Loading />
+  ) : (
+    <div className="container mt-4 mb-5 bg-tertiary">
+      <button className="btn btn-link mb-3" onClick={handleGoBack}>
+        ← {t("go_back")}
       </button>
+
       <div className="row">
         <div className="col-md-6">
-          <div className="position-relative mb-3">
-            <img src={product.images[0]} alt={product.name} className="img-fluid rounded" />
-            {discounted && (
-              <span className="badge bg-danger position-absolute top-0 start-0 m-2">-{product.discount * 100}%</span>
-            )}
-          </div>
-          <div className="d-flex gap-2 mb-4">
-            {product.images.map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                alt={`View ${i}`}
-                className="img-thumbnail object-fit-cover"
-                style={{ width: "70px", height: "70px", objectFit: "cover" }}
-              />
-            ))}
-          </div>
+          {images && (
+            <>
+              <div className="position-relative mb-3">
+                <img src={images[activeImage]} alt={title.content} className="img-fluid rounded" />
+                {discounted && (
+                  <span className="badge bg-danger position-absolute top-0 start-0 m-2">-{discount * 100}%</span>
+                )}
+              </div>
+              <div className="d-flex gap-2 mb-4">
+                {images.map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt={`View ${i}`}
+                    data-image-index={i}
+                    className="img-thumbnail object-fit-cover"
+                    onClick={handleImageClick}
+                    style={{
+                      width: "70px",
+                      height: "70px",
+                      objectFit: "cover",
+                      cursor: activeImage == i ? undefined : "pointer",
+                      filter: activeImage == i ? "grayscale(60%) brightness(105%) contrast(80%)" : "none",
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="col-md-6">
-          <div className="text-muted small mb-2">Food / Dogs / New</div>
-          <h2>{product.name}</h2>
+          <div className="mb-3">
+            <h2 className="m-0 d-flex align-items-center gap-1">
+              {title.content} <FavHeart product={product} inline={true} />
+            </h2>
+            {title.translated && (
+              <div className="text-muted small fst-italic d-flex gap-1 align-items-center">
+                <HiTranslate />
+                {t("automatically_translated", {
+                  sourceLang: getLangName(title.sourceLang, title.targetLang),
+                })}
+              </div>
+            )}
+          </div>
+
           <div className="mb-2">
-            <span className="text-warning">★</span> {product.rating} ({product.reviews.length} reviews)
+            <span className="text-warning">★</span> {rating} ({t("total_reviews", { totalReviews })})
           </div>
 
           <div className="d-flex align-items-baseline gap-2 mb-2">
-            <h4 className="text-primary">${finalPrice}</h4>
-            {discounted && <del className="text-muted">${product.price}</del>}
+            <h4 className="text-primary">${finalPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}</h4>
+            {discounted && (
+              <del className="text-muted">${price.toLocaleString(undefined, { maximumFractionDigits: 2 })}</del>
+            )}
           </div>
 
-          <div className={`mb-2 ${product.stock > 0 ? "text-success" : "text-danger"}`}>
-            {product.stock > 0 ? `In stock (${product.stock} available)` : "Out of stock"}
+          <div className={`mb-2 ${stock > 0 ? "text-success" : "text-danger"}`}>
+            {stock > 0 ? t("in_stock", { stock }) : t("out_of_stock")}
           </div>
 
           <div className="input-group mb-3" style={{ width: "150px" }}>
@@ -125,14 +141,14 @@ const Product = () => {
           <button
             className="btn btn-primary mb-3"
             onClick={() => {
-              if (!token) {
+              if (!isAuthenticated) {
                 Swal.fire({
                   icon: "warning",
-                  title: "You're not logged in",
-                  text: "Please log in or register to add items to your cart.",
+                  title: t("alert.title"),
+                  text: t("alert.content"),
                   showCancelButton: true,
-                  confirmButtonText: "Go to Login",
-                  cancelButtonText: "Cancel",
+                  confirmButtonText: t("alert.ok"),
+                  cancelButtonText: t("alert.cancel"),
                 }).then((result) => {
                   if (result.isConfirmed) {
                     navigate("/login")
@@ -142,26 +158,28 @@ const Product = () => {
               }
 
               addToCart({
-                id: product.id,
-                title: product.name,
+                id: productId,
+                title: title.content,
                 price: parseFloat(finalPrice),
-                img: product.images?.[0],
+                img: images?.[0],
                 quantity,
               })
             }}
-            disabled={product.stock === 0}
+            disabled={stock === 0}
           >
-            🛒 Add to cart
+            🛒 {t("add_to_cart")}
           </button>
 
           <ul className="list-unstyled text-muted small">
+            {brand && (
+              <li>
+                <strong>{t("brand")}:</strong> {brand}
+              </li>
+            )}
             <li>
-              <strong>Brand:</strong> {product.brand}
+              <strong>{t("seller")}:</strong> {vendor}
             </li>
-            <li>
-              <strong>Seller:</strong> <a href="#">{product.seller}</a>
-            </li>
-            <li>🚚 Free shipping on orders over $999</li>
+            <li>🚚 {t("free_shipping", { price: 999 })}</li>
           </ul>
         </div>
       </div>
@@ -169,9 +187,8 @@ const Product = () => {
       <div className="mt-4">
         <ul className="nav nav-tabs mb-3" id="productTabs" role="tablist">
           {[
-            { key: "desc", label: "Description" },
-            { key: "reviews", label: `Reviews (${product.reviews.length})` },
-            { key: "features", label: "Features" },
+            { key: "desc", label: t("description") },
+            { key: "reviews", label: t("reviews.title", { totalReviews }) },
           ].map((tab) => (
             <li className="nav-item" role="presentation" key={tab.key}>
               <button
@@ -188,29 +205,20 @@ const Product = () => {
         </ul>
 
         <div className="tab-content border p-3">
-          {activeTab === "desc" && <p>{product.description}</p>}
-
-          {activeTab === "reviews" && (
-            <div>
-              {product.reviews.map((r) => (
-                <div key={r.id} className="mb-3 border-bottom pb-2">
-                  <strong>{r.user}</strong> <span className="text-warning">{"★".repeat(r.rating)}</span>
-                  <div className="text-muted small">{r.date}</div>
-                  <p className="mb-1">{r.content}</p>
+          {activeTab === "desc" && (
+            <div className="mx-1 my-2">
+              <p className="m-0">{description.content}</p>
+              {description.translated && (
+                <div className="text-muted small fst-italic d-flex gap-1 align-items-center">
+                  <HiTranslate />
+                  {t("automatically_translated", {
+                    sourceLang: getLangName(description.sourceLang, description.targetLang),
+                  })}
                 </div>
-              ))}
+              )}
             </div>
           )}
-
-          {activeTab === "features" && (
-            <ul className="list-group list-group-flush">
-              {product.features.map((f, i) => (
-                <li key={i} className="list-group-item">
-                  {f}
-                </li>
-              ))}
-            </ul>
-          )}
+          {activeTab === "reviews" && <Reviews reviews={reviews} setReviews={setReviews} />}
         </div>
       </div>
     </div>

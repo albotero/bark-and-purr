@@ -9,17 +9,18 @@ import Product from "./pages/Product"
 import Cart from "./pages/Cart"
 import Footer from "./components/Footer"
 import Discover from "./pages/Discover"
-import { useUser } from "./context/UserContext"
 import Favorites from "./pages/Favorites"
 import NewProduct from "./pages/NewProduct"
 import Publications from "./pages/Publications"
+import EditProduct from "./pages/EditProduct"
+import ProtectedRoute from "./components/ProtectedRoute"
+import ErrorMsg from "./components/ErrorMsg"
+import MyOrders from "./pages/Orders"
 
 function App() {
-  const { token } = useUser()
-
   return (
     <>
-      <Navbar token={token} />
+      <Navbar />
       <Container className="container-main">
         <Routes>
           <Route index element={<Home />} />
@@ -29,19 +30,62 @@ function App() {
           <Route path="product/:productId" element={<Product />} />
           <Route path="cart" element={<Cart />} />
           <Route path="user">
-            <Route index element={<Profile />} />
-            <Route path="favorites" element={<Favorites />} />
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="favorites"
+              element={
+                <ProtectedRoute>
+                  <Favorites />
+                </ProtectedRoute>
+              }
+            />
             <Route path="notifications" element={<></>} />
-            <Route path="purchases" element={<></>} />
-            <Route path="publications" element={<Publications />} />
-            <Route path="new-product" element={<NewProduct />} />
+            <Route
+              path="purchases"
+              element={
+                <ProtectedRoute>
+                  <MyOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="publications"
+              element={
+                <ProtectedRoute>
+                  <Publications />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="new-product"
+              element={
+                <ProtectedRoute>
+                  <NewProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="edit-product/:id"
+              element={
+                <ProtectedRoute>
+                  <EditProduct />
+                </ProtectedRoute>
+              }
+            />
           </Route>
-          <Route path="*" element={<div>Page not found!</div>} />
+          <Route path="*" element={<ErrorMsg error="fetch.404" />} />
         </Routes>
       </Container>
       <Footer />
     </>
-  );
+  )
 }
 
 export default App

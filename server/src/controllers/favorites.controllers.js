@@ -1,30 +1,41 @@
-import execute from "./execute.js";
-import {
-  addFavorite,
-  getFavoritesByUser,
-  deleteFavorite,
-} from "../models/favorites.models.js";
+import execute from "./execute.js"
+import { createFavorite, getFavoritesByUser, deleteFavorite } from "../models/favorites.models.js"
 
-export const addFavoriteController = (req, res) =>
-  execute({
+// POST /favorites
+export const postFavorite = (req, res) => {
+  const { product_id } = req.body
+  if (!product_id) {
+    return res.status(400).json({ error: "product_id is required" })
+  }
+  return execute({
     res,
     success: 201,
-    callback: addFavorite,
-    args: req.body,
-  });
+    callback: createFavorite,
+    args: { userId: req.user.id, productId: product_id },
+  })
+}
 
-export const getFavoritesByUserController = (req, res) =>
+// GET /favorites
+export const getFavorites = (req, res) =>
   execute({
     res,
     success: 200,
     callback: getFavoritesByUser,
-    args: { user_id: req.params.user_id },
-  });
+    args: { userId: req.user.id, lang: req.params.lang },
+  })
 
-export const deleteFavoriteController = (req, res) =>
-  execute({
+// DELETE /favorites/:id
+export const removeFavorite = (req, res) => {
+  const { id } = req.params
+
+  if (!id) {
+    return res.status(400).json({ error: "Favorite ID is required" })
+  }
+
+  return execute({
     res,
-    success: 200,
+    success: 204,
     callback: deleteFavorite,
-    args: { id: req.params.id },
-  });
+    args: { favoriteId: id, userId: req.user.id },
+  })
+}

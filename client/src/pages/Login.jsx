@@ -12,7 +12,7 @@ const Login = () => {
   })
 
   const { t } = useTranslation("auth")
-  const { login, setToken } = useUser()
+  const { login } = useUser()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -45,13 +45,17 @@ const Login = () => {
         icon: "success",
         confirmButtonText: t("alert.go_home"),
       }).then(() => {
-        setToken(true)
         navigate("/")
       })
     } else {
       Swal.fire({
         title: t("alert.error"),
-        text: result.message || t("alert.wrong_credentials"),
+        text:
+          result.message === "Invalid password"
+            ? t("invalid_password")
+            : result.message === "User not found"
+            ? t("user_not_found")
+            : t("alert.wrong_credentials"),
         icon: "error",
         confirmButtonText: t("alert.ok"),
       })

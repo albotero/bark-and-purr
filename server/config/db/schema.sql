@@ -7,6 +7,9 @@ CREATE DATABASE bark_and_purr;
 
 \c bark_and_purr
 
+-- ADD SUPPORT TO ACCENT INSENSITIVE SEARCH
+CREATE EXTENSION unaccent;
+
 -- CREATE ENUMS
 
 CREATE TYPE cart_status AS ENUM ('active', 'canceled', 'payment_pending', 'payment_rejected', 'paid');
@@ -61,7 +64,8 @@ CREATE TABLE products_by_cart (
   id SERIAL NOT NULL PRIMARY KEY,
   cart_id INT NOT NULL REFERENCES carts(id),
   product_id INT NOT NULL REFERENCES products(id),
-  quantity INT NOT NULL
+  quantity INT NOT NULL,
+  unit_price INT NOT NULL
 );
 
 CREATE TABLE product_images (
@@ -74,7 +78,8 @@ CREATE TABLE product_images (
 CREATE TABLE favorites (
   id SERIAL NOT NULL PRIMARY KEY,
   user_id INT NOT NULL REFERENCES users(id),
-  product_id INT NOT NULL REFERENCES products(id)
+  product_id INT NOT NULL REFERENCES products(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE reviews (
@@ -109,6 +114,34 @@ VALUES
 (2, TRUE, 'Cama térmica para perros del sur', 'Cama aislante para climas fríos del sur de Chile', 45990, 12),
 (4, TRUE, 'Juguete interactivo Gato Chileno', 'Juguete con plumas de aves nacionales', 8990, 30);
 
+-- Insert mock images for the products
+INSERT INTO product_images (product_id, url, key) VALUES
+-- Product 1: Comedero automático (Pet Feeder)
+(1, 'https://images.pexels.com/photos/4588047/pexels-photo-4588047.jpeg', 'auto_feeder_1'),
+(1, 'https://images.pexels.com/photos/4588059/pexels-photo-4588059.jpeg', 'auto_feeder_2'),
+-- Product 2: Arnés (Dog Harness)
+(2, 'https://images.pexels.com/photos/5731864/pexels-photo-5731864.jpeg', 'harness_1'),
+(2, 'https://images.pexels.com/photos/3361739/pexels-photo-3361739.jpeg', 'harness_2'),
+-- Product 3: Rascador (Cat Scratcher)
+(3, 'https://images.pexels.com/photos/96428/pexels-photo-96428.jpeg', 'scratch_post_1'),
+(3, 'https://images.pexels.com/photos/6853286/pexels-photo-6853286.jpeg', 'scratch_post_2'),
+-- Product 4: Acuario (Aquarium)
+(4, 'https://images.pexels.com/photos/2156311/pexels-photo-2156311.jpeg', 'aquarium_1'),
+(4, 'https://images.pexels.com/photos/2156316/pexels-photo-2156316.jpeg', 'aquarium_2'),
+-- Product 5: Transportín (Pet Carrier)
+(5, 'https://images.pexels.com/photos/1904105/pexels-photo-1904105.jpeg', 'carrier_1'),
+(5, 'https://images.pexels.com/photos/1904106/pexels-photo-1904106.jpeg', 'carrier_2'),
+-- Product 6: Snacks (Dog Treats)
+(6, 'https://images.pexels.com/photos/4587978/pexels-photo-4587978.jpeg', 'treats_1'),
+(6, 'https://images.pexels.com/photos/5515881/pexels-photo-5515881.jpeg', 'treats_2'),
+-- Product 7: Cama térmica (Dog Bed)
+(7, 'https://images.pexels.com/photos/7752794/pexels-photo-7752794.jpeg', 'bed_1'),
+(7, 'https://images.pexels.com/photos/7752796/pexels-photo-7752796.jpeg', 'bed_2'),
+-- Product 8: Juguete (Cat Toy)
+(8, 'https://images.pexels.com/photos/6853287/pexels-photo-6853287.jpeg', 'toy_1'),
+(8, 'https://images.pexels.com/photos/6853288/pexels-photo-6853288.jpeg', 'toy_2');
+
+
 -- Insert mock carts
 INSERT INTO carts (user_id, status, status_time)
 VALUES
@@ -118,13 +151,13 @@ VALUES
 (5, 'active', CURRENT_TIMESTAMP);
 
 -- Insert products into carts (Chilean pesos values)
-INSERT INTO products_by_cart (cart_id, product_id, quantity)
+INSERT INTO products_by_cart (cart_id, product_id, quantity, unit_price)
 VALUES
-(1, 1, 1),  -- Javiera tiene un comedero automático en su carro
-(1, 2, 2),  -- y dos arneses
-(1, 6, 3),  -- y tres paquetes de snacks
-(3, 3, 1),  -- Camila tiene un rascador
-(3, 7, 1);  -- y una cama térmica
+(1, 1, 1, 59990),  -- Javiera tiene un comedero automático en su carro
+(1, 2, 2, 24990),  -- y dos arneses
+(1, 6, 3, 12990),  -- y tres paquetes de snacks
+(3, 3, 1, 34990),  -- Camila tiene un rascador
+(3, 7, 1, 45990);  -- y una cama térmica
 
 -- Insert product images with Chilean references
 INSERT INTO product_images (product_id, url, key)
@@ -160,3 +193,6 @@ VALUES
 (5, 1, 4, 'Funciona bacán pero la app a veces se tranca'),
 (1, 7, 5, 'La mejor compra! Mi perro ahora duerme calentito en las noches frías de Concepción'),
 (4, 1, 3, 'Aunque funciona, no es tan buena. Le doy 3 estrellas');
+
+--AGREAR COLUMNA en tabla
+ALTER TABLE favorites ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;

@@ -1,16 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
 /* Apply the custom variables */
 body {
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
-  min-height: 100vh;
   margin: 0;
   font-family: "Nunito", system-ui, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Your layout classes */
 .container-main {
   background-color: var(--bs-body-bg);
   padding: 0;
+  flex-grow: 1;
 }
 
 .section-padding {

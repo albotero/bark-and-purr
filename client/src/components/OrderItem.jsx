@@ -1,4 +1,5 @@
-import { FaArrowDownShortWide, FaArrowDownWideShort } from "react-icons/fa6"
+import { FaSortAmountDown, FaSortAmountDownAlt } from "react-icons/fa"
+import Button from "react-bootstrap/esm/Button"
 
 const OrderItem = ({ data: { key, text, order, setOrder } }) => {
   const [orderKey, orderDirection] = order.split("_")
@@ -9,15 +10,15 @@ const OrderItem = ({ data: { key, text, order, setOrder } }) => {
   const handleClick = () => setOrder(`${key}_${newDirection}`)
 
   return (
-    <p className="order-item" onClick={handleClick}>
+    <Button variant="outline-primary" className="px-1 py-0" active={isOrderedByItem} onClick={handleClick}>
       {isOrderedByItem &&
         (direction === "asc" ? (
-          <FaArrowDownShortWide className="order-icon" />
+          <FaSortAmountDownAlt className="order-icon" />
         ) : (
-          <FaArrowDownWideShort className="order-icon" />
+          <FaSortAmountDown className="order-icon" />
         ))}
-      {text}
-    </p>
+      {` ${text}`}
+    </Button>
   )
 }
 

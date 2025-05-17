@@ -1,6 +1,7 @@
 import { registerUser, loginUser } from "../models/auth.models.js"
 import execute from "./execute.js"
 import executeQuery from "../models/executeQuery.js"
+import cloudinary from "../../config/cloudinary.js"
 
 export const register = async (req, res) =>
   execute({
@@ -69,70 +70,91 @@ export const getUserProfile = async (req, res) => {
 
 export const updateUserProfile = async (req, res) => {
   const { id } = req.user;
-  const {
-    surname,
-    last_name,
-    birthday,
-    avatar_url,
-    address_line_1,
-    address_line_2,
-    city,
-    state,
-    country,
-    zip_code,
-    language,
-    notify_shipping,
-    notify_purchase,
-    notify_publication,
-    notify_review,
-    notify_pass_change
-  } = req.body;
+  const allowedFields = [
+    "surname",
+    "last_name",
+    "birthday",
+    "avatar_url",
+    "address_line_1",
+    "address_line_2",
+    "city",
+    "state",
+    "country",
+    "zip_code",
+    "language",
+    "notify_shipping",
+    "notify_purchase",
+    "notify_publication",
+    "notify_review",
+    "notify_pass_change"
+  ];
 
-  await executeQuery({
-    text: `
-      UPDATE users SET
-        surname = $1,
-        last_name = $2,
-        birthday = $3,
-        avatar_url = $4,
-        address_line_1 = $5,
-        address_line_2 = $6,
-        city = $7,
-        state = $8,
-        country = $9,
-        zip_code = $10,
-        language = $11,
-        notify_shipping = $12,
-        notify_purchase = $13,
-        notify_publication = $14,
-        notify_review = $15,
-        notify_pass_change = $16
-      WHERE id = $17
-    `,
-    values: [
-      surname,
-      last_name,
-      birthday,
-      avatar_url,
-      address_line_1,
-      address_line_2,
-      city,
-      state,
-      country,
-      zip_code,
-      language,
-      notify_shipping,
-      notify_purchase,
-      notify_publication,
-      notify_review,
-      notify_pass_change,
-      id
-    ]
-  });
+  const fields = [];
+  const values = [];
+  let i = 1;
+
+  for (const field of allowedFields) {
+    if (req.body[field] !== undefined) {
+      fields.push(`${field} = $${i++}`);
+      values.push(req.body[field]);
+    }
+  }
+
+  if (fields.length === 0) {
+    return res.status(400).json({ message: "No valid fields to update" });
+  }
+
+  const query = `
+    UPDATE users
+    SET ${fields.join(", ")}
+    WHERE id = $${i}
+  `;
+
+  values.push(id);
+
+  await executeQuery({ text: query, values });
 
   res.status(200).json({ message: "User profile updated successfully" });
 };
 
+export const updateAvatar = async (req, res) => {
+  const { id } = req.user
+  const file = req.file
   
-    
-    
+  console.log("Received file:", {
+  originalname: file.originalname,
+  mimetype: file.mimetype,
+  size: file.size,
+})
+
+
+  if (!file) {
+    return res.status(400).json({ message: "No file uploaded" })
+  }
+
+  try {
+    // Cloudinary upload
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "avatars" },
+      async (error, result) => {
+        if (error) {
+          console.error(error)
+          return res.status(500).json({ message: "Cloudinary error" })
+        }
+
+        // Guardar URL en la base de datos
+        await executeQuery({
+          text: "UPDATE users SET avatar_url = $1 WHERE id = $2",
+          values: [result.secure_url, id],
+        })
+
+        res.status(200).json({ avatar_url: result.secure_url })
+      }
+    )
+
+    stream.end(file.buffer)
+  } catch (err) {
+    console.error("Upload error", err)
+    res.status(500).json({ message: "Upload failed" })
+  }
+}

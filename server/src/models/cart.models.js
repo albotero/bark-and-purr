@@ -1,151 +1,89 @@
-import pool from "../../config/db/connection.db.js";
+import pool from "../../config/db/connection.db.js"
 
-export const findOrCreateActiveCart = async (userId) => {
-  const result = await pool.query(
-    `SELECT * FROM carts WHERE user_id = $1 AND status = 'active' LIMIT 1`,
-    [userId]
-  );
+export const getOrCreateCart = async (userId) => {
+  const existing = await pool.query(`SELECT * FROM carts WHERE user_id = $1 AND status = 'active'`, [userId])
+  if (existing.rows.length > 0) return existing.rows[0]
 
-  if (result.rows.length > 0) return result.rows[0];
-
-  const insert = await pool.query(
-    `INSERT INTO carts (user_id) VALUES ($1) RETURNING *`,
-    [userId]
-  );
-
-  return insert.rows[0];
-};
-
-export const getActiveCart = async (userId) => {
-  const result = await pool.query(
-    `
-    SELECT * FROM carts
-    WHERE user_id = $1 AND status = 'active'
-    LIMIT 1
-    `,
-    [userId]
-  );
-  return result.rows[0]; 
-};
-
-
-export const createCart = async (userId) => {
-  const result = await pool.query(
-    `
-    INSERT INTO carts (user_id, status)
-    VALUES ($1, 'active')
-    RETURNING id, user_id, status, status_time, expiration
-    `,
-    [userId]
-  );
-  return result.rows[0]; 
-};
+  const created = await pool.query(`INSERT INTO carts (user_id) VALUES ($1) RETURNING *`, [userId])
+  return created.rows[0]
+}
 
 export const findCartItemsByUser = async (userId) => {
+  const cart = await getOrCreateCart(userId)
   const result = await pool.query(
     `
-    SELECT pbc.id, pbc.quantity, p.title, p.price
-    FROM carts c
-    JOIN products_by_cart pbc ON c.id = pbc.cart_id
+    SELECT
+      pbc.id,
+      pbc.quantity,
+      p.title,
+      pbc.unit_price AS price,
+      (
+        SELECT url
+        FROM product_images
+        WHERE product_id = p.id
+        ORDER BY id ASC
+        LIMIT 1
+      ) AS thumbnail,
+      pbc.unit_price * pbc.quantity AS total
+    FROM products_by_cart pbc
     JOIN products p ON p.id = pbc.product_id
-    WHERE c.user_id = $1 AND c.status = 'active'
+    WHERE pbc.cart_id = $1
     `,
-    [userId]
-  );
+    [cart.id]
+  )
+  return result.rows
+}
 
-  return result.rows;
-};
+export const findCartItem = async (userId, productId) => {
+  const cart = await getOrCreateCart(userId)
+  const result = await pool.query(`SELECT * FROM products_by_cart WHERE cart_id = $1 AND product_id = $2`, [
+    cart.id,
+    productId,
+  ])
+  return result.rows[0]
+}
 
-export const findCartItem = async (cartId, productId) => {
-  const result = await pool.query(
-    `SELECT * FROM products_by_cart WHERE cart_id = $1 AND product_id = $2`,
-    [cartId, productId]
-  );
-  return result.rows[0];
-};
+const getProductPrice = async (productId) => {
+  const res = await pool.query("SELECT price FROM products WHERE id = $1", [productId])
+  return res.rows[0]?.price
+}
 
-/**
- *Check if an item already exists in your cart. If so, update the quantity; otherwise, add the item to your cart.
- */
+export const insertCartItem = async (userId, productId, quantity) => {
+  const cart = await getOrCreateCart(userId)
+  const unitPrice = await getProductPrice(productId)
 
-export const insertCartItem = async (cartId, productId, quantity) => {
-  // Check if the item already exists in the cart
-  const existingItem = await pool.query(
-    `SELECT * FROM products_by_cart WHERE cart_id = $1 AND product_id = $2`,
-    [cartId, productId]
-  );
+  return await pool.query(
+    `
+    INSERT INTO products_by_cart (cart_id, product_id, quantity, unit_price)
+    VALUES ($1, $2, $3, $4)
+    `,
+    [cart.id, productId, quantity, unitPrice]
+  )
+}
 
-  if (existingItem.rows.length > 0) {
-    // If the item already exists, update the quantity
-    await updateCartItemQuantity(quantity, existingItem.rows[0].id);
-  } else {
-    // If the item does not exist, add it to your cart.
-    await pool.query(
-      `INSERT INTO products_by_cart (cart_id, product_id, quantity) VALUES ($1, $2, $3)`,
-      [cartId, productId, quantity]
-    );
-  }
-};
-
-/**
- * Updates the quantity of an item in the cart.
- */
-
-export const updateCartItemQuantity = async (quantity, id) => {
-  try {
-    const result = await pool.query(
-      `UPDATE products_by_cart SET quantity = quantity + $1 WHERE id = $2`,
-      [quantity, id]
-    );
-
-    if (result.rowCount === 0) {
-      throw new Error("The article was not found to update.");
-    }
-  } catch (error) {
-    console.error("Error updating item quantity:", error);
-    throw new Error("Error updating quantity");
-  }
-};
-
+export const updateCartItemQuantity = async (newQuantity, cartItemId) => {
+  return await pool.query(`UPDATE products_by_cart SET quantity = $1 WHERE id = $2`, [newQuantity, cartItemId])
+}
 
 export const updateCartItem = async (quantity, itemId, userId) => {
-  const result = await pool.query(
-    `
-    UPDATE products_by_cart
-    SET quantity = $1
-    WHERE id = $2 AND cart_id = (
-      SELECT id FROM carts WHERE user_id = $3 AND status = 'active'
-    )
-    `,
-    [quantity, itemId, userId]
-  );
-
-  return result;
-};
-
-export const updateCartStatus = async (cartId, status) => {
-  const result = await pool.query(
-    `
-    UPDATE carts
-    SET status = $1, status_time = CURRENT_TIMESTAMP
-    WHERE id = $2
-    RETURNING id, status
-    `,
-    [status, cartId]
-  );
-  return result.rows[0]; 
-};
+  const cart = await getOrCreateCart(userId)
+  return await pool.query(`UPDATE products_by_cart SET quantity = $1 WHERE id = $2 AND cart_id = $3 RETURNING id`, [
+    quantity,
+    itemId,
+    cart.id,
+  ])
+}
 
 export const deleteCartItem = async (itemId, userId) => {
-  const result = await pool.query(
-    `
-    DELETE FROM products_by_cart
-    WHERE id = $1 AND cart_id = (
-      SELECT id FROM carts WHERE user_id = $2 AND status = 'active'
-    )
-    `,
-    [itemId, userId]
-  );
+  const cart = await getOrCreateCart(userId)
+  return await pool.query(`DELETE FROM products_by_cart WHERE id = $1 AND cart_id = $2 RETURNING id`, [itemId, cart.id])
+}
 
-  return result;
-};
+export const getActiveCart = async (userId) => {
+  const result = await pool.query(`SELECT * FROM carts WHERE user_id = $1 AND status = 'active'`, [userId])
+  return result.rows[0]
+}
+
+export const updateCartStatus = async (cartId, status) => {
+  return await pool.query(`UPDATE carts SET status = $1 WHERE id = $2`, [status, cartId])
+}
