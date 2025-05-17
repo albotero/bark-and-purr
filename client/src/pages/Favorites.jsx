@@ -1,7 +1,6 @@
 import Container from "react-bootstrap/Container"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
-import Button from "react-bootstrap/Button"
 import { FaHeartBroken } from "react-icons/fa"
 import { useTranslation } from "react-i18next"
 import { ProductCard } from "../components/ProductCard"
@@ -29,7 +28,7 @@ const Favorites = () => {
       ) : (
         <Row className="g-4">
           {favorites.map((product) => (
-            <Col key={product.id} sm={12} md={6} lg={4}>
+            <Col key={"favorite_" + product.favorite_id} sm={12} md={6} lg={4}>
               <ProductCard product={product} showAddToCart={true} />
             </Col>
           ))}

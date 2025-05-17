@@ -4,6 +4,7 @@ import Swal from "sweetalert2"
 import { useTranslation } from "react-i18next"
 import { HiTranslate } from "react-icons/hi"
 import ErrorMsg from "../components/ErrorMsg"
+import FavHeart from "../components/FavHeart"
 import Loading from "../components/Loading"
 import Reviews from "../components/Reviews"
 import { useCart } from "../context/CartContext"
@@ -99,7 +100,9 @@ const Product = () => {
 
         <div className="col-md-6">
           <div className="mb-3">
-            <h2 className="m-0">{title.content}</h2>
+            <h2 className="m-0 d-flex align-items-center gap-1">
+              {title.content} <FavHeart product={product} inline={true} />
+            </h2>
             {title.translated && (
               <div className="text-muted small fst-italic d-flex gap-1 align-items-center">
                 <HiTranslate />

@@ -21,7 +21,7 @@ export const getFavorites = (req, res) =>
     res,
     success: 200,
     callback: getFavoritesByUser,
-    args: { userId: req.user.id },
+    args: { userId: req.user.id, lang: req.params.lang },
   })
 
 // DELETE /favorites/:id

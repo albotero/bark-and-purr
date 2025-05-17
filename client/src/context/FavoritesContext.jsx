@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react"
-import { useApi } from "../hooks/useApi"
+import { useTranslation } from "react-i18next"
 import Swal from "sweetalert2"
+import { useApi } from "../hooks/useApi"
 import { useUser } from "./UserContext"
 
 const FavoritesContext = createContext()
@@ -14,6 +15,7 @@ export function FavoritesProvider({ children }) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [fetchData] = useApi()
   const { getToken, isAuthenticated } = useUser()
+  const { i18n } = useTranslation()
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -28,7 +30,7 @@ export function FavoritesProvider({ children }) {
 
       try {
         const response = await fetchData({
-          endpoint: "favorites",
+          endpoint: `favorites/${i18n.language}`,
           method: "GET",
           token: getToken(),
         })
@@ -37,7 +39,7 @@ export function FavoritesProvider({ children }) {
           setError(response.error || "Error desconocido al obtener favoritos")
           setFavorites([])
         } else {
-          setFavorites(Array.isArray(response) ? response : [])
+          setFavorites(response.favorites || [])
           setError(null)
         }
       } catch (err) {
@@ -48,7 +50,7 @@ export function FavoritesProvider({ children }) {
       }
     }
     fetchFavorites()
-  }, [fetchData, getToken, isAuthenticated])
+  }, [fetchData, getToken, isAuthenticated, i18n.language])
 
   const toggleFavorite = async (product) => {
     if (isDeleting) {
@@ -145,9 +147,12 @@ export function FavoritesProvider({ children }) {
     }
   }
 
+  const isProductFavorite = (productId) => !!favorites?.find((fav) => fav.product_id === productId)
+
   const context = {
     favorites,
     setFavorites,
+    isProductFavorite,
     isLoading,
     error,
     toggleFavorite,

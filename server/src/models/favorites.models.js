@@ -1,13 +1,13 @@
-import format from "pg-format"
+import { doTranslation } from "../common/translate.js"
 import executeQuery from "./executeQuery.js"
 
 // Crear un favorito
 export const createFavorite = async ({ userId, productId }) => {
   try {
-    console.log(" Creando favorito con:", { userId, productId })
-    const [favorite] = await executeQuery(
-      format("INSERT INTO favorites (user_id, product_id) VALUES (%s, %s) RETURNING *", userId, productId)
-    )
+    const [favorite] = await executeQuery({
+      text: "INSERT INTO favorites (user_id, product_id) VALUES ($1, $2) RETURNING *",
+      values: [userId, productId],
+    })
     return favorite
   } catch (error) {
     console.error(" Error en createFavorite:", error.message)
@@ -16,30 +16,50 @@ export const createFavorite = async ({ userId, productId }) => {
 }
 
 // Obtener favoritos por ID de usuario
-export const getFavoritesByUser = async ({ userId }) => {
+export const getFavoritesByUser = async ({ userId, lang }) => {
   try {
-    const results = await executeQuery(
-      format(
-        `SELECT DISTINCT ON (p.id) f.id as favorite_id, p.*
-          FROM favorites f
-          JOIN products p ON f.product_id = p.id
-          WHERE f.user_id = %s
-          ORDER BY p.id, f.created_at DESC`,
-        userId
-      )
-    )
-
-    const uniqueProducts = []
-    const seenIds = new Set()
-
-    results.forEach((row) => {
-      if (!seenIds.has(row.id)) {
-        seenIds.add(row.id)
-        uniqueProducts.push(row)
-      }
+    const results = await executeQuery({
+      text: `
+        SELECT
+          DISTINCT ON (p.id) f.id AS favorite_id,
+          f.product_id,
+          p.*,
+          (
+            SELECT imgs.url
+            FROM product_images imgs
+            WHERE imgs.product_id = p.id
+            ORDER BY imgs.id
+            LIMIT 1
+          ) AS thumbnail,
+          (
+            SELECT AVG(rating)
+            FROM reviews
+            WHERE reviews.product_id = p.id
+          ) AS rating
+        FROM favorites f
+        JOIN products p ON f.product_id = p.id
+        WHERE f.user_id = $1
+        ORDER BY p.id, f.created_at DESC`,
+      values: [userId],
     })
-
-    return uniqueProducts
+    const favorites = await Promise.all(
+      results.map(async (fav) => {
+        const tTitle = await doTranslation("auto", lang, fav.title)
+        const tDesc = await doTranslation("auto", lang, fav.description)
+        return {
+          ...fav,
+          title: {
+            ...tTitle,
+            content: tTitle.translated ? tTitle.translation : title,
+          },
+          description: {
+            ...tDesc,
+            content: tDesc.translated ? tDesc.translation : description,
+          },
+        }
+      })
+    )
+    return { favorites }
   } catch (error) {
     throw new Error("Error getting favorites: " + error.message)
   }
@@ -48,11 +68,10 @@ export const getFavoritesByUser = async ({ userId }) => {
 // Eliminar favorito por su ID
 export const deleteFavorite = async ({ favoriteId, userId }) => {
   try {
-    const [deletedItem] = await executeQuery(
-      format("DELETE FROM favorites WHERE id = %s AND user_id = %s RETURNING *", favoriteId, userId)
-    )
-
-    console.log("deleted", deletedItem)
+    const [deletedItem] = await executeQuery({
+      text: "DELETE FROM favorites WHERE id = $1 AND user_id = $2 RETURNING *",
+      values: [favoriteId, userId],
+    })
 
     if (!deletedItem) {
       const error = new Error("Favorite not found")
