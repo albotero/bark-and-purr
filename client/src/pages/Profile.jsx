@@ -77,8 +77,8 @@ const Profile = () => {
         })
 
         const address = {
-          line1: user.address.line1,
-          line2: user.address.line2,
+          line1: user.address.address_line_1,
+          line2: user.address.address_line_2,
           city: user.address.city,
           state: user.address.state,
           zip: user.address.zip_code,
