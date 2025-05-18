@@ -25,20 +25,25 @@
       "review": "Notifícame cuando un producto que publiqué reciba una reseña",
       "password": "Notifícame cuando cambie mi contraseña"
     }
-  },    
+  },
   "alerts": {
-      "no_changes": "Sin cambios detectados",
-      "no_avatar_change": "No has cambiado la URL del avatar.",
-      "no_address_change": "No has realizado cambios en tu dirección.",
-      "avatar_updated": "¡Avatar actualizado!",
-      "avatar_success": "Tu avatar se actualizó correctamente.",
-      "avatar_error": "No se pudo actualizar el avatar. Inténtalo de nuevo.",
-      "address_updated": "¡Cambios guardados!",
-      "address_success": "Tu dirección se actualizó correctamente.",
-      "address_error": "No se pudo actualizar la dirección. Inténtalo de nuevo.",
-      "prefs_updated": "¡Cambios guardados!",
-      "prefs_success": "Tus preferencias se actualizaron correctamente.",
-      "prefs_error": "No se pudieron actualizar las preferencias. Inténtalo de nuevo."
+    "no_changes": "Sin cambios detectados",
+    "no_avatar_change": "No has cambiado la URL del avatar.",
+    "no_address_change": "No has realizado cambios en tu dirección.",
+    "avatar_updated": "¡Avatar actualizado!",
+    "avatar_success": "Tu avatar se actualizó correctamente.",
+    "avatar_error": "No se pudo actualizar el avatar. Inténtalo de nuevo.",
+    "avatar_errors": {
+      "no_image": "No se subió ninguna imagen.",
+      "file_type_not_allowed": "Tipo de archivo no permitido. Solo archivos de imagen svg, png y jpg son permitidos.",
+      "file_too_large": "El archivo es demasiado grande. El tamaño máximo es 5MB"
+    },
+    "address_updated": "¡Cambios guardados!",
+    "address_success": "Tu dirección se actualizó correctamente.",
+    "address_error": "No se pudo actualizar la dirección. Inténtalo de nuevo.",
+    "prefs_updated": "¡Cambios guardados!",
+    "prefs_success": "Tus preferencias se actualizaron correctamente.",
+    "prefs_error": "No se pudieron actualizar las preferencias. Inténtalo de nuevo."
   },
   "form": {
     "select_avatar": "Selecciona un nuevo avatar",

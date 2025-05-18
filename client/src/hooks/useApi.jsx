@@ -15,40 +15,44 @@ export const useApi = () => {
    * @param token Optional
    * @returns fetchedData
    */
-  const consumeApi = useCallback(async ({ method = "GET", fullUrl, endpoint, query, body, token }) => {
-    let data, error
+  const consumeApi = useCallback(
+    async ({ method = "GET", fullUrl, endpoint, query, body, token, sendContentType = true }) => {
+      let data, error
 
-    // Try n times before sending an error
-    for (let n = 0; n <= fetchRetries; n++) {
-      try {
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : undefined,
+      // Try n times before sending an error
+      for (let n = 0; n <= fetchRetries; n++) {
+        try {
+          const headers = {
+            "Content-Type": sendContentType ? "application/json" : undefined,
+            Authorization: token ? `Bearer ${token}` : undefined,
+          }
+          const queryStr =
+            query &&
+            Object.keys(query)
+              .map((key) => `${key}=${query[key]}`)
+              .join("&")
+          const url = fullUrl ? `${baseUrl}${fullUrl}` : `${baseUrl}/api/${endpoint}` + (queryStr ? `?${queryStr}` : "")
+
+          const res = await axios({ method, url, headers, data: body })
+          data = res.data
+
+          if (res.status >= 200 && res.status < 300) {
+            // Succeeded
+            break
+          }
+        } catch ({ request, response }) {
+          error =
+            response.data.error ||
+            (response && `fetch.${response.status}`) || // Server answered with error code
+            (request && "fetch.no_response") || // Couldn't reach server
+            "fetch.no_request" // Couldn't set up the request
         }
-        const queryStr =
-          query &&
-          Object.keys(query)
-            .map((key) => `${key}=${query[key]}`)
-            .join("&")
-        const url = fullUrl ? `${baseUrl}${fullUrl}` : `${baseUrl}/api/${endpoint}` + (queryStr ? `?${queryStr}` : "")
-
-        const res = await axios({ method, url, headers, data: body })
-        data = res.data
-
-        if (res.status >= 200 && res.status < 300) {
-          // Succeeded
-          break
-        }
-      } catch ({ request, response }) {
-        error =
-          (response && `fetch.${response.status}`) || // Server answered with error code
-          (request && "fetch.no_response") || // Couldn't reach server
-          "fetch.no_request" // Couldn't set up the request
       }
-    }
 
-    return { ...data, error }
-  }, [])
+      return { ...data, error }
+    },
+    []
+  )
 
   return [consumeApi]
 }

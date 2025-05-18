@@ -33,6 +33,11 @@
     "avatar_updated": "Avatar updated!",
     "avatar_success": "Your avatar has been updated successfully.",
     "avatar_error": "Failed to update your avatar. Please try again.",
+    "avatar_errors": {
+      "no_image": "No image uploaded.",
+      "file_type_not_allowed": "File type not allowed. Only svg, png, and jpg image files are allowed.",
+      "file_too_large": "The file is too large. The maximum size is 5MB"
+    },
     "address_updated": "Changes saved!",
     "address_success": "Your address has been updated successfully.",
     "address_error": "Failed to update your address. Please try again.",

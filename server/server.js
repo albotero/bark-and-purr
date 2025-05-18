@@ -4,7 +4,6 @@ import envs from "./config/envs.js"
 import authRoutes from "./src/routes/auth.routes.js"
 import productRoutes from "./src/routes/products.routes.js"
 import favoritesRoutes from "./src/routes/favorites.routes.js"
-import usersRoutes from "./src/routes/user.routes.js"
 import cartRoutes from "./src/routes/cart.routes.js"
 import publicationsRoutes from "./src/routes/publications.routes.js"
 import ordersRoutes from "./src/routes/orders.routes.js"
@@ -36,7 +35,6 @@ app.use("/uploads", express.static("uploads"))
 app.use("/api/auth", authRoutes)
 app.use("/api", productRoutes)
 app.use("/api/favorites", favoritesRoutes)
-app.use("/users", usersRoutes)
 app.use("/api/cart", cartRoutes)
 app.use("/api/publications", publicationsRoutes)
 app.use("/api/orders", ordersRoutes)

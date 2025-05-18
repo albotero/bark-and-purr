@@ -131,6 +131,7 @@ const Profile = () => {
         endpoint: "auth/profile/avatar",
         token: getToken(),
         body: formData,
+        sendContentType: false,
       })
 
       if (error) throw new Error(error)
@@ -146,11 +147,10 @@ const Profile = () => {
         showConfirmButton: true,
       })
     } catch (err) {
-      console.error("Failed to update avatar:", err)
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: t("alerts.avatar_error"),
+        html: `<p>${t("alerts.avatar_error")}</p><p>${t("alerts.avatar_errors." + err.message)}</p>`,
       })
     } finally {
       setIsUploading(false)
