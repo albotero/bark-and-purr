@@ -2,7 +2,7 @@ import { useCallback } from "react"
 import axios from "axios"
 
 const fetchRetries = 5
-const baseUrl = "http://localhost:3000"
+const baseUrl = import.meta.env.PROD ? "https://bark-and-purr.netlify.app" : "http://localhost:3000"
 
 export const useApi = () => {
   /**
