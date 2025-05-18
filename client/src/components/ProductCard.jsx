@@ -14,9 +14,9 @@ export function ProductCard({ product, showAddToCart = true }) {
   const { addToCart, removeFromCart, decreaseQty, increaseQty, getCartItem } = useCart()
 
   const cartItem = getCartItem(productId)
-  const isProductInCart = !!cartItem
 
-  return isProductInCart ? (
+  return cartItem ? (
+    /* Product is already in cart */
     <Card className="mb-3 shadow-sm position-relative">
       <FavHeart product={product} />
 
@@ -66,6 +66,7 @@ export function ProductCard({ product, showAddToCart = true }) {
       </Card.Body>
     </Card>
   ) : (
+    /* Product is not in cart */
     <Card className="position-relative">
       <FavHeart product={product} />
 
