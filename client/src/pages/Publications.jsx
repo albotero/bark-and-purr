@@ -157,7 +157,7 @@ const Publications = () => {
                       </div>
 
                       <div className="mb-2">
-                        <strong>Price:</strong> ${product.price}
+                        <strong>Price:</strong> ${product.price.toLocaleString()}
                       </div>
 
                       {product.is_active_product ? (
