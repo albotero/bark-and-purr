@@ -99,7 +99,7 @@ const Publications = () => {
             </Col>
           </Row>
 
-          {publications.length === 0 ? (
+          {!publications?.length ? (
             <Row className="text-center text-muted py-5">
               <p className="fs-5">You haven't published any products yet.</p>
             </Row>

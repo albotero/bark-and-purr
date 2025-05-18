@@ -39,7 +39,7 @@ const Navbar = () => {
             </NavLink>
             {isAuthenticated && (
               <NavLink to="/user/publications" className={linkClassName}>
-                {t("Products")}
+                {t("publications")}
               </NavLink>
             )}
           </Nav>
