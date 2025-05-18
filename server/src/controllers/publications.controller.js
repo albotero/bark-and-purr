@@ -15,17 +15,8 @@ export const getPublications = async (req, res) => {
   await execute({
     res,
     success: 200,
-    callback: async () => {
-      const vendorId = req.user.id
-      const publications = await getPublicationsByUser(vendorId)
-
-      const mapped = publications.map((pub) => ({
-        ...pub,
-        thumbnail: pub.images?.[0]?.url || "/placeholder.png",
-      }))
-
-      return mapped
-    },
+    callback: getPublicationsByUser,
+    args: req.user.id,
   })
 }
 
@@ -158,26 +149,8 @@ export const deletePublication = async (req, res) => {
   await execute({
     res,
     success: 200,
-    args: req.params,
-    callback: async ({ id }) => {
-      const existing = await getPublicationById(id)
-
-      if (!existing) {
-        throw Object.assign(new Error("Publication not found"), {
-          status: 404,
-        })
-      }
-
-      if (existing.vendor_id !== req.user.id) {
-        throw Object.assign(new Error("Unauthorized access"), { status: 403 })
-      }
-
-      const result = await deletePublicationById(id)
-      return {
-        message: "Publication deleted successfully",
-        deleted: result.rows[0],
-      }
-    },
+    callback: deletePublicationById,
+    args: { productId: req.params.id, userId: req.user.id },
   })
 }
 
