@@ -77,8 +77,6 @@ const Publications = () => {
     }
   }
 
-  console.log(publications)
-
   return (
     <Container className="py-5">
       <h6 className="text-muted mb-3">
