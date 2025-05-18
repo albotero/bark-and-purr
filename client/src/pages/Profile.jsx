@@ -47,11 +47,11 @@ const Profile = () => {
   const [fetchData] = useApi()
 
   const addressItems = [
-    { id: "line1", label: t("address.line", { num: 1 }) },
-    { id: "line2", label: t("address.line", { num: 2 }) },
+    { id: "address_line_1", label: t("address.line", { num: 1 }) },
+    { id: "address_line_2", label: t("address.line", { num: 2 }) },
     { id: "city", label: t("address.city") },
     { id: "state", label: t("address.state") },
-    { id: "zip", label: t("address.zip") },
+    { id: "zip_code", label: t("address.zip") },
     { id: "country", label: t("address.country") },
   ]
 
