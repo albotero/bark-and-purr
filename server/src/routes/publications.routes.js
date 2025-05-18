@@ -1,4 +1,4 @@
-import express from "express";
+import express from "express"
 import {
   createPublicationController,
   getPublications,
@@ -6,28 +6,17 @@ import {
   updatePublicationController,
   deletePublication,
   togglePublicationStatus,
-} from "../controllers/publications.controller.js";
-import { verifyToken } from "../middlewares/verifyToken.js";
-import upload from "../middlewares/upload.js";
+} from "../controllers/publications.controller.js"
+import { verifyToken } from "../middlewares/verifyToken.js"
+import upload from "../middlewares/upload.js"
 
-const router = express.Router();
+const router = express.Router()
 
-router.get("/", verifyToken, getPublications);
-router.get("/product/:id", verifyToken, getPublicationByIdController);
-router.post(
-  "/create",
-  verifyToken,
-  upload.array("images"),
-  createPublicationController
-);
-router.put(
-  "/:id",
-  verifyToken,
-  upload.array("files"),
-  updatePublicationController
-);
-router.put("/:id/status", verifyToken, togglePublicationStatus);
+router.get("/", verifyToken, getPublications)
+router.get("/:id", verifyToken, getPublicationByIdController)
+router.post("/", verifyToken, upload.array("images"), createPublicationController)
+router.put("/:id", verifyToken, upload.array("files"), updatePublicationController)
+router.put("/:id/status", verifyToken, togglePublicationStatus)
+router.delete("/:id", verifyToken, deletePublication)
 
-router.delete("/:id", verifyToken, deletePublication);
-
-export default router;
+export default router

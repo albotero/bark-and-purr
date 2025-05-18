@@ -3,10 +3,12 @@ import { Link } from "react-router-dom"
 import OrderStatusBadge from "../components/OrderStatusBadge"
 import { useUser } from "../context/UserContext"
 import { useTranslation } from "react-i18next"
+import { useApi } from "../hooks/useApi"
 
 const Orders = () => {
   const { t } = useTranslation("orders")
   const { getToken } = useUser()
+  const [fetchData] = useApi()
   const [orders, setOrders] = useState([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -17,23 +19,21 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true)
-      const token = getToken()
       try {
         const params = new URLSearchParams({
           page,
           limit: 5,
           ...(statusFilter && { status: statusFilter }),
         })
-
-        const response = await fetch(`http://localhost:3000/api/orders?${params}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const { error, orders, totalPages } = await fetchData({
+          method: "GET",
+          endpoint: "orders",
+          token: getToken(),
+          query: params,
         })
-
-        const data = await response.json()
-        setOrders(Array.isArray(data.orders) ? data.orders : [])
-        setTotalPages(data.totalPages || 1)
+        if (error) throw new Error(error)
+        setOrders(orders || [])
+        setTotalPages(totalPages || 1)
       } catch (error) {
         console.error("Error fetching orders:", error)
       } finally {
@@ -42,7 +42,7 @@ const Orders = () => {
     }
 
     fetchOrders()
-  }, [page, statusFilter, getToken])
+  }, [page, statusFilter, getToken, fetchData])
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {

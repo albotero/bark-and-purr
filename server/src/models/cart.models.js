@@ -15,6 +15,7 @@ export const findCartItemsByUser = async (userId) => {
     SELECT
       pbc.id,
       pbc.quantity,
+      p.id AS product_id,
       p.title,
       pbc.unit_price AS price,
       (
@@ -62,21 +63,23 @@ export const insertCartItem = async (userId, productId, quantity) => {
 }
 
 export const updateCartItemQuantity = async (newQuantity, cartItemId) => {
-  return await pool.query(`UPDATE products_by_cart SET quantity = $1 WHERE id = $2`, [newQuantity, cartItemId])
+  return await pool.query(`UPDATE products_by_cart SET quantity = $1 WHERE product_id = $2`, [newQuantity, cartItemId])
 }
 
 export const updateCartItem = async (quantity, itemId, userId) => {
   const cart = await getOrCreateCart(userId)
-  return await pool.query(`UPDATE products_by_cart SET quantity = $1 WHERE id = $2 AND cart_id = $3 RETURNING id`, [
-    quantity,
-    itemId,
-    cart.id,
-  ])
+  return await pool.query(
+    `UPDATE products_by_cart SET quantity = $1 WHERE product_id = $2 AND cart_id = $3 RETURNING product_id`,
+    [quantity, itemId, cart.id]
+  )
 }
 
 export const deleteCartItem = async (itemId, userId) => {
   const cart = await getOrCreateCart(userId)
-  return await pool.query(`DELETE FROM products_by_cart WHERE id = $1 AND cart_id = $2 RETURNING id`, [itemId, cart.id])
+  return await pool.query(`DELETE FROM products_by_cart WHERE product_id = $1 AND cart_id = $2 RETURNING product_id`, [
+    itemId,
+    cart.id,
+  ])
 }
 
 export const getActiveCart = async (userId) => {

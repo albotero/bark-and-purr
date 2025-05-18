@@ -1,51 +1,45 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react"
 import { useUser } from "./UserContext"
+import { useApi } from "../hooks/useApi"
 
 const CartContext = createContext()
 
 export const useCart = () => useContext(CartContext)
 
-export const CartProvider =  ({ children }) => {
+export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([])
   const { getToken, isAuthenticated } = useUser()
+  const [fetchData] = useApi()
+
+  const getCartItem = (productId) => cart.find((item) => item.product_id === productId)
 
   const fetchCart = useCallback(async () => {
-    if (!isAuthenticated) return
-
     try {
-      const res = await fetch("http://localhost:3000/api/cart", {
-        headers: {
-          Authorization: `Bearer ${getToken()}`,
-        },
+      if (!isAuthenticated) {
+        throw new Error("Not authenticated")
+      }
+      const { error, cart } = await fetchData({
+        method: "GET",
+        endpoint: "cart",
+        token: getToken(),
       })
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || "Error fetching cart")
-
-      setCart(data.cart) // ← Aquí se actualiza el carrito
+      if (error) throw new Error(error)
+      setCart(cart) // ← Aquí se actualiza el carrito
     } catch (err) {
       console.error("Error fetching cart:", err)
     }
-  }, [getToken, isAuthenticated])
+  }, [isAuthenticated, fetchData, getToken])
 
   const addToCart = async (product, quantity = 1) => {
     try {
       const { id: product_id, price } = product
-
-      const res = await fetch("http://localhost:3000/api/cart", {
+      const { error } = await fetchData({
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-        body: JSON.stringify({ product_id, quantity, price }), // ← AÑADIR PRECIO
+        endpoint: "cart",
+        body: { product_id, quantity, price }, // ← AÑADIR PRECIO
+        token: getToken(),
       })
-
-      if (!res.ok) {
-        const errorText = await res.text()
-        throw new Error(`Error adding to cart: ${errorText}`)
-      }
-
+      if (error) throw new Error(error)
       await fetchCart()
     } catch (err) {
       console.error("Error adding product to cart:", err)
@@ -54,18 +48,13 @@ export const CartProvider =  ({ children }) => {
 
   const updateItemQuantity = async (itemId, newQuantity) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/cart/${itemId}`, {
+      const { error } = await fetchData({
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
-        body: JSON.stringify({ quantity: newQuantity }),
+        endpoint: `cart/${itemId}`,
+        body: { quantity: newQuantity },
+        token: getToken(),
       })
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || "Error updating quantity")
-
+      if (error) throw new Error(error)
       await fetchCart()
     } catch (err) {
       console.error("Error updating quantity:", err)
@@ -74,31 +63,27 @@ export const CartProvider =  ({ children }) => {
 
   const removeFromCart = async (itemId) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/cart/${itemId}`, {
+      const { error } = await fetchData({
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${getToken()}`,
-        },
+        endpoint: `cart/${itemId}`,
+        token: getToken(),
       })
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || "Error deleting product")
-
-      fetchCart()
+      if (error) throw new Error(error)
+      await fetchCart()
     } catch (err) {
       console.error("Error removing product from cart:", err)
     }
   }
 
   const increaseQty = async (itemId) => {
-    const item = cart.find((i) => i.id === itemId)
+    const item = getCartItem(itemId)
     if (item) {
       await updateItemQuantity(itemId, item.quantity + 1)
     }
   }
 
   const decreaseQty = async (itemId) => {
-    const item = cart.find((i) => i.id === itemId)
+    const item = getCartItem(itemId)
     if (item) {
       if (item.quantity <= 1) {
         await removeFromCart(itemId)
@@ -115,16 +100,12 @@ export const CartProvider =  ({ children }) => {
 
   const buyCart = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/cart/complete-payment", {
+      const { error } = await fetchData({
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${getToken()}`,
-        },
+        endpoint: "cart/complete-payment",
+        token: getToken(),
       })
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || "Error completing payment")
-
+      if (error) throw new Error(error)
       fetchCart()
     } catch (err) {
       console.error("Error at checkout:", err)
@@ -133,7 +114,7 @@ export const CartProvider =  ({ children }) => {
 
   useEffect(() => {
     fetchCart()
-  }, [fetchCart]) 
+  }, [fetchCart, isAuthenticated])
 
   return (
     <CartContext.Provider
@@ -146,6 +127,7 @@ export const CartProvider =  ({ children }) => {
         decreaseQty,
         clearCart,
         buyCart,
+        getCartItem,
       }}
     >
       {children}

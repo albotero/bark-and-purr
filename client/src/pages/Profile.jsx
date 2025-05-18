@@ -13,6 +13,7 @@ import EditIcon from "../components/EditIcon"
 import ProfileInfoItem from "../components/ProfileInfoItem"
 import { useUser } from "../context/UserContext"
 import Swal from "sweetalert2"
+import { useApi } from "../hooks/useApi"
 
 const displayOrDash = (value) => value?.toString().trim() || "-"
 
@@ -43,6 +44,7 @@ const Profile = () => {
   const [isUploading, setIsUploading] = useState(false)
   const { i18n, t } = useTranslation("profile")
   const { getToken } = useUser()
+  const [fetchData] = useApi()
 
   const addressItems = [
     { id: "line1", label: t("address.line", { num: 1 }) },
@@ -55,18 +57,14 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = getToken()
       try {
-        const res = await fetch("http://localhost:3000/api/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const { error, user } = await fetchData({
+          method: "GET",
+          endpoint: "auth/profile",
+          token: getToken(),
         })
-        const data = await res.json()
 
-        if (!res.ok) throw new Error(data.message)
-
-        const { user } = data
+        if (error) throw new Error(error)
 
         setUserInfo({
           avatar: user.avatar_url,
@@ -108,7 +106,7 @@ const Profile = () => {
     }
 
     fetchProfile()
-  }, [i18n.language, getToken])
+  }, [i18n.language, getToken, fetchData])
 
   const languageLabel = (id) => languages.find((el) => el.id == id)?.label
 
@@ -127,20 +125,17 @@ const Profile = () => {
     const formData = new FormData()
     formData.append("avatar", inputAvatar)
 
-    const token = getToken()
     try {
-      const res = await fetch("http://localhost:3000/api/auth/profile/avatar", {
+      const { error, avatar_url: avatar } = await fetchData({
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        endpoint: "auth/profile/avatar",
+        token: getToken(),
         body: formData,
       })
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message)
+      if (error) throw new Error(error)
 
-      setUserInfo((prev) => ({ ...prev, avatar: data.avatar_url }))
+      setUserInfo((prev) => ({ ...prev, avatar }))
       setIsEditingAvatar(false)
 
       Swal.fire({
@@ -178,6 +173,7 @@ const Profile = () => {
     const updateNotification = (nots) => nots.map((el) => (el.id == id ? { ...el, isActive } : el))
     setInputPreferences((prev) => ({ ...prev, notifications: updateNotification(prev.notifications) }))
   }
+
   const handleSaveAddress = async () => {
     const isUnchanged = JSON.stringify(inputAddress) === JSON.stringify(address)
 
@@ -192,22 +188,19 @@ const Profile = () => {
       return
     }
 
-    const token = getToken()
     try {
-      const res = await fetch("http://localhost:3000/api/auth/profile", {
+      const { error } = await fetchData({
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(inputAddress),
+        endpoint: "auth/profile",
+        token: getToken(),
+        body: inputAddress,
       })
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message)
+      if (error) throw new Error(error)
 
       setAddress(inputAddress)
       setIsEditingAddress(false)
+
       Swal.fire({
         icon: "success",
         title: t("alerts.address_updated"),
@@ -227,18 +220,15 @@ const Profile = () => {
   }
 
   const handleSavePreferences = async () => {
-    const token = getToken()
     try {
-      const res = await fetch("http://localhost:3000/api/auth/profile", {
+      const { error } = await fetchData({
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(preferencesToPayload(inputPreferences)),
+        endpoint: "auth/profile",
+        token: getToken(),
+        body: preferencesToPayload(inputPreferences),
       })
 
-      if (!res.ok) throw new Error("Failed to update preferences")
+      if (error) throw new Error(error)
 
       i18n.changeLanguage(inputPreferences.language)
       setPreferences(inputPreferences)

@@ -5,36 +5,31 @@ import { FaEdit, FaTrash, FaStar } from "react-icons/fa"
 import { useTranslation } from "react-i18next"
 import Swal from "sweetalert2"
 import { useUser } from "../context/UserContext"
+import { useApi } from "../hooks/useApi"
 
 const Publications = () => {
   const { t } = useTranslation("publications")
   const { getToken } = useUser()
+  const [fetchData] = useApi()
   const [publications, setPublications] = useState([])
   const [loadingStatusId, setLoadingStatusId] = useState(null)
-
-  const token = getToken()
 
   useEffect(() => {
     const fetchPublications = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/publications", {
+        const { error, ...data } = await fetchData({
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          endpoint: "publications",
+          token: getToken(),
         })
-
-        if (!response.ok) throw new Error("Failed to fetch publications")
-
-        const data = await response.json()
+        if (error) throw new Error(error)
         setPublications(data)
       } catch (error) {
         console.error("Error fetching publications:", error)
       }
     }
-
     fetchPublications()
-  }, [token])
+  }, [getToken, fetchData])
 
   const removePublication = async (id) => {
     const result = await Swal.fire({
@@ -50,17 +45,13 @@ const Publications = () => {
     if (!result.isConfirmed) return
 
     try {
-      const response = await fetch(`http://localhost:3000/api/publications/${id}`, {
+      const { error } = await fetchData({
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        endpoint: `publications/${id}`,
+        token: getToken(),
       })
-
-      if (!response.ok) throw new Error("Failed to delete publication")
-
+      if (error) throw new Error(error)
       setPublications((prev) => prev.filter((item) => item.id !== id))
-
       Swal.fire("Deleted!", "Your publication has been removed.", "success")
     } catch (error) {
       console.error("Error deleting publication:", error)
@@ -71,19 +62,13 @@ const Publications = () => {
   const toggleStatus = async (id, currentStatus) => {
     try {
       setLoadingStatusId(id) // ← Bloquea solo ese botón
-      const response = await fetch(`http://localhost:3000/api/publications/${id}/status`, {
+      const { error, ...updated } = await fetchData({
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ is_active: !currentStatus }),
+        endpoint: `publications/${id}/status`,
+        token: getToken(),
+        body: { is_active: !currentStatus },
       })
-
-      if (!response.ok) throw new Error("Failed to toggle publication")
-
-      const updated = await response.json()
-
+      if (error) throw new Error(error)
       setPublications((prev) => prev.map((item) => (item.id === id ? { ...item, ...updated } : item)))
     } catch (error) {
       console.error("Error toggling publication:", error)

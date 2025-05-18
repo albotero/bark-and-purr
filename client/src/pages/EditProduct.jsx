@@ -8,10 +8,12 @@ import Card from "react-bootstrap/Card"
 import Container from "react-bootstrap/Container"
 import Swal from "sweetalert2"
 import { useUser } from "../context/UserContext"
+import { useApi } from "../hooks/useApi"
 
 const EditProduct = () => {
   const { id: productId } = useParams()
   const { getToken } = useUser()
+  const [fetchData] = useApi()
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
 
@@ -28,27 +30,20 @@ const EditProduct = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const token = getToken()
-        const response = await fetch(`http://localhost:3000/api/publications/product/${productId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const { error, images, ...product } = await fetchData({
+          method: "GET",
+          endpoint: `publications/${productId}`,
+          token: getToken(),
         })
-        const data = await response.json()
-        setFormData({
-          title: data.title,
-          description: data.description,
-          price: data.price,
-          stock: data.stock,
-        })
-        setExistingImages(data.images || [])
+        if (error) throw new Error(error)
+        setFormData(product)
+        setExistingImages(images || [])
       } catch (err) {
         console.error("Error fetching product:", err)
       }
     }
-
     fetchProduct()
-  }, [productId, getToken])
+  }, [productId, getToken, fetchData])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -97,20 +92,13 @@ const EditProduct = () => {
     })
 
     try {
-      const token = getToken()
-      const response = await fetch(`http://localhost:3000/api/publications/${productId}`, {
+      const { error } = await fetchData({
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        endpoint: `publications/${productId}`,
         body: formDataToSend,
+        token: getToken(),
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Error al actualizar la publicación")
-      }
-
+      if (error) throw new Error(error)
       Swal.fire("Success!", "The post has been updated.", "success")
       navigate("/user/publications")
     } catch (error) {

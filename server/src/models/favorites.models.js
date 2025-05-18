@@ -50,11 +50,11 @@ export const getFavoritesByUser = async ({ userId, lang }) => {
           ...fav,
           title: {
             ...tTitle,
-            content: tTitle.translated ? tTitle.translation : title,
+            content: tTitle.translated ? tTitle.translation : fav.title,
           },
           description: {
             ...tDesc,
-            content: tDesc.translated ? tDesc.translation : description,
+            content: tDesc.translated ? tDesc.translation : fav.description,
           },
         }
       })

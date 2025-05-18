@@ -9,9 +9,11 @@ import Container from "react-bootstrap/Container"
 import { FiUploadCloud } from "react-icons/fi"
 import Swal from "sweetalert2"
 import { useUser } from "../context/UserContext"
+import { useApi } from "../hooks/useApi"
 
 const NewProduct = () => {
   const { getToken } = useUser()
+  const [fetchData] = useApi()
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     title: "",
@@ -70,26 +72,20 @@ const NewProduct = () => {
     }
 
     try {
-      const token = getToken()
-      const response = await fetch("http://localhost:3000/api/publications/create", {
+      const { error } = await fetchData({
         method: "POST",
+        endpoint: "publications",
         body: formDataToSend,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        token: getToken(),
       })
-
-      if (response.ok) {
-        await Swal.fire({
-          icon: "success",
-          title: "Published!",
-          text: "Your product has been published.",
-          confirmButtonColor: "#6f42c1",
-        })
-        navigate("/user/publications")
-      } else {
-        throw new Error("Server error")
-      }
+      if (error) throw new Error(error)
+      await Swal.fire({
+        icon: "success",
+        title: "Published!",
+        text: "Your product has been published.",
+        confirmButtonColor: "#6f42c1",
+      })
+      navigate("/user/publications")
     } catch (error) {
       console.error("Error creating publication:", error)
       await Swal.fire({

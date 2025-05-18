@@ -20,7 +20,7 @@ const Product = () => {
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState("desc")
-  const { addToCart } = useCart()
+  const { addToCart, updateItemQuantity, getCartItem } = useCart()
   const { isAuthenticated } = useUser()
   const [fetchData] = useApi()
   const navigate = useNavigate()
@@ -53,6 +53,35 @@ const Product = () => {
   const handleImageClick = ({ target }) => {
     const { imageIndex } = target.dataset
     setActiveImage(imageIndex)
+  }
+
+  const handleDecreaseQty = () => {
+    setQuantity((prev) => (prev > 1 ? prev - 1 : prev))
+  }
+
+  const handleIncreaseQty = () => {
+    setQuantity((prev) => (prev < stock ? prev + 1 : prev))
+  }
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      Swal.fire({
+        icon: "warning",
+        title: t("alert.title"),
+        text: t("alert.content"),
+        showCancelButton: true,
+        confirmButtonText: t("alert.ok"),
+        cancelButtonText: t("alert.cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login")
+        }
+      })
+      return
+    }
+    const cartItem = getCartItem(product.id)
+    if (cartItem) updateItemQuantity(product.id, cartItem.quantity + quantity)
+    else addToCart(product, quantity)
   }
 
   return message === "not_found" ? (
@@ -129,44 +158,16 @@ const Product = () => {
           </div>
 
           <div className="input-group mb-3" style={{ width: "150px" }}>
-            <button className="btn btn-outline-secondary" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
+            <button className="btn btn-outline-secondary" onClick={handleDecreaseQty}>
               -
             </button>
             <input type="text" className="form-control text-center" value={quantity} readOnly />
-            <button className="btn btn-outline-secondary" onClick={() => setQuantity((q) => q + 1)}>
+            <button className="btn btn-outline-secondary" onClick={handleIncreaseQty}>
               +
             </button>
           </div>
 
-          <button
-            className="btn btn-primary mb-3"
-            onClick={() => {
-              if (!isAuthenticated) {
-                Swal.fire({
-                  icon: "warning",
-                  title: t("alert.title"),
-                  text: t("alert.content"),
-                  showCancelButton: true,
-                  confirmButtonText: t("alert.ok"),
-                  cancelButtonText: t("alert.cancel"),
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    navigate("/login")
-                  }
-                })
-                return
-              }
-
-              addToCart({
-                id: productId,
-                title: title.content,
-                price: parseFloat(finalPrice),
-                img: images?.[0],
-                quantity,
-              })
-            }}
-            disabled={stock === 0}
-          >
+          <button className="btn btn-primary mb-3" onClick={handleAddToCart} disabled={stock === 0}>
             🛒 {t("add_to_cart")}
           </button>
 

@@ -11,9 +11,9 @@ import { useCart } from "../context/CartContext"
 
 export function ProductCard({ product, showAddToCart = true }) {
   const { id: productId, title, price, thumbnail, rating } = product
-  const { addToCart, removeFromCart, decreaseQuantity, cart } = useCart()
+  const { addToCart, removeFromCart, decreaseQty, increaseQty, getCartItem } = useCart()
 
-  const cartItem = cart.find((item) => item.id === productId)
+  const cartItem = getCartItem(productId)
   const isProductInCart = !!cartItem
 
   return isProductInCart ? (
@@ -43,13 +43,13 @@ export function ProductCard({ product, showAddToCart = true }) {
           </div>
           <div className="mt-2 d-flex align-items-center gap-2">
             <ButtonGroup>
-              <Button variant="secondary" onClick={() => decreaseQuantity(productId)}>
+              <Button variant="secondary" onClick={() => decreaseQty(productId)}>
                 -
               </Button>
               <Button variant="light" disabled>
                 {cartItem.quantity}
               </Button>
-              <Button variant="secondary" onClick={() => addToCart({ ...product, quantity: 1 })}>
+              <Button variant="secondary" onClick={() => increaseQty(productId)}>
                 +
               </Button>
             </ButtonGroup>

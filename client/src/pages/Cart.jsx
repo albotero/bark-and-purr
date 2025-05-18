@@ -1,52 +1,48 @@
-import { useState } from "react";
-import { useCart } from "../context/CartContext";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import ListGroup from "react-bootstrap/ListGroup";
-import Tree from "../components/Tree";
-import { useTranslation } from "react-i18next";
-import Swal from "sweetalert2";
+import { useState } from "react"
+import { useCart } from "../context/CartContext"
+import Button from "react-bootstrap/Button"
+import Card from "react-bootstrap/Card"
+import Container from "react-bootstrap/Container"
+import Form from "react-bootstrap/Form"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+import ListGroup from "react-bootstrap/ListGroup"
+import Tree from "../components/Tree"
+import { useTranslation } from "react-i18next"
+import Swal from "sweetalert2"
 
 const Cart = () => {
-  const { cart, removeFromCart, buyCart, increaseQty, decreaseQty } = useCart();
-  const { t } = useTranslation("cart");
+  const { cart, removeFromCart, buyCart, increaseQty, decreaseQty } = useCart()
+  const { t } = useTranslation("cart")
 
   const treeItems = [
     { key: "home", href: "/" },
     { key: "cart", isActive: true },
-  ];
+  ]
 
-  const [shippingMethod, setShippingMethod] = useState("pickup");
-  const subtotal = cart.reduce(
-    (acc, item) => acc + item.quantity * item.price,
-    0
-  );
-  const shippingCost = shippingMethod === "delivery" ? 3000 : 0;
-  const totalWithShipping = subtotal + shippingCost;
-  
+  const [shippingMethod, setShippingMethod] = useState("pickup")
+  const subtotal = cart.reduce((acc, item) => acc + item.quantity * item.price, 0)
+  const shippingCost = shippingMethod === "delivery" ? 3000 : 0
+  const totalWithShipping = subtotal + shippingCost
 
   const handleBuy = async () => {
     try {
-      await buyCart();
+      await buyCart()
 
       Swal.fire({
         icon: "success",
         title: t("success_title", "Purchase completed!"),
         text: t("success_message", "Thank you for your purchase."),
         confirmButtonColor: "#3085d6",
-      });
+      })
     } catch {
       Swal.fire({
         icon: "error",
         title: t("error_title", "Oops..."),
         text: t("error_message", "Something went wrong."),
-      });
+      })
     }
-  };
+  }
 
   return (
     <Container className="section-padding">
@@ -95,19 +91,11 @@ const Cart = () => {
                       </p>
 
                       <div className="d-flex align-items-center gap-2">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => decreaseQty(item.id)}
-                        >
+                        <Button variant="secondary" size="sm" onClick={() => decreaseQty(item.product_id)}>
                           -
                         </Button>
                         <span className="fw-bold">{item.quantity}</span>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => increaseQty(item.id)}
-                        >
+                        <Button variant="secondary" size="sm" onClick={() => increaseQty(item.product_id)}>
                           +
                         </Button>
                       </div>
@@ -117,11 +105,7 @@ const Cart = () => {
                       <p className="fw-semibold mb-0">
                         {t("total")}: ${(item.price * item.quantity).toLocaleString()}
                       </p>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => removeFromCart(item.id)}
-                      >
+                      <Button variant="outline-danger" size="sm" onClick={() => removeFromCart(item.product_id)}>
                         {t("remove")}
                       </Button>
                     </Col>
@@ -140,13 +124,9 @@ const Cart = () => {
                 </Card.Title>
 
                 <ListGroup className="mb-3">
+                  <ListGroup.Item>${subtotal.toLocaleString()}</ListGroup.Item>
                   <ListGroup.Item>
-                    ${subtotal.toLocaleString()}
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Card.Subtitle className="mb-2 fw-bold">
-                      shipping
-                    </Card.Subtitle>
+                    <Card.Subtitle className="mb-2 fw-bold">shipping</Card.Subtitle>
                     <Form.Check
                       type="radio"
                       name="shipping"
@@ -168,11 +148,7 @@ const Cart = () => {
                   </ListGroup.Item>
                 </ListGroup>
 
-                <Button
-                  variant="primary"
-                  className="w-100 rounded-pill"
-                  onClick={handleBuy}
-                >
+                <Button variant="primary" className="w-100 rounded-pill" onClick={handleBuy}>
                   {t("pay")}
                 </Button>
               </Card.Body>
@@ -181,7 +157,7 @@ const Cart = () => {
         </Row>
       )}
     </Container>
-  );
-};
+  )
+}
 
-export default Cart;
+export default Cart

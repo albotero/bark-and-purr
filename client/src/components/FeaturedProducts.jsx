@@ -19,7 +19,7 @@ const FeaturedProducts = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       setIsLoading(true)
-      const response = await fetchProducts({
+      const { error, results } = await fetchProducts({
         endpoint: `products/${i18n.language}`,
         query: {
           results_per_page: 7,
@@ -27,11 +27,8 @@ const FeaturedProducts = () => {
         },
       })
 
-      if (response?.error) {
-        setError(response.error)
-      } else {
-        setProducts(response.results || [])
-      }
+      if (error) setError(error)
+      else setProducts(results || [])
 
       setIsLoading(false)
     }

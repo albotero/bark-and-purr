@@ -28,26 +28,20 @@ export function FavoritesProvider({ children }) {
       setIsLoading(true)
       setError(null)
 
-      try {
-        const response = await fetchData({
-          endpoint: `favorites/${i18n.language}`,
-          method: "GET",
-          token: getToken(),
-        })
+      const { error, favorites } = await fetchData({
+        endpoint: `favorites/${i18n.language}`,
+        method: "GET",
+        token: getToken(),
+      })
 
-        if (response.error) {
-          setError(response.error || "Error desconocido al obtener favoritos")
-          setFavorites([])
-        } else {
-          setFavorites(response.favorites || [])
-          setError(null)
-        }
-      } catch (err) {
-        setError(err.message || "Error inesperado al obtener favoritos")
+      if (error) {
+        setError(error)
         setFavorites([])
-      } finally {
-        setIsLoading(false)
+      } else {
+        setFavorites(favorites || [])
+        setError(null)
       }
+      setIsLoading(false)
     }
     fetchFavorites()
   }, [fetchData, getToken, isAuthenticated, i18n.language])
@@ -79,42 +73,40 @@ export function FavoritesProvider({ children }) {
           return null
         }
 
-        const response = await fetchData({
+        const { error } = await fetchData({
           endpoint: `favorites/${favoriteId}`,
           method: "DELETE",
           token: currentToken,
         })
 
-        if (!response.error) {
+        if (!error) {
           setFavorites((prev) => prev.filter((item) => getFavoriteId(item) !== favoriteId))
           return "removed"
         } else {
           Swal.fire({
             icon: "error",
             title: "Error al eliminar favorito",
-            text: response.error || "Intenta nuevamente",
+            text: error || "Intenta nuevamente",
           })
-          return null
+          return
         }
       } else {
         // Agregar favorito (POST)
-        const response = await fetchData({
+        const { error, id: favoriteId } = await fetchData({
           endpoint: "favorites",
           method: "POST",
           token: currentToken,
           body: { product_id: product.id },
         })
 
-        if (!response.error) {
-          // Obtener favorite_id del backend
-          const favoriteId = response.favorite_id || response.id
+        if (!error) {
           if (!favoriteId) {
             Swal.fire({
               icon: "error",
               title: "Error al agregar favorito",
               text: "No se recibió el ID del favorito desde el servidor.",
             })
-            return null
+            return
           }
 
           const newFavorite = {
@@ -129,7 +121,7 @@ export function FavoritesProvider({ children }) {
           Swal.fire({
             icon: "error",
             title: "Error al agregar favorito",
-            text: response.error || "Intenta nuevamente",
+            text: error || "Intenta nuevamente",
           })
           return null
         }
@@ -141,7 +133,7 @@ export function FavoritesProvider({ children }) {
         title: "Error inesperado",
         text: error.message || "Intenta nuevamente",
       })
-      return null
+      return
     } finally {
       setIsDeleting(false)
     }
