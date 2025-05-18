@@ -113,8 +113,8 @@ export const userProfile = async ({ id }) => {
       birthday: user.birthday,
       avatar_url: user.avatar_url,
       address: {
-        line1: user.address_line_1,
-        line2: user.address_line_2,
+        address_line_1: user.address_line_1,
+        address_line_2: user.address_line_2,
         city: user.city,
         state: user.state,
         zip_code: user.zip_code,
