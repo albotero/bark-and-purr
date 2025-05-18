@@ -113,23 +113,35 @@ export const updatePublication = async (id, fields) => {
   return publication
 }
 
-export const deletePublicationById = async (id) => {
+export const deletePublicationById = async ({ productId, userId }) => {
+  const [existing] = await getPublicationById(productId)
+
+  if (!existing) {
+    throw Object.assign(new Error("Publication not found"), {
+      status: 404,
+    })
+  }
+
+  if (existing.vendor_id !== userId) {
+    throw Object.assign(new Error("Unauthorized access"), { status: 403 })
+  }
+
   // Delete relationships with carts
   await executeQuery({
     text: "DELETE FROM products_by_cart WHERE product_id = $1",
-    values: [id],
+    values: [productId],
   })
 
   // Delete product images
   await executeQuery({
     text: "DELETE FROM product_images WHERE product_id = $1",
-    values: [id],
+    values: [productId],
   })
 
   // Delete the post
   const result = await executeQuery({
     text: "DELETE FROM products WHERE id = $1 RETURNING *",
-    values: [id],
+    values: [productId],
   })
 
   if (!result) {
