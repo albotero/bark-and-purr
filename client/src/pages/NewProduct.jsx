@@ -75,8 +75,9 @@ const NewProduct = () => {
       const { error } = await fetchData({
         method: "POST",
         endpoint: "publications",
-        body: formDataToSend,
         token: getToken(),
+        body: formDataToSend,
+        sendContentType: false,
       })
       if (error) throw new Error(error)
       await Swal.fire({

@@ -95,8 +95,9 @@ const EditProduct = () => {
       const { error } = await fetchData({
         method: "PUT",
         endpoint: `publications/${productId}`,
-        body: formDataToSend,
         token: getToken(),
+        body: formDataToSend,
+        sendContentType: false,
       })
       if (error) throw new Error(error)
       Swal.fire("Success!", "The post has been updated.", "success")
