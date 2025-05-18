@@ -77,11 +77,11 @@ const Profile = () => {
         })
 
         const address = {
-          line1: user.address.address_line_1,
-          line2: user.address.address_line_2,
+          address_line_1: user.address.address_line_1,
+          address_line_2: user.address.address_line_2,
           city: user.address.city,
           state: user.address.state,
-          zip: user.address.zip_code,
+          zip_code: user.address.zip_code,
           country: user.address.country,
         }
 
@@ -387,7 +387,7 @@ const Profile = () => {
                 <>
                   <Row>
                     <Col xs={12}>
-                      {`${t("address.address")}: ${displayOrDash(address.line1)} ${displayOrDash(address.line2)}`}
+                      {`${t("address.address")}: ${displayOrDash(address.address_line_1)} ${displayOrDash(address.address_line_2)}`}
                     </Col>
                   </Row>
                   <Row>
@@ -395,7 +395,7 @@ const Profile = () => {
                     <Col xs={12} md={6}>{`${t("address.state")}: ${displayOrDash(address.state)}`}</Col>
                   </Row>
                   <Row>
-                    <Col xs={12} md={6}>{`${t("address.zip")}: ${displayOrDash(address.zip)}`}</Col>
+                    <Col xs={12} md={6}>{`${t("address.zip")}: ${displayOrDash(address.zip_code)}`}</Col>
                     <Col xs={12} md={6}>{`${t("address.country")}: ${displayOrDash(address.country)}`}</Col>
                   </Row>
                 </>
