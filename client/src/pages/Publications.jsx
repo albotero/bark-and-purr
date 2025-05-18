@@ -17,13 +17,13 @@ const Publications = () => {
   useEffect(() => {
     const fetchPublications = async () => {
       try {
-        const { error, ...data } = await fetchData({
+        const { error, publications } = await fetchData({
           method: "GET",
           endpoint: "publications",
           token: getToken(),
         })
         if (error) throw new Error(error)
-        setPublications(data)
+        setPublications(publications)
       } catch (error) {
         console.error("Error fetching publications:", error)
       }
@@ -76,6 +76,8 @@ const Publications = () => {
       setLoadingStatusId(null)
     }
   }
+
+  console.log(publications)
 
   return (
     <Container className="py-5">

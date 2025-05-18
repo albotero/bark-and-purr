@@ -1,7 +1,7 @@
-import connectionDb from "../../config/db/connection.db.js";
+import executeQuery from "./executeQuery.js"
 
 export const getAllPublications = async () => {
-  const result = await connectionDb.query(`
+  const publications = await executeQuery(`
     SELECT 
       p.*,
       COALESCE(
@@ -18,160 +18,146 @@ export const getAllPublications = async () => {
     WHERE p.is_active_product = true
     GROUP BY p.id
     ORDER BY p.created_at DESC
-  `);
+  `)
 
-  return result.rows;
-};
-
+  return { publications }
+}
 
 export const getPublicationsByUser = async (userId) => {
-  const result = await connectionDb.query(
-    `
-    SELECT 
-      p.*,
-      (
-        SELECT json_agg(json_build_object('url', pi.url, 'key', pi.key))
-        FROM product_images pi
-        WHERE pi.product_id = p.id
-      ) AS images,
-      COUNT(r.id) AS review_count,
-      ROUND(AVG(r.rating), 1) AS average_rating
-    FROM products p
-    LEFT JOIN reviews r ON r.product_id = p.id
-    WHERE p.vendor_id = $1
-    GROUP BY p.id
-    ORDER BY p.created_at DESC
-    `,
-    [userId]
-  );
+  const publications = await executeQuery({
+    text: `
+      SELECT 
+        p.*,
+        (
+          SELECT json_agg(json_build_object('url', pi.url, 'key', pi.key))
+          FROM product_images pi
+          WHERE pi.product_id = p.id
+        ) AS images,
+        COUNT(r.id) AS review_count,
+        ROUND(AVG(r.rating), 1) AS average_rating
+      FROM products p
+      LEFT JOIN reviews r ON r.product_id = p.id
+      WHERE p.vendor_id = $1
+      GROUP BY p.id
+      ORDER BY p.created_at DESC`,
+    values: [userId],
+  })
 
-  return result.rows;
-};
-
+  return {
+    publications: publications.map((pub) => ({
+      ...pub,
+      thumbnail: pub.images?.[0]?.url || "/placeholder.png",
+    })),
+  }
+}
 
 export const getPublicationById = async (id) => {
-  const result = await connectionDb.query(
-    `
-    SELECT 
-      p.*,
-      (
-        SELECT json_agg(json_build_object('url', pi.url, 'key', pi.key))
-        FROM product_images pi
-        WHERE pi.product_id = p.id
-      ) AS images
-    FROM products p
-    WHERE p.id = $1
-    `,
-    [id]
-  );
+  const publication = await executeQuery({
+    text: `
+      SELECT 
+        p.*,
+        (
+          SELECT json_agg(json_build_object('url', pi.url, 'key', pi.key))
+          FROM product_images pi
+          WHERE pi.product_id = p.id
+        ) AS images
+      FROM products p
+      WHERE p.id = $1`,
+    values: [id],
+  })
 
-  return result.rows[0] || null;
-};
+  return publication
+}
 
+export const createPublication = async ({ title, description, price, stock, vendor_id }) => {
+  const publication = await executeQuery({
+    text: `
+      INSERT INTO products (title, description, price, stock, vendor_id)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *`,
+    values: [title, description, price, stock, vendor_id],
+  })
 
-export const createPublication = async ({
-  title,
-  description,
-  price,
-  stock,
-  vendor_id,
-}) => {
-  const result = await connectionDb.query(
-    `
-    INSERT INTO products (title, description, price, stock, vendor_id)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING *
-    `,
-    [title, description, price, stock, vendor_id]
-  );
-
-  return result.rows[0];
-};
-
+  return publication
+}
 
 export const addImagesToProduct = async (productId, files) => {
-  const imageInsertPromises = files.map((file) =>
-    connectionDb.query(
-      `INSERT INTO product_images (product_id, url, key)
-       VALUES ($1, $2, $3)`,
-      [
-        productId,
-        `/uploads/${file.originalname}`, 
-        file.originalname,
-      ]
-    )
-  );
+  const imageInsertPromises = files.map(
+    async (file) =>
+      await executeQuery({
+        text: `
+          INSERT INTO product_images (product_id, url, key)
+          VALUES ($1, $2, $3)`,
+        values: [productId, `/uploads/${file.originalname}`, file.originalname],
+      })
+  )
 
-  await Promise.all(imageInsertPromises);
-};
-
+  await Promise.all(imageInsertPromises)
+}
 
 export const updatePublication = async (id, fields) => {
-  const keys = Object.keys(fields);
-  const values = Object.values(fields);
+  const keys = Object.keys(fields)
+  const values = Object.values(fields)
 
-  const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(", ");
-  values.push(id);
+  const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(", ")
+  values.push(id)
 
-  const result = await connectionDb.query(
-    `
-    UPDATE products SET ${setClause}
-    WHERE id = $${values.length}
-    RETURNING *
-    `,
-    values
-  );
+  const publication = await executeQuery({
+    text: `
+      UPDATE products SET ${setClause}
+      WHERE id = $${values.length}
+      RETURNING *`,
+    values,
+  })
 
-  return result.rows[0];
-};
+  return publication
+}
 
 export const deletePublicationById = async (id) => {
   // Delete relationships with carts
-  await connectionDb.query(
-    "DELETE FROM products_by_cart WHERE product_id = $1",
-    [id]
-  );
+  await executeQuery({
+    text: "DELETE FROM products_by_cart WHERE product_id = $1",
+    values: [id],
+  })
 
   // Delete product images
-  await connectionDb.query("DELETE FROM product_images WHERE product_id = $1", [
-    id,
-  ]);
+  await executeQuery({
+    text: "DELETE FROM product_images WHERE product_id = $1",
+    values: [id],
+  })
 
   // Delete the post
-  const result = await connectionDb.query(
-    "DELETE FROM products WHERE id = $1 RETURNING *",
-    [id]
-  );
+  const result = await executeQuery({
+    text: "DELETE FROM products WHERE id = $1 RETURNING *",
+    values: [id],
+  })
 
-  if (result.rowCount === 0) {
-    throw Object.assign(
-      new Error("Product not found or could not be deleted"),
-      {
-        status: 404,
-      }
-    );
+  if (!result) {
+    throw Object.assign(new Error("Product not found or could not be deleted"), {
+      status: 404,
+    })
   }
 
-  return result;
-};
-
+  return result
+}
 
 export const insertProductImages = async (productId, images) => {
-  const values = [];
-  const placeholders = [];
+  const values = []
+  const placeholders = []
 
   images.forEach((img, i) => {
-    const idx = i * 3;
-    values.push(img.url, img.key, productId);
-    placeholders.push(`($${idx + 1}, $${idx + 2}, $${idx + 3})`);
-  });
+    const idx = i * 3
+    values.push(img.url, img.key, productId)
+    placeholders.push(`($${idx + 1}, $${idx + 2}, $${idx + 3})`)
+  })
 
-  const query = `
-    INSERT INTO product_images (url, key, product_id)
-    VALUES ${placeholders.join(", ")}
-    RETURNING *;
-  `;
+  const productImages = await executeQuery({
+    text: `
+      INSERT INTO product_images (url, key, product_id)
+      VALUES ${placeholders.join(", ")}
+      RETURNING *`,
+    values,
+  })
 
-  const result = await connectionDb.query(query, values);
-  return result.rows;
-};
+  return { images: productImages }
+}

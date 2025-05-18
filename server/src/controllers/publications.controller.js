@@ -15,17 +15,8 @@ export const getPublications = async (req, res) => {
   await execute({
     res,
     success: 200,
-    callback: async () => {
-      const vendorId = req.user.id
-      const publications = await getPublicationsByUser(vendorId)
-
-      const mapped = publications.map((pub) => ({
-        ...pub,
-        thumbnail: pub.images?.[0]?.url || "/placeholder.png",
-      }))
-
-      return mapped
-    },
+    callback: getPublicationsByUser,
+    args: req.user.id,
   })
 }
 
