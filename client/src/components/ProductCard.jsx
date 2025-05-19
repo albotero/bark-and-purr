@@ -1,7 +1,6 @@
 import "../styles/ProductCard.css"
 import { Link } from "react-router-dom"
 import { BsCart4, BsTrash } from "react-icons/bs"
-import { IoArrowRedo } from "react-icons/io5"
 import { TiStarFullOutline } from "react-icons/ti"
 import Button from "react-bootstrap/Button"
 import ButtonGroup from "react-bootstrap/ButtonGroup"
@@ -20,7 +19,7 @@ export function ProductCard({ product, showAddToCart = true }) {
     <Card className="mb-3 shadow-sm position-relative">
       <FavHeart product={product} />
 
-      <div className="position-relative">
+      <Link to={`/product/${productId}`} className="position-relative">
         <Card.Img
           variant="top"
           src={thumbnail || "/placeholder.png"}
@@ -32,16 +31,18 @@ export function ProductCard({ product, showAddToCart = true }) {
             <TiStarFullOutline className="star" /> {Number(rating).toFixed(1)}
           </div>
         )}
-      </div>
+      </Link>
 
       <Card.Body className="d-flex align-items-center">
         <div className="flex-grow-1">
-          <h5>{title.content}</h5>
+          <Link to={`/product/${productId}`} className="text-decoration-none">
+            <Card.Title>{title.content}</Card.Title>
+          </Link>
           <div className="d-flex justify-content-between fs-6 flex-wrap">
             <p className="m-0">${price.toLocaleString()}/u</p>
             <p className="m-0">Total: ${(price * cartItem.quantity).toLocaleString()}</p>
           </div>
-          <div className="mt-2 d-flex align-items-center gap-2">
+          <div className="mt-2 d-flex align-items-center justify-content-center gap-2">
             <ButtonGroup>
               <Button variant="secondary" onClick={() => decreaseQty(productId)}>
                 -
@@ -70,7 +71,7 @@ export function ProductCard({ product, showAddToCart = true }) {
     <Card className="position-relative">
       <FavHeart product={product} />
 
-      <div className="position-relative">
+      <Link to={`/product/${productId}`} className="position-relative">
         <Card.Img
           variant="top"
           src={thumbnail || "/placeholder.png"}
@@ -82,10 +83,12 @@ export function ProductCard({ product, showAddToCart = true }) {
             <TiStarFullOutline className="star" /> {Number(rating).toFixed(1)}
           </div>
         )}
-      </div>
+      </Link>
 
       <Card.Body>
-        <Card.Title>{title.content}</Card.Title>
+        <Link to={`/product/${productId}`} className="text-decoration-none">
+          <Card.Title>{title.content}</Card.Title>
+        </Link>
         <div className="d-flex gap-3 w-100">
           <Card.Text className="flex-grow-1 m-0">${price.toLocaleString()}</Card.Text>
 
@@ -94,10 +97,6 @@ export function ProductCard({ product, showAddToCart = true }) {
               <BsCart4 />
             </Button>
           )}
-
-          <Link to={`/product/${productId}`} className="btn btn-outline-primary btn-sm">
-            <IoArrowRedo />
-          </Link>
         </div>
       </Card.Body>
     </Card>

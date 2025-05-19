@@ -186,7 +186,7 @@ const NewProduct = () => {
 
             <h5 className="fw-bold mt-4">Images</h5>
             <Form.Group
-              className="mb-4 border border-2 p-5 text-center bg-light"
+              className="mb-4 border-2 p-5 text-center bg-light"
               style={{
                 borderStyle: "dashed",
                 cursor: "pointer",
