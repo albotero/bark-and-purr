@@ -103,7 +103,7 @@ const RegisterForm = () => {
 
   return (
     <div className="d-flex align-items-center justify-content-center vh-100">
-      <div className="p-5 border rounded" style={{ backgroundColor: "white", width: "100%", maxWidth: "600px" }}>
+      <div className="p-5 border rounded bg-body-tertiary text-body" style={{ width: "100%", maxWidth: "600px" }}>
         <h2 className="text-center mb-4">{t("register")}</h2>
         <form onSubmit={handleSubmit}>
           <div className="row mb-3">

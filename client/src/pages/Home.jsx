@@ -4,10 +4,12 @@ import Container from "react-bootstrap/esm/Container"
 
 const Home = () => {
   return (
-    <Container className="section-padding">
-      <Hero />
-      <FeaturedProducts />
-    </Container>
+    <>
+      <Hero /> 
+      <Container className="section-padding">
+        <FeaturedProducts />
+      </Container>
+    </>
   )
 }
 
