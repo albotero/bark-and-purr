@@ -1,0 +1,37 @@
+{
+  "publications": {
+    "delete_confirm_title": "¿Estás segura de que quieres eliminar la publicación?",
+    "delete_confirm_text": "¡No podrás deshacer esto!",
+    "delete_confirm": "¡Sí, elimínala!",
+    "deleted": "Eliminado",
+    "delete_success": "Tu publicación ha sido eliminada.",
+    "error": "Error",
+    "delete_error": "No se pudo eliminar la publicación",
+    "my.products": "Mis Productos",
+    "title": "Publicaciones",
+    "new_product": "Nuevo Producto",
+    "no_publications": "Aún no has publicado ningún producto.",
+    "no_image": "Sin imagen",
+    "price": "Precio:",
+    "changing": "Cambiando...",
+    "deactivate": "Desactivar",
+    "activate": "Activar",
+    "delete_confirm_button": "Eliminar Publicación",
+    "deactivate_product_protection": "Desactiva el producto para protegerlo"
+  },
+  "editProduct": {
+    "editTitle": "Edita tu Producto",
+    "nameLabel": "Nombre del Producto",
+    "priceLabel": "Precio",
+    "descriptionLabel": "Descripción",
+    "stockLabel": "Stock",
+    "saveButton": "Guardar Cambios",
+    "cancelButton": "Cancelar",
+    "delete_confirm_image": "¿Deseas eliminar esta imagen?",
+    "newImagesPreview": "Vista previa de Nuevas Imágenes",
+    "existingImages": "Imágenes Existentes",
+    "deleteImageButton": "Eliminar Imagen",
+    "uploadNewImages": "Subir Nuevas Imágenes",
+    "chooseFiles": "Elegir Archivos"
+  }
+}

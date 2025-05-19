@@ -13,6 +13,7 @@ import enCart from "../locales/en/cart.json"
 import enRoutes from "../locales/en/routes.json"
 import enErrors from "../locales/en/errors.json"
 import enOrders from "../locales/en/orders.json"
+import enPublications from "../locales/en/publications.json"
 
 import esAuth from "../locales/es/auth.json"
 import esProfile from "../locales/es/profile.json"
@@ -26,7 +27,7 @@ import esErrors from "../locales/es/errors.json"
 import enProduct from "../locales/en/product.json"
 import esProduct from "../locales/es/product.json"
 import esOrders from "../locales/es/orders.json"
-    
+import esPublications from "../locales/es/publications.json"
 
 i18n
   .use(LanguageDetector)
@@ -48,7 +49,8 @@ i18n
         routes: enRoutes,
         errors: enErrors,
         product: enProduct,
-        orders: enOrders
+        orders: enOrders,
+        publications: enPublications
       },
       es: {
         auth: esAuth,
@@ -61,7 +63,8 @@ i18n
         routes: esRoutes,
         errors: esErrors,
         product: esProduct,
-        orders: esOrders
+        orders: esOrders,
+        publications: esPublications
       },
     },
   })
