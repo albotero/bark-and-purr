@@ -1,7 +1,7 @@
 # 🧠 Proyecto Final
 
 Proyecto en desarrollo como parte del curso de desarrollo web.  
-Actualmente hemos completado el **Hito 3**, donde trabajamos en el desarrollo del Backend.
+Actualmente hemos completado el **Hito 4**, donde hemos desplegado la aplicación a productivo en Render y Netlify.
 
 ---
 
@@ -22,6 +22,6 @@ Actualmente hemos completado el **Hito 3**, donde trabajamos en el desarrollo de
 
 ✅ Hito 3 completado => [Commit 32996ea](https://github.com/albotero/bark-and-purr/commit/32996ea354080c4b94e066a09a3d9305a5a0685e)
 
-🔜 Próximo: desarrollo del Hito 4
+✅ Hito 4 completado => [Commit 910e612](https://github.com/albotero/bark-and-purr/commit/910e612cb6add1ad0821c4eef8972e15a365449e)
 
-
+🔜 Próximo: desarrollo del Hito 5
