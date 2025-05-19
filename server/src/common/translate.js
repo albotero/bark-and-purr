@@ -17,7 +17,7 @@ export const doTranslation = async (SourceLanguageCode, TargetLanguageCode, Text
         translated,
         translation: (translated && data?.TranslatedText) || Text,
       }
-      if (error) console.log("Error:", error.originalError.message)
+      if (error) console.log("Error:", error.originalError?.message)
     })
 
     do {
