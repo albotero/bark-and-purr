@@ -22,6 +22,6 @@ Actualmente hemos completado el **Hito 4**, donde hemos desplegado la aplicació
 
 ✅ Hito 3 completado => [Commit 32996ea](https://github.com/albotero/bark-and-purr/commit/32996ea354080c4b94e066a09a3d9305a5a0685e)
 
-✅ Hito 4 completado => [Commit 910e612](https://github.com/albotero/bark-and-purr/commit/910e612cb6add1ad0821c4eef8972e15a365449e)
+✅ Hito 4 completado => [Commit b1e90f5](https://github.com/albotero/bark-and-purr/commit/b1e90f59779d59c9612150142fc0e82591fd5e93)
 
 🔜 Próximo: desarrollo del Hito 5
