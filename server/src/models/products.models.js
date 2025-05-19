@@ -1,10 +1,9 @@
-import format from "pg-format"
 import executeQuery from "./executeQuery.js"
 import { doTranslation } from "../common/translate.js"
 
 export const findProduct = async ({ id, lang }) => {
-  const query = format(
-    `SELECT
+  const [product] = await executeQuery({
+    text: `SELECT
         p.*,
         CONCAT(u.surname, ' ', u.last_name) AS vendor,
         ARRAY (
@@ -15,12 +14,14 @@ export const findProduct = async ({ id, lang }) => {
         ) AS images
       FROM products p
       JOIN users u ON p.vendor_id = u.id
-      WHERE p.id = %s`,
-    id
-  )
-  const rows = await executeQuery(query)
-  const product = !rows || rows.length === 0 ? { message: "not_found" } : rows[0]
-  if (!product) return
+      WHERE p.id = $1`,
+    values: [id],
+  })
+  if (!product) {
+    const error = new Error("not_found")
+    error.status = 404
+    throw error
+  }
 
   const translate = async (text) => {
     const { translated, translation, sourceLang, targetLang } = await doTranslation("auto", lang, text)
@@ -191,7 +192,7 @@ export const findProducts = async ({
           LIMIT 1
         ) AS thumbnail,
         (
-          SELECT AVG(rating)
+          SELECT AVG(rating)::FLOAT
           FROM reviews
           WHERE reviews.product_id = products.id
         ) AS rating

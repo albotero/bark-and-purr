@@ -3,9 +3,11 @@ import executeQuery from "./executeQuery.js"
 import { doTranslation } from "../common/translate.js"
 
 export const findRating = async ({ productId }) => {
-  const query = format("SELECT AVG(rating) AS rating FROM reviews WHERE product_id=%s", productId)
-  const rows = await executeQuery(query)
-  return rows[0]
+  const [rating] = await executeQuery({
+    text: "SELECT AVG(rating)::FLOAT AS rating FROM reviews WHERE product_id = $1",
+    values: [productId],
+  })
+  return rating
 }
 
 /**

@@ -20,30 +20,31 @@ const Product = () => {
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState("desc")
+  const [error, setError] = useState("")
   const { addToCart, updateItemQuantity, getCartItem } = useCart()
   const { isAuthenticated } = useUser()
   const [fetchData] = useApi()
   const navigate = useNavigate()
   const { t, i18n } = useTranslation("product")
 
-  const { message, id, title, images, discount, price, stock, brand, description, vendor } = product
+  const { id, title, images, discount, price, stock, brand, description, vendor } = product
   const { total_reviews: totalReviews } = reviews
   const discounted = discount > 0
   const finalPrice = price * (1 - (discount || 0))
 
   useEffect(() => {
     if (!productId) return
-    const fetchProductData = async () => {
-      const [productData, reviewsData, ratingData] = await Promise.all([
-        fetchData({ endpoint: `product/${i18n.language}/${productId}` }),
-        fetchData({ endpoint: `product/${i18n.language}/${productId}/reviews` }),
-        fetchData({ endpoint: `product/${productId}/rating` }),
-      ])
-      setProduct(productData)
-      setReviews(reviewsData)
-      setRating(Number(ratingData.rating))
+
+    const doFetch = async (endpoint, setFn, key) => {
+      const { error, ...res } = await fetchData({ endpoint })
+      if (error) setError(error)
+      else if (res) setFn(key ? res[key] : res)
     }
-    fetchProductData()
+
+    setError("")
+    doFetch(`product/${i18n.language}/${productId}`, setProduct)
+    doFetch(`product/${i18n.language}/${productId}/reviews`, setReviews)
+    doFetch(`product/${productId}/rating`, setRating, "rating")
   }, [productId, fetchData, i18n.language])
 
   const handleGoBack = () => {
@@ -84,8 +85,8 @@ const Product = () => {
     else addToCart(product, quantity)
   }
 
-  return message === "not_found" ? (
-    <ErrorMsg />
+  return error ? (
+    <ErrorMsg error={error} />
   ) : !id ? (
     <Loading />
   ) : (

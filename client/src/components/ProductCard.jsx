@@ -28,7 +28,7 @@ export function ProductCard({ product, showAddToCart = true }) {
         />
         {rating && (
           <div className="product-rating">
-            <TiStarFullOutline className="star" /> {Number(rating).toFixed(1)}
+            <TiStarFullOutline className="star" /> {rating.toFixed(1)}
           </div>
         )}
       </Link>
@@ -80,7 +80,7 @@ export function ProductCard({ product, showAddToCart = true }) {
         />
         {rating && (
           <div className="product-rating">
-            <TiStarFullOutline className="star" /> {Number(rating).toFixed(1)}
+            <TiStarFullOutline className="star" /> {rating.toFixed(1)}
           </div>
         )}
       </Link>

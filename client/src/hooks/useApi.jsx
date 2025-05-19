@@ -36,16 +36,17 @@ export const useApi = () => {
           const res = await axios({ method, url, headers, data: body })
           data = res.data
 
-          if (res.status >= 200 && res.status < 300) {
-            // Succeeded
-            break
-          }
+          // Got a response, don't try again
+          if (res.status) break
         } catch ({ request, response }) {
           error =
             response.data.error ||
             (response && `fetch.${response.status}`) || // Server answered with error code
             (request && "fetch.no_response") || // Couldn't reach server
             "fetch.no_request" // Couldn't set up the request
+
+          // Got a response, don't try again
+          if (response.status) break
         }
       }
 
