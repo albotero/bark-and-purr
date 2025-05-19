@@ -15,9 +15,8 @@ export const CartProvider = ({ children }) => {
 
   const fetchCart = useCallback(async () => {
     try {
-      if (!isAuthenticated) {
-        throw new Error("Not authenticated")
-      }
+      if (!isAuthenticated) return
+
       const { error, cart } = await fetchData({
         method: "GET",
         endpoint: "cart",

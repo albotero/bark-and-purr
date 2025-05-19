@@ -112,12 +112,14 @@ const Publications = () => {
                       product.is_active_product ? "bg-white" : "bg-secondary-subtle"
                     }`}
                   >
-                    <Card.Body>
+                    <Card.Body className="px-0 pb-0 pt-1">
                       <Row className="justify-content-between align-items-start mb-2">
                         <Col>
-                          <Card.Title as="h5" className="mb-0">
-                            {product.title}
-                          </Card.Title>
+                          <Link to={`/product/${product.id}`} className="text-decoration-none text-primary me-5">
+                            <Card.Title as="h5" className="mb-0">
+                              {product.title}
+                            </Card.Title>
+                          </Link>
                         </Col>
                         <Col xs="auto">
                           {product.is_active_product ? (
@@ -137,34 +139,36 @@ const Publications = () => {
                       </Row>
 
                       <div
-                        className="bg-light d-flex align-items-center justify-content-center mb-2 overflow-hidden rounded"
+                        className="bg-light d-flex align-items-center justify-content-center mb-3 overflow-hidden rounded"
                         style={{ height: "120px" }}
                       >
-                        {product.images?.length > 0 ? (
-                          <Card.Img
-                            variant="top"
-                            src={product.images[0].url}
-                            alt={product.title}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
-                          />
-                        ) : (
-                          <span className="text-muted">No image</span>
-                        )}
+                        <Link to={`/product/${product.id}`} className="text-decoration-none text-primary me-5">
+                          {product.images?.length > 0 ? (
+                            <Card.Img
+                              variant="top"
+                              src={product.images[0].url}
+                              alt={product.title}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                            />
+                          ) : (
+                            <span className="text-muted">No image</span>
+                          )}
+                        </Link>
                       </div>
 
-                      <div className="mb-2">
+                      <div>
                         <strong>Price:</strong> ${product.price.toLocaleString()}
                       </div>
 
                       {product.is_active_product ? (
-                        <Link to={`/product/${product.id}`} className="text-decoration-none text-primary me-5">
+                        <>
                           <FaStar className="me-1" />
                           {(product.review_count ?? 0) === 1 ? "Review" : "Reviews"} ({product.review_count ?? 0})
-                        </Link>
+                        </>
                       ) : (
                         <span className="text-muted me-5" title="Desactivada">
                           <FaStar className="me-1" />
