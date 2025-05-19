@@ -1,5 +1,6 @@
 import "../styles/Navbar.css"
 import { NavLink, Link, useNavigate } from "react-router-dom"
+import { BsCart4 } from "react-icons/bs"
 import Container from "react-bootstrap/esm/Container"
 import Nav from "react-bootstrap/esm/Nav"
 import BsNavbar from "react-bootstrap/esm/Navbar"
@@ -27,7 +28,15 @@ const Navbar = () => {
         <BsNavbar.Brand as={Link} to="/">
           <img src="/logo.png" alt="Logo" width="60" height="60" />
         </BsNavbar.Brand>
+
+        {/* Cart Counter for mobile only */}
+        <NavLink to="/cart" className="d-flex d-md-none align-items-center gap-1 ms-auto me-3">
+          <BsCart4 className="text-light" />
+          <CartCounter />
+        </NavLink>
+
         <BsNavbar.Toggle aria-controls="responsive-navbar-nav" />
+
         <BsNavbar.Collapse>
           {/* Links at the left */}
           <Nav className="me-auto">
@@ -57,15 +66,8 @@ const Navbar = () => {
             ) : (
               // Si hay token, se muestra Profile y Logout
               <>
-                {/* Cart Counter always visible when logged in */}
-                <NavLink
-                  to="/cart"
-                  className={({ isActive }) =>
-                    `${linkClassName({
-                      isActive,
-                    })} d-flex align-items-center gap-2`
-                  }
-                >
+                {/* Cart Counter for desktop */}
+                <NavLink to="/cart" className={(e) => `${linkClassName(e)} d-none d-md-flex align-items-center gap-2`}>
                   <CartCounter />
                   {t("cart")}
                 </NavLink>
