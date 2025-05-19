@@ -110,7 +110,7 @@ const Publications = () => {
               {publications.map((product) => (
                 <Col key={product.id} xs={12} sm={6} md={4} lg={3}>
                   <Card
-                    className={`h-100 border rounded-4 p-3 shadow-sm ${
+                    className={`h-100 border rounded-4 p-3 shadow-sm text-dark ${
                       product.is_active_product
                         ? "bg-white"
                         : "bg-secondary-subtle"
@@ -123,7 +123,7 @@ const Publications = () => {
                             to={`/product/${product.id}`}
                             className="text-decoration-none text-primary me-5"
                           >
-                            <Card.Title as="h5" className="mb-0">
+                            <Card.Title as="h5" className="text-dark mb-0">
                               {product.title}
                             </Card.Title>
                           </Link>
@@ -133,9 +133,9 @@ const Publications = () => {
                             <Link
                               to={`/user/edit-product/${product.id}`}
                               title="Edit publication"
-                              className="text-decoration-none text-dark"
+                              className="text-decoration-none text-danger"
                             >
-                              <FaEdit role="button" size={24} />
+                              <FaEdit role="button" size={24} className="text-danger" />
                             </Link>
                           ) : (
                             <span className="text-muted" title="Desactivada">
