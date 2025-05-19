@@ -60,7 +60,7 @@ const prepareHATEOAS = async ({ totalProducts, lang, products, histogram, filter
       `page=${p}`,
     ]
     // Build URL
-    return "/api/products?" + params.join("&")
+    return `/api/products/${lang}?${params.join("&")}`
   }
   const results = await Promise.all(
     products.map(async ({ id, title, price, thumbnail, rating }) => {
@@ -118,7 +118,7 @@ export const findProducts = async ({
   min_stock: minStock,
   min_price: minPrice,
   max_price: maxPrice,
-  order_by: orderBy = "price_desc",
+  order_by: orderBy = "rating_desc",
   results_per_page: rpp = 10,
   page = 1,
 }) => {
@@ -126,46 +126,61 @@ export const findProducts = async ({
   const resultsPerPage = Number(rpp)
   const offset = (page - 1) * resultsPerPage
   const filters = []
+  const histogramFilters = []
+  const values = []
+  const histogramValues = []
+  let i = 0
+  let histogramI = 0
 
-  const addFilter = (key, column, operator, value) => {
-    filters.push({
-      key: "is_active",
-      value: true,
-      query: "is_active_product = true",
-    })
-    // filters.push({
-    //   key,
-    //   value,
-    //   query: format(`${column} ${operator} %s`, value),
-    // });
+  const addFilter = (column, operator, value) => {
+    i++
+    filters.push(
+      column === "title" // For text search
+        ? `UNACCENT(LOWER(${column})) SIMILAR TO '%' || UNACCENT(LOWER($${i})) || '%'`
+        : `${column} ${operator} $${i}`
+    )
+    values.push(value)
+    if (column !== "price") {
+      histogramI++
+      histogramFilters.push(
+        column === "title" // For text search
+          ? `UNACCENT(LOWER(${column})) SIMILAR TO '%' || UNACCENT(LOWER($${histogramI})) || '%'`
+          : `${column} ${operator} $${histogramI}`
+      )
+      histogramValues.push(value)
+    }
   }
 
   // Add requested filters
-  if (search)
-    addFilter("search", "UNACCENT(LOWER(title))", "SIMILAR TO", `UNACCENT(LOWER('%(${search.replace(/\s/g, "|")})%'))`)
-  if (minStock) addFilter("min_stock", "stock", ">=", minStock)
-  if (minPrice) addFilter("min_price", "price", ">=", minPrice)
-  if (maxPrice) addFilter("max_price", "price", "<=", maxPrice)
-  addFilter("active", "is_active_product", "=", true)
+  if (search) addFilter("title", undefined, search.trim().replace(/\s+/g, "|"))
+  if (minStock) addFilter("stock", ">=", minStock)
+  if (minPrice) addFilter("price", ">=", minPrice)
+  if (maxPrice) addFilter("price", "<=", maxPrice)
+  addFilter("is_active_product", "=", true)
 
-  const filtersTotal = filters.map(({ query }) => query).join(" AND ")
-  const filtersHistogram = filters
-    .filter(({ key }) => !key.includes("price"))
-    .map(({ query }) => query)
-    .join(" AND ")
-
-  const countProducts = await executeQuery(
-    "SELECT COUNT(id)::INT FROM products" +
+  const countProducts = await executeQuery({
+    text:
+      "SELECT COUNT(id)::INT FROM products" +
       // Add filter
-      (filters.length ? ` WHERE ${filtersTotal}` : "")
-  )
+      (filters.length ? ` WHERE ${filters.join(" AND ")}` : ""),
+    values,
+  })
   const totalProducts = countProducts[0]?.count
 
-  // Build query
-  const [orderColumn, orderDirection] = orderBy.split("_")
+  const order =
+    orderBy == "random"
+      ? " ORDER BY RANDOM ()"
+      : /^(rating|price|date)_(asc|desc)$/.test(orderBy)
+      ? ` ORDER BY ${orderBy.replace("_", " ")} NULLS LAST`
+      : ""
 
-  const products = await executeQuery(
-    `SELECT
+  values.push(resultsPerPage)
+  values.push(offset)
+
+  // Build query
+  const products = await executeQuery({
+    text:
+      `SELECT
         *,
         created_at AS date,
         (
@@ -182,28 +197,24 @@ export const findProducts = async ({
         ) AS rating
       FROM products` +
       // Add filter
-      (filters.length ? ` WHERE ${filtersTotal}` : "") +
+      (filters.length ? ` WHERE ${filters.join(" AND ")}` : "") +
       // Add order
-      (orderBy
-        ? format(
-            ` ORDER BY %s %s`,
-            orderColumn === "random" ? "RANDOM ()" : orderColumn,
-            orderDirection?.toUpperCase() || ""
-          )
-        : "") +
+      order +
       // Add pagination
-      format(` LIMIT %s OFFSET %s`, resultsPerPage, offset)
-  )
+      ` LIMIT $${i + 1} OFFSET $${i + 2}`,
+    values,
+  })
 
   // Build histogram
-  const histogram = await executeQuery(`
+  const histogram = await executeQuery({
+    text: `
     WITH
       stats AS (
         SELECT 
           CEIL(MAX(price) / 10) * 10 AS max_price,
           CEIL(MAX(price) / 100) * 10 AS range_size
         FROM products
-        ${filtersHistogram ? `WHERE ${filtersHistogram}` : ""}
+        ${histogramFilters ? `WHERE ${histogramFilters.join(" AND ")}` : ""}
       ),
       series AS (
         SELECT GENERATE_SERIES(
@@ -226,7 +237,7 @@ export const findProducts = async ({
           (SELECT COUNT(*)::INT
             FROM products
             WHERE
-              ${filtersHistogram ? `${filtersHistogram} AND` : ""}
+              ${histogramFilters ? `${histogramFilters.join(" AND ")} AND` : ""}
               price BETWEEN range_start AND range_end
           )
         FROM ranges
@@ -236,8 +247,10 @@ export const findProducts = async ({
       MAX(price) AS max_price,
       (SELECT JSON_AGG(values.*) FROM values) AS values
     FROM products
-      ${filtersHistogram ? `WHERE ${filtersHistogram}` : ""}
-    `)
+      ${histogramFilters ? `WHERE ${histogramFilters.join(" AND ")}` : ""}
+    `,
+    values: histogramValues,
+  })
 
   return await prepareHATEOAS({
     totalProducts,

@@ -12,7 +12,7 @@ import EditIcon from "./EditIcon"
 import OrderItem from "./OrderItem"
 import { useApi } from "../hooks/useApi"
 
-const orderOptions = ["price", "rating", "date"]
+const orderOptions = ["rating", "price", "date"]
 
 const ProductFilters = ({
   filters,
@@ -30,7 +30,7 @@ const ProductFilters = ({
   const [selPrice, setSelPrice] = useState([filtersData.minPrice, filtersData.maxPrice])
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [fetchProducts] = useApi()
-  const { t } = useTranslation("discover")
+  const { t, i18n } = useTranslation("discover")
 
   const updateQuery = async (pageUrl, key, value) => {
     const regex = new RegExp(`${key}=[\\d\\w]+&?`, "g")
@@ -74,7 +74,7 @@ const ProductFilters = ({
   const handleClearFilters = async () => {
     setIsLoading(true)
     const data = await fetchProducts({
-      endpoint: "products",
+      endpoint: `products/${i18n.language}`,
       query: initialFilters,
     })
     setProductsData(data)

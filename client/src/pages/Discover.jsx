@@ -15,7 +15,7 @@ import ProductFilters from "../components/ProductFilters"
 import { useApi } from "../hooks/useApi"
 
 const resultsPerPageOptions = [10, 20, 50]
-const initialFilters = { results_per_page: resultsPerPageOptions[0], order_by: "price_desc" }
+const initialFilters = { results_per_page: resultsPerPageOptions[0], order_by: "rating_desc" }
 
 const Discover = () => {
   const [order, setOrder] = useState(initialFilters.order_by)
