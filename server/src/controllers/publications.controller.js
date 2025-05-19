@@ -7,7 +7,7 @@ import {
   deletePublicationById,
   updatePublication,
   insertProductImages,
-} from "../models/publication.models.js"
+} from "../models/publications.models.js"
 import connectionDb from "../../config/db/connection.db.js"
 
 // Get all publications by the authenticated user
@@ -25,24 +25,8 @@ export const getPublicationByIdController = async (req, res) => {
   await execute({
     res,
     success: 200,
-    args: req.params,
-    callback: async ({ id }) => {
-      const publication = await getPublicationById(id)
-
-      if (!publication) {
-        const error = new Error("Publication not found")
-        error.status = 404
-        throw error
-      }
-
-      if (publication.vendor_id !== req.user.id) {
-        const error = new Error("Unauthorized access")
-        error.status = 403
-        throw error
-      }
-
-      return publication
-    },
+    args: req.params.id,
+    callback: getPublicationById,
   })
 }
 
@@ -65,9 +49,7 @@ export const createPublicationController = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" })
     }
     if (!title.trim() || !description.trim()) {
-      return res
-        .status(400)
-        .json({ message: "Title and description cannot be empty" });
+      return res.status(400).json({ message: "Title and description cannot be empty" })
     }
 
     const priceNum = parseInt(price)
@@ -78,9 +60,7 @@ export const createPublicationController = async (req, res) => {
     }
 
     if (priceNum < 0 || stockNum < 0) {
-      return res
-        .status(400)
-        .json({ message: "Price and stock must be non-negative" });
+      return res.status(400).json({ message: "Price and stock must be non-negative" })
     }
 
     const insertProductResult = await connectionDb.query(
@@ -110,81 +90,69 @@ export const updatePublicationController = async (req, res) => {
     success: 200,
     args: { ...req.params, ...req.body },
     callback: async ({ id, imagesToDelete = "[]", ...fields }) => {
-      const existing = await getPublicationById(id);
+      const existing = await getPublicationById(id)
 
       if (!existing) {
         throw Object.assign(new Error("Publication not found"), {
           status: 404,
-        });
+        })
       }
 
       if (existing.vendor_id !== req.user.id) {
-        throw Object.assign(new Error("Unauthorized access"), { status: 403 });
+        throw Object.assign(new Error("Unauthorized access"), { status: 403 })
       }
 
       // Validations of empty or incorrect fields
       if (fields.title !== undefined && fields.title.trim() === "") {
         throw Object.assign(new Error("Title cannot be empty"), {
           status: 400,
-        });
+        })
       }
-      if (
-        fields.description !== undefined &&
-        fields.description.trim() === ""
-      ) {
+      if (fields.description !== undefined && fields.description.trim() === "") {
         throw Object.assign(new Error("Description cannot be empty"), {
           status: 400,
-        });
+        })
       }
       if (fields.price !== undefined && isNaN(parseFloat(fields.price))) {
         throw Object.assign(new Error("Price must be a valid number"), {
           status: 400,
-        });
+        })
       }
       if (fields.stock !== undefined && isNaN(parseInt(fields.stock))) {
         throw Object.assign(new Error("Stock must be a valid number"), {
           status: 400,
-        });
+        })
       }
 
-      const parsedImagesToDelete =
-        typeof imagesToDelete === "string"
-          ? JSON.parse(imagesToDelete)
-          : imagesToDelete;
+      const parsedImagesToDelete = typeof imagesToDelete === "string" ? JSON.parse(imagesToDelete) : imagesToDelete
 
       // 1. Delete selected images
-      if (
-        Array.isArray(parsedImagesToDelete) &&
-        parsedImagesToDelete.length > 0
-      ) {
+      if (Array.isArray(parsedImagesToDelete) && parsedImagesToDelete.length > 0) {
         for (const key of parsedImagesToDelete) {
           try {
             // Delete from Cloudinary
-            await cloudinary.uploader.destroy(key);
+            await cloudinary.uploader.destroy(key)
           } catch (err) {
-            console.warn(`Error deleting image ${key} from Cloudinary:`, err);
+            console.warn(`Error deleting image ${key} from Cloudinary:`, err)
           }
 
           // Delete from DB
-          await connectionDb.query(
-            `DELETE FROM product_images WHERE product_id = $1 AND key = $2`,
-            [id, key]
-          );
+          await connectionDb.query(`DELETE FROM product_images WHERE product_id = $1 AND key = $2`, [id, key])
         }
       }
 
       // 2.Upload new images if they exist
       if (req.files && req.files.length > 0) {
-        const uploadedImages = await uploadImagesToCloudinary(req.files);
-        await insertProductImages(id, uploadedImages);
+        const uploadedImages = await uploadImagesToCloudinary(req.files)
+        await insertProductImages(id, uploadedImages)
       }
 
       // 3. Update product fields
-      const updatedProduct = await updatePublication(id, fields);
+      const updatedProduct = await updatePublication(id, fields)
 
       // 4. Get the updated product with images
-      const updatedWithImages = await getPublicationById(id);
-      return updatedWithImages;
+      const updatedWithImages = await getPublicationById(id)
+      return updatedWithImages
     },
   })
 }

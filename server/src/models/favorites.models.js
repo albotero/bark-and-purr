@@ -32,7 +32,7 @@ export const getFavoritesByUser = async ({ userId, lang }) => {
             LIMIT 1
           ) AS thumbnail,
           (
-            SELECT AVG(rating)
+            SELECT AVG(rating)::FLOAT
             FROM reviews
             WHERE reviews.product_id = p.id
           ) AS rating

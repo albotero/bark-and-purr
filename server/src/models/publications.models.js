@@ -51,8 +51,8 @@ export const getPublicationsByUser = async (userId) => {
   }
 }
 
-export const getPublicationById = async (id) => {
-  const publication = await executeQuery({
+export const getPublicationById = async (publicationId) => {
+  const [publication] = await executeQuery({
     text: `
       SELECT 
         p.*,
@@ -63,7 +63,7 @@ export const getPublicationById = async (id) => {
         ) AS images
       FROM products p
       WHERE p.id = $1`,
-    values: [id],
+    values: [publicationId],
   })
 
   return publication
@@ -114,7 +114,7 @@ export const updatePublication = async (id, fields) => {
 }
 
 export const deletePublicationById = async ({ productId, userId }) => {
-  const [existing] = await getPublicationById(productId)
+  const existing = await getPublicationById(productId)
 
   if (!existing) {
     throw Object.assign(new Error("Publication not found"), {

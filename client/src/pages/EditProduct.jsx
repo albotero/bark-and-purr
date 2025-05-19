@@ -1,33 +1,33 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
-import Swal from "sweetalert2";
-import { useUser } from "../context/UserContext";
-import { useApi } from "../hooks/useApi";
+import { useEffect, useState, useRef } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import Button from "react-bootstrap/Button"
+import Form from "react-bootstrap/Form"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+import Card from "react-bootstrap/Card"
+import Container from "react-bootstrap/Container"
+import Swal from "sweetalert2"
+import { useUser } from "../context/UserContext"
+import { useApi } from "../hooks/useApi"
 
 const EditProduct = () => {
-  const { t } = useTranslation(["publications", "editProduct"])
-  const { id: productId } = useParams();
-  const { getToken } = useUser();
-  const [fetchData] = useApi();
-  const navigate = useNavigate();
-  const fileInputRef = useRef(null);
+  const { t } = useTranslation("publications")
+  const { id: productId } = useParams()
+  const { getToken } = useUser()
+  const [fetchData] = useApi()
+  const navigate = useNavigate()
+  const fileInputRef = useRef(null)
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
     stock: "",
-  });
-  const [existingImages, setExistingImages] = useState([]);
-  const [imagesToDelete, setImagesToDelete] = useState([]);
-  const [newImages, setNewImages] = useState([]);
+  })
+  const [existingImages, setExistingImages] = useState([])
+  const [imagesToDelete, setImagesToDelete] = useState([])
+  const [newImages, setNewImages] = useState([])
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -36,62 +36,62 @@ const EditProduct = () => {
           method: "GET",
           endpoint: `publications/${productId}`,
           token: getToken(),
-        });
-        if (error) throw new Error(error);
-        setFormData(product);
-        setExistingImages(images || []);
+        })
+        if (error) throw new Error(error)
+        setFormData(product)
+        setExistingImages(images || [])
       } catch (err) {
-        console.error("Error fetching product:", err);
+        console.error("Error fetching product:", err)
       }
-    };
-    fetchProduct();
-  }, [productId, getToken, fetchData]);
+    }
+    fetchProduct()
+  }, [productId, getToken, fetchData])
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleImageDelete = async (publicId) => {
     const result = await Swal.fire({
-      title: t("delete_confirm_title"),
-      text: t("delete_confirm_image"),
+      title: t("delete.title"),
+      text: t("delete.image"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: t("delete_confirm_button"),
+      confirmButtonText: t("delete.confirm"),
       cancelButtonText: t("cancel"),
-    });
+    })
 
-    if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return
 
-    setImagesToDelete((prev) => [...prev, publicId]);
-    setExistingImages((prev) => prev.filter((img) => img.key !== publicId));
-  };
+    setImagesToDelete((prev) => [...prev, publicId])
+    setExistingImages((prev) => prev.filter((img) => img.key !== publicId))
+  }
 
   const handleEditSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const result = await Swal.fire({
-      title: t("delete_confirm_title"),
-      text: t("accept_changes"),
+      title: t("edit.title"),
+      text: t("edit.accept_changes"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: t("saveButton"),
+      confirmButtonText: t("edit.save"),
       cancelButtonText: t("cancel"),
-    });
+    })
 
-    if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("title", formData.title);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("price", formData.price);
-    formDataToSend.append("stock", formData.stock);
-    formDataToSend.append("imagesToDelete", JSON.stringify(imagesToDelete));
+    const formDataToSend = new FormData()
+    formDataToSend.append("title", formData.title)
+    formDataToSend.append("description", formData.description)
+    formDataToSend.append("price", formData.price)
+    formDataToSend.append("stock", formData.stock)
+    formDataToSend.append("imagesToDelete", JSON.stringify(imagesToDelete))
 
     newImages.forEach((file) => {
-      formDataToSend.append("files", file);
-    });
+      formDataToSend.append("files", file)
+    })
 
     try {
       const { error } = await fetchData({
@@ -100,36 +100,28 @@ const EditProduct = () => {
         token: getToken(),
         body: formDataToSend,
         sendContentType: false,
-      });
-      if (error) throw new Error(error);
-      Swal.fire("Success!", "The post has been updated.", "success");
-      navigate("/user/publications");
+      })
+      if (error) throw new Error(error)
+      Swal.fire(t("edit.title"), t("edit.publication_success"), "success")
+      navigate("/user/publications")
     } catch (error) {
-      console.error("Error updating publication:", error);
-      Swal.fire("Error", "There was an error updating the post.", "error");
+      console.error("Error updating publication:", error)
+      Swal.fire(t("Error"), t("edit.publication_error"), "error")
     }
-  };
+  }
 
   return (
     <Container className="my-4">
       <Card className="p-4">
-        <h2>{t("editTitle")}</h2>
+        <h2>{t("edit.title")}</h2>
         <Form onSubmit={handleEditSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label className="fs-4">
-              {t("editProduct:nameLabel")}
-            </Form.Label>
-            <Form.Control
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
+            <Form.Label className="fs-4">{t("edit.name")}</Form.Label>
+            <Form.Control type="text" name="title" value={formData.title} onChange={handleChange} required />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="fs-4">{t("descriptionLabel")}</Form.Label>
+            <Form.Label className="fs-4">{t("edit.description")}</Form.Label>
             <Form.Control
               type="text"
               name="description"
@@ -142,7 +134,7 @@ const EditProduct = () => {
           <Row>
             <Col>
               <Form.Group className="mb-3">
-                <Form.Label className="fs-4">{t("priceLabel")}</Form.Label>
+                <Form.Label className="fs-4">{t("edit.price")}</Form.Label>
                 <Form.Control
                   type="number"
                   name="price"
@@ -155,7 +147,7 @@ const EditProduct = () => {
             </Col>
             <Col>
               <Form.Group className="mb-3">
-                <Form.Label className="fs-4">{t("stockLabel")}</Form.Label>
+                <Form.Label className="fs-4">{t("edit.stock")}</Form.Label>
                 <Form.Control
                   type="number"
                   name="stock"
@@ -170,7 +162,7 @@ const EditProduct = () => {
 
           <Row className="mb-4">
             <Col md={6}>
-              <h5 className="text-primary mb-3">{t("existingImages")}</h5>
+              <h5 className="text-primary mb-3">{t("edit.existing_images")}</h5>
               <Row>
                 {existingImages.map((img) => (
                   <Col key={img.key} xs={6} className="mb-3 text-center">
@@ -191,7 +183,7 @@ const EditProduct = () => {
                         className="rounded-pill"
                         onClick={() => handleImageDelete(img.key)}
                       >
-                        {t("deleteImageButton")}
+                        {t("edit.delete_image")}
                       </Button>
                     </div>
                   </Col>
@@ -201,15 +193,10 @@ const EditProduct = () => {
 
             <Col md={6}>
               <Form.Group>
-                <Form.Label className="fs-5 fw-semibold">
-                  {t("uploadNewImages")}
-                </Form.Label>
+                <Form.Label className="fs-5 fw-semibold">{t("edit.upload_new_images")}</Form.Label>
                 <div className="mb-2">
-                  <label
-                    htmlFor="customFileInput"
-                    className="btn btn-secondary"
-                  >
-                    {t("chooseFiles")}
+                  <label htmlFor="customFileInput" className="btn btn-secondary">
+                    {t("edit.choose_files")}
                   </label>
                   <Form.Control
                     ref={fileInputRef}
@@ -225,16 +212,10 @@ const EditProduct = () => {
 
               {newImages.length > 0 && (
                 <>
-                  <h6 className="mt-4 text-secondary">
-                    {t("newImagesPreview")}
-                  </h6>
+                  <h6 className="mt-4 text-secondary">{t("edit.preview_new_images")}</h6>
                   <Row>
                     {newImages.map((file, index) => (
-                      <Col
-                        key={index}
-                        xs={6}
-                        className="mb-3 text-center position-relative"
-                      >
+                      <Col key={index} xs={6} className="mb-3 text-center position-relative">
                         <div className="position-relative">
                           <img
                             src={URL.createObjectURL(file)}
@@ -251,11 +232,11 @@ const EditProduct = () => {
                             size="sm"
                             className="position-absolute top-0 end-0 m-1 rounded-circle"
                             onClick={() => {
-                              const updatedImages = [...newImages];
-                              updatedImages.splice(index, 1);
-                              setNewImages(updatedImages);
+                              const updatedImages = [...newImages]
+                              updatedImages.splice(index, 1)
+                              setNewImages(updatedImages)
                               if (fileInputRef.current) {
-                                fileInputRef.current.value = null;
+                                fileInputRef.current.value = null
                               }
                             }}
                           >
@@ -272,23 +253,20 @@ const EditProduct = () => {
 
           <Row className="justify-content-center">
             <Col xs="auto">
-              <Button
-                variant="outline-primary"
-                onClick={() => navigate("/user/publications")}
-              >
-                {t("cancelButton")}
+              <Button variant="outline-primary" onClick={() => navigate("/user/publications")}>
+                {t("cancel")}
               </Button>
             </Col>
             <Col xs="auto">
               <Button type="submit" variant="primary">
-                {t("saveButton")}
+                {t("edit.save")}
               </Button>
             </Col>
           </Row>
         </Form>
       </Card>
     </Container>
-  );
-};
+  )
+}
 
-export default EditProduct;
+export default EditProduct
