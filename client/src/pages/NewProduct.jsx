@@ -11,6 +11,7 @@ import { FiUploadCloud } from "react-icons/fi"
 import Swal from "sweetalert2"
 import { useUser } from "../context/UserContext"
 import { useApi } from "../hooks/useApi"
+import { useTranslation } from "react-i18next"
 
 const NewProduct = () => {
   const { getToken } = useUser()
@@ -25,6 +26,7 @@ const NewProduct = () => {
   })
   const [isPublishing, setIsPublishing] = useState(false)
   const [previewUrls, setPreviewUrls] = useState([])
+  const { t } = useTranslation("publications")
 
   const handleChange = (e) => {
     const { name, value, files } = e.target
@@ -106,13 +108,13 @@ const NewProduct = () => {
     <Container className="my-4">
       <span className="text-muted">
         <Link to="/user" className="text-decoration-none">
-          Profile
+          {t("create.profile")}
         </Link>{" "}
         &gt;{" "}
         <Link to="/user/publications" className="text-decoration-none">
-          My publications
+          {t("create.publications")}
         </Link>{" "}
-        &gt; <strong>New product</strong>
+        &gt; <strong>{t("create.new_product")}</strong>
       </span>
 
       <Card className="p-4 mt-3">
@@ -127,9 +129,9 @@ const NewProduct = () => {
           <fieldset disabled={isPublishing}>
             <Row className="mb-3">
               <Col md={6}>
-                <h5 className="fw-bold mb-3">Basic information</h5>
+                <h5 className="fw-bold mb-3">{t("create.basic_info")}</h5>
                 <Form.Group className="mb-3">
-                  <Form.Label>Product Title</Form.Label>
+                  <Form.Label>{t("create.name")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="title"
@@ -141,7 +143,7 @@ const NewProduct = () => {
                 </Form.Group>
 
                 <Form.Group>
-                  <Form.Label>Description</Form.Label>
+                  <Form.Label>{t("create.description")}</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={5}
@@ -155,9 +157,9 @@ const NewProduct = () => {
               </Col>
 
               <Col md={6}>
-                <h5 className="fw-bold mb-3">Price and Stock</h5>
+                <h5 className="fw-bold mb-3">{t("create.price_stock")}</h5>
                 <Form.Group className="mb-3">
-                  <Form.Label>Price</Form.Label>
+                  <Form.Label>{t("create.price")}</Form.Label>
                   <Form.Control
                     type="number"
                     name="price"
@@ -170,7 +172,7 @@ const NewProduct = () => {
                 </Form.Group>
 
                 <Form.Group>
-                  <Form.Label>Stock</Form.Label>
+                  <Form.Label>{t("create.stock")}</Form.Label>
                   <Form.Control
                     type="number"
                     name="stock"
@@ -184,7 +186,7 @@ const NewProduct = () => {
               </Col>
             </Row>
 
-            <h5 className="fw-bold mt-4">Images</h5>
+            <h5 className="fw-bold mt-4">{t("create.images")}</h5>
             <Form.Group
               className="mb-4 border-2 p-5 text-center bg-light"
               style={{
@@ -196,7 +198,7 @@ const NewProduct = () => {
                 {previewUrls.length === 0 ? (
                   <>
                     <FiUploadCloud size={48} className="text-secondary mb-2" />
-                    <span className="d-block text-secondary">Upload Images</span>
+                    <span className="d-block text-secondary">{t("create.upload_images")}</span>
                   </>
                 ) : (
                   <div className="d-flex flex-wrap justify-content-center gap-3">
@@ -230,7 +232,7 @@ const NewProduct = () => {
             <Row className="justify-content-end">
               <Col xs="auto">
                 <Button variant="outline-secondary" onClick={() => navigate("/user/publications")}>
-                  Cancel
+                  {t("cancel")}
                 </Button>
               </Col>
               <Col xs="auto">
@@ -241,7 +243,7 @@ const NewProduct = () => {
                     borderColor: "#6f42c1",
                   }}
                 >
-                  Publish
+                  {t("create.publish")}
                 </Button>
               </Col>
             </Row>

@@ -12,6 +12,20 @@
   "activate": "Activar",
   "deactivate_product_protection": "Desactiva el producto para protegerlo",
   "cancel": "Cancelar",
+  "create": {
+    "profile": "Perfil",
+    "publications": "Mis Publicaciones",
+    "new_product": "Nuevo Producto",
+    "basic_info": "Información Básica",
+    "name": "Nombre del Producto",
+    "description": "Descripción",
+    "price_stock": "Precio e Inventario",
+    "price": "Precio",
+    "stock": "Inventario",
+    "images": "Imágenes",
+    "upload_images": "Subir Imágenes",
+    "publish": "Publicar"
+  },
   "delete": {
     "title": "Eliminar Producto",
     "publication": "¿Quieres eliminar esta publicación?",
