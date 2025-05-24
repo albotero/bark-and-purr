@@ -4,7 +4,7 @@ import { doTranslation } from "../common/translate.js"
 
 export const findRating = async ({ productId }) => {
   const [rating] = await executeQuery({
-    text: "SELECT AVG(rating)::FLOAT AS rating FROM reviews WHERE product_id = $1",
+    text: "SELECT ROUND(AVG(rating),1)::FLOAT AS rating FROM reviews WHERE product_id = $1",
     values: [productId],
   })
   return rating
